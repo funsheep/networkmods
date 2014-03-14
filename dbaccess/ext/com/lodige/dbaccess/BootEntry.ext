@@ -1,0 +1,16 @@
+/*
+	This file is part of the dbaccess library.
+	Copyright (C) 2011-2014 Loedige Systems
+
+	This library is Closed Source.
+*/
+{
+
+	"com.lodige.dbaccess.BootEntry" :
+	{
+		"point" : "github.javaappplatform.platform.boot",
+		"class" : "com.lodige.dbaccess.BootEntry",
+		"singleton" : true
+	}
+
+}

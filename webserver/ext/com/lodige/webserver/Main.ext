@@ -1,0 +1,10 @@
+{
+	"com.lodige.webserver.boot" :
+	{
+		"point" : "github.javaappplatform.platform.boot",
+		"class" : "com.lodige.webserver.BootEntry",
+		"singleton" : true,
+		"port" : 8080
+	}
+	
+}
