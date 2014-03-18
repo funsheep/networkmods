@@ -18,8 +18,6 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import com.lodige.webserver.IHandlerProvider;
-
 /**
  * TODO javadoc
  * 
@@ -42,11 +40,11 @@ public class ServletHandlerProvider implements IHandlerProvider
 		Set<Extension> servletExts = ExtensionRegistry.getExtensions(EXT_POINT_SERVLET);
 		for (Extension ext : servletExts)
 		{
-			String context = ext.getProperty("context", "");
+			String context = ext.getProperty("context", "/");
 			ServletContextHandler handler = handlers.get(context);
 			if (handler == null)
 			{
-				handler = new ServletContextHandler(null, "".equals(context) ? null : context, ServletContextHandler.SESSIONS);
+				handler = new ServletContextHandler(null, context, ServletContextHandler.SESSIONS);
 				handlers.put(context, handler);
 			}
 			
