@@ -14,5 +14,5 @@ public interface IjdbcURIGenerator
 	public static final String EP_JDBCURIGEN = "com.lodige.dbaccess.jdbcurigen";
 
 
-	public String generateURI(String dbhost, int dbpost, String dbname);
+	public String generateURI(String dbhost, int dbport, String dbname);
 }

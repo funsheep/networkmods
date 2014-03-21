@@ -16,7 +16,7 @@ public class SQLiteURIGenerator implements IjdbcURIGenerator
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String generateURI(String dbhost, int dbpost, String dbname)
+	public String generateURI(String dbhost, int dbport, String dbname)
 	{
 		try
 		{
