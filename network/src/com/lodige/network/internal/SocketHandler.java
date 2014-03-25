@@ -42,10 +42,10 @@ class SocketHandler
 				{
 					try 
 					{
-						final Message msg = InternalNetTools.readTCPMSG(in);
+						final Message msg = (Message) con._protocol().read(in);
 						if (msg != null)
 						{
-							assert LOGGER.fine("Received " + msg);
+							assert LOGGER.trace("Received {}", msg);
 							SocketHandler.this.con._put(msg);
 						}
 					}
@@ -57,7 +57,7 @@ class SocketHandler
 			}
 			catch (final IOException ex)
 			{
-				assert LOGGER.fine("TCP MSG Handler shutdown.", ex);
+				LOGGER.debug("TCP MSG Handler shutdown.", ex);
 			}
 			SocketHandler.this.shutdown();
 		}
@@ -82,8 +82,8 @@ class SocketHandler
 					{
 						if (msg.type() != IInternalNetworkConnection.T_CLOSED_SEND_QUEUE)
 						{
-							assert LOGGER.fine("Send " + msg);
-							InternalNetTools.sendMSG(out, msg);
+							assert LOGGER.trace("Send {}", msg);
+							con._protocol().send(msg, out);
 						}
 						SocketHandler.this.con._msgSend(msg);
 						msg.dispose();
@@ -92,7 +92,7 @@ class SocketHandler
 			}
 			catch (IOException ex)
 			{
-				assert LOGGER.fine("TCP MSG Handler shutdown.", ex);
+				LOGGER.debug("TCP MSG Handler shutdown.", ex);
 			}
 			SocketHandler.this.shutdown();
 		}

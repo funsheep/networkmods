@@ -7,6 +7,7 @@ package com.lodige.network.internal;
 import java.net.Socket;
 
 import com.lodige.network.INetworkConnection;
+import com.lodige.network.IProtocol;
 
 /**
  * TODO javadoc
@@ -18,6 +19,8 @@ public interface IInternalNetworkConnection extends INetworkConnection
 	public static final int T_CLOSED_SEND_QUEUE = Integer.MIN_VALUE;
 
 	public Socket _socket();
+
+	public IProtocol _protocol();
 
 
 	public void _put(Message msg);

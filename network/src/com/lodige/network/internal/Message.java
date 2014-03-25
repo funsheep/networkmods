@@ -81,16 +81,6 @@ public class Message implements IMessage
 		return this.callback;
 	}
 	
-//	public int bodyType()
-//	{
-//		return this.bodyType;
-//	}
-//	
-//	public <O> O body()
-//	{
-//		return GenericsToolkit.<O>convertUnchecked(this.body);
-//	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -100,6 +90,10 @@ public class Message implements IMessage
 		return this.type;
 	}
 
+	public int length()
+	{
+		return this.len;
+	}
 
 	/**
 	 * {@inheritDoc}

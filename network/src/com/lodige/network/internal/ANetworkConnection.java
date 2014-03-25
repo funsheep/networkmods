@@ -20,12 +20,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.lodige.network.INetworkAPI;
+import com.lodige.network.IProtocol;
 import com.lodige.network.msg.IMessage;
 
 /**
  * @author funsheep
  */
-public abstract class NetworkConnection extends JobbedTalkerStub implements IInternalNetworkConnection
+public abstract class ANetworkConnection extends JobbedTalkerStub implements IInternalNetworkConnection
 {
 
 	protected static final Logger LOGGER = Logger.getLogger();
@@ -42,7 +43,7 @@ public abstract class NetworkConnection extends JobbedTalkerStub implements IInt
 	private String alias;
 
 
-	public NetworkConnection(IInternalNetworkService service)
+	public ANetworkConnection(IInternalNetworkService service)
 	{
 		super(INetworkAPI.NETWORK_THREAD);
 		this.service = service;
@@ -114,7 +115,7 @@ public abstract class NetworkConnection extends JobbedTalkerStub implements IInt
 				@Override
 				public void run()
 				{
-					msg.callback().handleEvent(new Event(NetworkConnection.this, INetworkAPI.E_MSG_SEND, Long.valueOf(msg.sendID())));
+					msg.callback().handleEvent(new Event(ANetworkConnection.this, INetworkAPI.E_MSG_SEND, Long.valueOf(msg.sendID())));
 				}
 			}, INetworkAPI.NETWORK_THREAD);
 		}
@@ -148,7 +149,7 @@ public abstract class NetworkConnection extends JobbedTalkerStub implements IInt
 				@Override
 				public void run()
 				{
-					NetworkConnection.this.shutdown();
+					ANetworkConnection.this.shutdown();
 				}
 			}, INetworkAPI.NETWORK_THREAD);
 		}
@@ -164,6 +165,15 @@ public abstract class NetworkConnection extends JobbedTalkerStub implements IInt
 		return this.socket;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IProtocol _protocol()
+	{
+		return this.service._getProtocol();
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -186,7 +196,7 @@ public abstract class NetworkConnection extends JobbedTalkerStub implements IInt
 		}
 		catch (InterruptedException e)
 		{
-			LOGGER.warn("Dropping received message: " + msg);
+			LOGGER.warn("Dropping received message: {}", msg);
 		}
 	}
 
@@ -208,8 +218,8 @@ public abstract class NetworkConnection extends JobbedTalkerStub implements IInt
 			@Override
 			public void run()
 			{
-				NetworkConnection.this.sendQueue.putVIP(Message.create(IInternalNetworkConnection.T_CLOSED_SEND_QUEUE, null));
-				NetworkConnection.this.sendQueue.close();
+				ANetworkConnection.this.sendQueue.putVIP(Message.create(IInternalNetworkConnection.T_CLOSED_SEND_QUEUE, null));
+				ANetworkConnection.this.sendQueue.close();
 			}
 		}, INetworkAPI.NETWORK_THREAD);
 	}

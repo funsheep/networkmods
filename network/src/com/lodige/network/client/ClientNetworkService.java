@@ -6,7 +6,7 @@
 	You should have received a copy of the MPL along with this library; see the
 	file LICENSE. If not, you can obtain one at http://mozilla.org/MPL/2.0/.
 */
-package com.lodige.network.internal;
+package com.lodige.network.client;
 
 import github.javaappplatform.platform.job.ADoJob;
 import github.javaappplatform.platform.job.JobPlatform;
@@ -14,6 +14,8 @@ import github.javaappplatform.platform.job.JobPlatform;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.lodige.network.INetworkAPI;
+import com.lodige.network.IProtocol;
+import com.lodige.network.internal.ANetworkService;
 
 
 /**
@@ -24,11 +26,11 @@ public class ClientNetworkService extends ANetworkService
 {
 
 	private final AtomicInteger state = new AtomicInteger(INetworkAPI.S_RUNNING);
+
 	
-	
-	public ClientNetworkService(String name, int localPort)
+	public ClientNetworkService(String name, IProtocol protocol)
 	{
-		super(name);
+		super(name, protocol);
 	}
 	
 	

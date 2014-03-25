@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="ext"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="github.javaappplatform.eclipse.project.classpath.JAPClasspathContainer"/>
 	<classpathentry kind="src" path="/platform"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-dbcp-1.4.jar" sourcepath="lib/commons-dbcp-1.4-src.zip"/>

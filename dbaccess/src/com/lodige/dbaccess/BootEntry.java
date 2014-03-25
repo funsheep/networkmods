@@ -58,7 +58,7 @@ public class BootEntry implements IBootEntry
 		pool.setUrl(generator.generateURI(dbhost, dbport, dbname));
 		ExtensionRegistry.registerSingleton(DataSource.class.getName(), EP_DBCP, pool, null);
 		
-		LOGGER.info("Started connection pool with URI " + pool.getUrl());
+		LOGGER.info("Started connection pool with URI {}", pool.getUrl());
 	}
 
 	/**

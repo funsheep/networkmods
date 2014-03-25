@@ -70,7 +70,7 @@ public class SocketUnit extends Thread
 		{
 			while (!SocketUnit.this.isShutdown())
 			{
-				assert LOGGER.fine("Accepting connections on " + SocketUnit.this.socket);
+				assert LOGGER.info("Accepting connections on {}", SocketUnit.this.socket);
 				SocketUnit.this.socketAccepted(SocketUnit.this.socket.accept());
 			}
 		}
@@ -82,7 +82,7 @@ public class SocketUnit extends Thread
 				SocketUnit.this.shutdown();
 			}
 		}
-		LOGGER.fine("Socketunit no longer accepting connections.");
+		LOGGER.debug("Socketunit no longer accepting connections.");
 		this.serverNetworkService.shutdown();
 	}
 
@@ -95,7 +95,7 @@ public class SocketUnit extends Thread
 			if (!this.isShutdown())
 			{
 				InternalNetTools.configureSocket(clientSocket);
-				LOGGER.info("Client "+ clientSocket.getInetAddress() +" connected.");
+				LOGGER.info("Client {} connected.", clientSocket.getInetAddress());
 
 				this.serverNetworkService.register(clientSocket);
 				return;
@@ -103,7 +103,7 @@ public class SocketUnit extends Thread
 		}
 		catch (IOException ioe)
 		{
-			LOGGER.fine("Accepting a client socket threw an exception.", ioe);
+			LOGGER.warn("Accepting a client socket threw an exception.", ioe);
 		}
 		finally
 		{

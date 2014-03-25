@@ -1,5 +1,6 @@
 package com.lodige.network.client;
 
+import github.javaappplatform.platform.extension.ExtensionRegistry;
 import github.javaappplatform.platform.job.AComputeDoJob;
 
 import java.io.IOException;
@@ -11,19 +12,24 @@ import com.lodige.network.INetworkAPI;
 import com.lodige.network.INetworkService;
 import com.lodige.network.internal.IInternalNetworkService;
 import com.lodige.network.internal.InternalNetTools;
-import com.lodige.network.internal.NetworkConnection;
+import com.lodige.network.internal.ANetworkConnection;
 import com.lodige.network.server.PortRange;
 
 /**
  * @author renken
  */
-public class ClientConnection extends NetworkConnection
+public class ClientConnection extends ANetworkConnection
 {
 
 	private final InetSocketAddress remoteAddress;
 	private final PortRange localRange;
 
 
+	public ClientConnection(String remoteHost, int remotePort, PortRange localPortRange, String networkservice) throws IOException
+	{
+		this(remoteHost, remotePort, localPortRange, ExtensionRegistry.<INetworkService>getService(networkservice));
+	}
+	
 	public ClientConnection(String remoteHost, int remotePort, PortRange localPortRange, INetworkService service) throws IOException
 	{
 		super((IInternalNetworkService) service);

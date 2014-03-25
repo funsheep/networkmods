@@ -23,6 +23,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import com.lodige.network.INetworkAPI;
 import com.lodige.network.INetworkConnection;
+import com.lodige.network.IProtocol;
 
 
 /**
@@ -38,12 +39,14 @@ public abstract class ANetworkService extends JobbedTalkerStub implements IInter
 	private final HashMap<InetAddress, INetworkConnection> connectionsByAddr  = new HashMap<>(1);
 	private final HashMap<String, INetworkConnection> connectionsByAlias = new HashMap<>(1);
 	private final String name;
+	private final IProtocol protocol;
 
 	
-	public ANetworkService(String name)
+	public ANetworkService(String name, IProtocol protocol)
 	{
 		super(INetworkAPI.NETWORK_THREAD);
 		this.name = name;
+		this.protocol = protocol;
 	}
 	
 	
@@ -56,6 +59,16 @@ public abstract class ANetworkService extends JobbedTalkerStub implements IInter
 		return this.name;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IProtocol _getProtocol()
+	{
+		return this.protocol;
+	}
+
+
 	protected void closeAllConnections()
 	{
 		JobPlatform.runJob(new AComputeDoJob("Closing Networkconnections", INetworkAPI.NETWORK_THREAD)

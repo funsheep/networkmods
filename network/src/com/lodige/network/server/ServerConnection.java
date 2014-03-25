@@ -9,13 +9,13 @@ import java.net.Socket;
 
 import com.lodige.network.INetworkAPI;
 import com.lodige.network.internal.IInternalNetworkService;
-import com.lodige.network.internal.NetworkConnection;
+import com.lodige.network.internal.ANetworkConnection;
 
 /**
  * TODO javadoc
  * @author renken
  */
-public class ServerConnection extends NetworkConnection
+public class ServerConnection extends ANetworkConnection
 {
 
 	private final InetAddress remoteAddress;
