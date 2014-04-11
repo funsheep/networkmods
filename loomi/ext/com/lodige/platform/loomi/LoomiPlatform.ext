@@ -1,0 +1,9 @@
+{
+
+	"com.lodige.platform.loomi.Servlet":
+	{
+		"point" : "com.lodige.webserver.servlet",
+		"class" : "com.lodige.platform.loomi.Servlet"
+	}
+	
+}
