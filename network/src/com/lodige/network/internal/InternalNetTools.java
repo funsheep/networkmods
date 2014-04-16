@@ -34,9 +34,9 @@ public class InternalNetTools
 
 	public static final void configureSocket(Socket socket) throws SocketException
 	{
-		socket.setKeepAlive(KEEP_ALIVE);
-		socket.setSoLinger(LINGER_ON, LINGER_TIMEOUT);
-		socket.setTcpNoDelay(!BUFFERING_DELAY);
+//		socket.setKeepAlive(KEEP_ALIVE);
+//		socket.setSoLinger(LINGER_ON, LINGER_TIMEOUT);
+//		socket.setTcpNoDelay(!BUFFERING_DELAY);
 	}
 
 
@@ -83,6 +83,39 @@ public class InternalNetTools
 			len -= eof;
 		}
 		return true;
+	}
+
+	public static final boolean readDataCausious(InputStream in, byte[] b, int start, int len) throws IOException
+	{
+		int res;
+		System.out.println("Interface.read");
+		try {
+			int retry = 0;
+			while ((in.available() <= 0) && (retry < 10)) {
+				try {
+					if(retry>0)Thread.sleep(5000 / 200);
+					retry++;
+					System.out.println("Interface.read delayed");
+				} catch (InterruptedException e) {
+					System.out.println(e);
+				}
+			}
+			res=0;
+			while ((in.available() > 0) && (len > 0)) {
+				//				if ((Nodave.Debug & Nodave.DEBUG_IFACE) != 0)
+				//				System.out.println("can read");
+				res = in.read(b, start, len);
+				start+=res;
+				len-=res;
+//				System.out.println(res+" bytes read");
+			}
+    				System.out.println("got "+res+"bytes");
+			return true;
+//			return 0;
+		} catch (IOException e) {
+			System.out.println(e);
+			return false;
+		}
 	}
 
 

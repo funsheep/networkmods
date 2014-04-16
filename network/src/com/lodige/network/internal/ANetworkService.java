@@ -39,14 +39,24 @@ public abstract class ANetworkService extends JobbedTalkerStub implements IInter
 	private final HashMap<InetAddress, INetworkConnection> connectionsByAddr  = new HashMap<>(1);
 	private final HashMap<String, INetworkConnection> connectionsByAlias = new HashMap<>(1);
 	private final String name;
-	private final IProtocol protocol;
+	private final IProtocol.Stateless protocol;
+	private final Class<? extends IProtocol.Stateful> protocolClass;
 
 	
-	public ANetworkService(String name, IProtocol protocol)
+	public ANetworkService(String name, IProtocol.Stateless protocol)
 	{
 		super(INetworkAPI.NETWORK_THREAD);
 		this.name = name;
 		this.protocol = protocol;
+		this.protocolClass = null;
+	}
+	
+	public ANetworkService(String name, Class<? extends IProtocol.Stateful> protocol)
+	{
+		super(INetworkAPI.NETWORK_THREAD);
+		this.name = name;
+		this.protocol = null;
+		this.protocolClass = protocol;
 	}
 	
 	
@@ -63,9 +73,18 @@ public abstract class ANetworkService extends JobbedTalkerStub implements IInter
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IProtocol _getProtocol()
+	public IProtocol.Stateless _getProtocol()
 	{
-		return this.protocol;
+		if (this.protocol != null)
+			return this.protocol;
+		try
+		{
+			return new StatelessProtocolWrapper(this.protocolClass.newInstance());
+		}
+		catch (InstantiationException | IllegalAccessException e)
+		{
+			throw new RuntimeException("Could not instantiate stateful protocol.", e);
+		}
 	}
 
 

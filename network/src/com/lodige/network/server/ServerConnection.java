@@ -4,6 +4,7 @@
  */
 package com.lodige.network.server;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -24,7 +25,7 @@ public class ServerConnection extends ANetworkConnection
 	/**
 	 * @param service
 	 */
-	public ServerConnection(IInternalNetworkService service, Socket socket)
+	public ServerConnection(IInternalNetworkService service, Socket socket) throws IOException
 	{
 		super(service);
 		this.remoteAddress = socket.getInetAddress();

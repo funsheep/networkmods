@@ -36,6 +36,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	private Socket socket;
 	private SocketHandler handler;
 	private final IInternalNetworkService service;
+	private final IProtocol.Stateless protocol;
 	private final CloseableQueue sendQueue = new CloseableQueue(INetworkAPI.MAX_MESSAGE_COUNTER);
 	private final CloseableQueue receiveQueue = new CloseableQueue(INetworkAPI.MAX_MESSAGE_COUNTER);
 
@@ -47,6 +48,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	{
 		super(INetworkAPI.NETWORK_THREAD);
 		this.service = service;
+		this.protocol = this.service._getProtocol();
 	}
 	
 	protected void register()
@@ -62,7 +64,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 		this.alias = alias;
 	}
 
-	protected void setSocket(Socket socket)
+	protected void setSocket(Socket socket) throws IOException
 	{
 		this.socket = socket;
 		this.handler = new SocketHandler(this);
@@ -169,9 +171,9 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IProtocol _protocol()
+	public IProtocol.Stateless _protocol()
 	{
-		return this.service._getProtocol();
+		return this.protocol;
 	}
 	
 	/**

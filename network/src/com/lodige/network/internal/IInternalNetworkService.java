@@ -15,7 +15,7 @@ import com.lodige.network.IProtocol;
 public interface IInternalNetworkService extends INetworkService
 {
 	
-	public IProtocol _getProtocol();
+	public IProtocol.Stateless _getProtocol();
 
 	public void _register(INetworkConnection connection);
 

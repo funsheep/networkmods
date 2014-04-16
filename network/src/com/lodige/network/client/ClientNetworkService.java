@@ -28,7 +28,12 @@ public class ClientNetworkService extends ANetworkService
 	private final AtomicInteger state = new AtomicInteger(INetworkAPI.S_RUNNING);
 
 	
-	public ClientNetworkService(String name, IProtocol protocol)
+	public ClientNetworkService(String name, IProtocol.Stateless protocol)
+	{
+		super(name, protocol);
+	}
+	
+	public ClientNetworkService(String name, Class<? extends IProtocol.Stateful> protocol)
 	{
 		super(name, protocol);
 	}

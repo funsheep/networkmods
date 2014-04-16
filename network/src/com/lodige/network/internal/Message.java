@@ -22,7 +22,7 @@ import com.lodige.network.msg.IMessage;
  * TODO javadoc
  * @author funsheep
  */
-public class Message implements IMessage
+public class Message implements IMessage.Simple
 {
 
 	public static final int BODYTYPE_BYTEARRAY = 0;
@@ -43,13 +43,13 @@ public class Message implements IMessage
 //	private Object source;
 
 
-	private void set(int type, IListener callback)
+	protected void set(int type, IListener callback)
 	{
 		this.type = type;
 		this.callback = callback;
 	}
 
-	private void set(byte[] body, int off, int len)
+	protected void set(byte[] body, int off, int len)
 	{
 		this.bodyType = BODYTYPE_BYTEARRAY;
 		this.body = body;
@@ -57,7 +57,7 @@ public class Message implements IMessage
 		this.len = len;
 	}
 
-	private void set(SemiDynamicByteArray body, int len)
+	protected void set(SemiDynamicByteArray body, int len)
 	{
 		this.bodyType = BODYTYPE_SEMIARRAY;
 		this.body = body;
@@ -80,7 +80,21 @@ public class Message implements IMessage
 	{
 		return this.callback;
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void data(byte[] dest, int off)
+	{
+		if (this.bodyType == BODYTYPE_BYTEARRAY)
+		{
+			System.arraycopy(this.body, off, dest, 0, dest.length);
+			return;
+		}
+		((SemiDynamicByteArray) this.body).getDataFrom(dest, off);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -90,7 +104,11 @@ public class Message implements IMessage
 		return this.type;
 	}
 
-	public int length()
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int size()
 	{
 		return this.len;
 	}
@@ -103,7 +121,15 @@ public class Message implements IMessage
 	{
 		if (this.bodyType == BODYTYPE_BYTEARRAY)
 			return new ByteArrayInputStream((byte[]) this.body, this.off, this.len);
-		return new SemiDynamicByteArrayInputStream((SemiDynamicByteArray) this.body, this.len);
+		return new SemiDynamicByteArrayInputStream((SemiDynamicByteArray) this.body, this.off, this.len);
+	}
+	
+	public byte date(int pos)
+	{
+		if (this.bodyType == BODYTYPE_BYTEARRAY)
+			return ((byte[]) this.body)[this.off+pos];
+		((SemiDynamicByteArray) this.body).cursor(this.off+pos);
+		return ((SemiDynamicByteArray) this.body).getDate();
 	}
 
 	public void dispose()
@@ -132,12 +158,12 @@ public class Message implements IMessage
 	}
 
 
-	public static IMessage create(int type, byte[] body)
+	public static Message create(int type, byte[] body)
 	{
 		return create(type, body, 0, body.length, null);
 	}
 
-	public static IMessage create(int type, byte[] body, int off, int len, IListener callback)
+	public static Message create(int type, byte[] body, int off, int len, IListener callback)
 	{
 		final Message m = get();
 		m.set(type, callback);
@@ -145,7 +171,7 @@ public class Message implements IMessage
 		return m;
 	}
 
-	public static IMessage create(int type, SemiDynamicByteArray body, int len, IListener callback)
+	public static Message create(int type, SemiDynamicByteArray body, int len, IListener callback)
 	{
 		final Message m = get();
 		m.set(type, callback);

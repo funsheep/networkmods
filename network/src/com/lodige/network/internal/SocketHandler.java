@@ -106,17 +106,17 @@ class SocketHandler
 	/**
 	 *
 	 */
-	public SocketHandler(IInternalNetworkConnection con)
+	public SocketHandler(IInternalNetworkConnection con) throws IOException
 	{
 		this.con = con;
-		
 		if (!this.isConnected())
 			return;
+		this.con._protocol().onConnect(this.con._socket());
 
-		this._receiver.setName("TCPReceiver for: " + this.con._socket().getLocalAddress());
-		this._sender.setName("TCPSender for: " + this.con._socket().getLocalAddress());
-		this._receiver.start();
-		this._sender.start();
+//		this._receiver.setName("TCPReceiver for: " + this.con._socket().getLocalAddress());
+//		this._sender.setName("TCPSender for: " + this.con._socket().getLocalAddress());
+//		this._receiver.start();
+//		this._sender.start();
 	}
 
 
@@ -130,6 +130,7 @@ class SocketHandler
 	{
 		if (this.isShutdown.compareAndSet(false, true))
 		{
+			this.con._protocol().onDisconnect(this.con._socket());
 			Close.close(this.con._socket());
 			this._receiver.interrupt();
 			this._sender.interrupt();

@@ -10,9 +10,9 @@ import java.net.Socket;
 
 import com.lodige.network.INetworkAPI;
 import com.lodige.network.INetworkService;
+import com.lodige.network.internal.ANetworkConnection;
 import com.lodige.network.internal.IInternalNetworkService;
 import com.lodige.network.internal.InternalNetTools;
-import com.lodige.network.internal.ANetworkConnection;
 import com.lodige.network.server.PortRange;
 
 /**
@@ -58,7 +58,7 @@ public class ClientConnection extends ANetworkConnection
 				}
 				catch (IOException e)
 				{
-					LOGGER.warn("Could not establish connection.", e);
+//					LOGGER.warn("Could not establish connection.", e);
 					ClientConnection.this.state.set(INetworkAPI.S_SHUTDOWN);
 					this.finishedWithError(e);
 				}

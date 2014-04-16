@@ -8,6 +8,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Socket;
 
 import com.lodige.network.IProtocol;
 import com.lodige.network.msg.Converter;
@@ -17,10 +18,27 @@ import com.lodige.network.msg.IMessage;
  * TODO javadoc
  * @author renken
  */
-public class VarMSGProtocol implements IProtocol
+public class SimpleProtocol implements IProtocol.Stateless
 {
+	
+	public static final IProtocol INSTANCE = new SimpleProtocol();
+	
+	private static final int HEADER_LENGTH = 8;
 
-	public static final int HEADER_LENGTH = 8;
+	
+	private SimpleProtocol()
+	{
+		//no instance
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onConnect(Socket socket)
+	{
+		//do nothing
+	}
 
 
 	/**
@@ -31,7 +49,7 @@ public class VarMSGProtocol implements IProtocol
 	{
 		Message msg = (Message) _msg;
 		byte[] _long = new byte[8];
-		Converter.putIntBig(_long, 0, msg.length()+HEADER_LENGTH);
+		Converter.putIntBig(_long, 0, msg.size()+HEADER_LENGTH);
 		out.write(_long, 0, 4);
 		Converter.putIntBig(_long, 0, msg.type());
 		out.write(_long, 0, 4);
@@ -67,6 +85,15 @@ public class VarMSGProtocol implements IProtocol
 		if (data.length > 0 && !InternalNetTools.readData(in, data))
 			throw new EOFException("Unexpected end of stream.");
 		return Message.create(msgType, data);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onDisconnect(Socket socket)
+	{
+		//do nothing
 	}
 
 }
