@@ -20,7 +20,9 @@
  along with this; see the file COPYING.  If not, write to
  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  
  */
-package com.lodige.network.plc;
+package com.lodige.network.plc.msg;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import github.javaappplatform.commons.collection.SemiDynamicByteArray;
 import github.javaappplatform.commons.log.Logger;
@@ -29,6 +31,7 @@ import github.javaappplatform.commons.util.Strings;
 
 import com.lodige.network.internal.Message;
 import com.lodige.network.msg.IMessage;
+import com.lodige.network.plc.Nodave;
 
 public class PDUBuilder
 {
@@ -53,15 +56,18 @@ public class PDUBuilder
 	protected int data;
 	protected int udata;
 
+	private static AtomicInteger IDs = new AtomicInteger(123);
+
 
 	public PDUBuilder()
 	{
-		this.initHeader(1);
+		this(1);
 	}
 
 	protected PDUBuilder(int type)
 	{
 		this.initHeader(type);
+		this.setNumber(IDs.incrementAndGet());
 	}
 
 	/**
@@ -88,6 +94,16 @@ public class PDUBuilder
 		this.data = 0;
 		this.udata = 0;
 	}
+
+	/**
+	 * set the number of the PDU
+	 */
+	private void setNumber(int n)
+	{
+		LOGGER.debug("Initialized PDU with number {}", Integer.valueOf(n));
+		Nodave.setUSBEWord(this.mem, this.header + 4, n);
+	}
+
 
 	public void addParam(byte[] pa)
 	{

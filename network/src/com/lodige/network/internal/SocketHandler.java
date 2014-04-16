@@ -113,10 +113,10 @@ class SocketHandler
 			return;
 		this.con._protocol().onConnect(this.con._socket());
 
-//		this._receiver.setName("TCPReceiver for: " + this.con._socket().getLocalAddress());
-//		this._sender.setName("TCPSender for: " + this.con._socket().getLocalAddress());
-//		this._receiver.start();
-//		this._sender.start();
+		this._receiver.setName("TCPReceiver for: " + this.con._socket().getLocalAddress());
+		this._sender.setName("TCPSender for: " + this.con._socket().getLocalAddress());
+		this._receiver.start();
+		this._sender.start();
 	}
 
 

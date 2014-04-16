@@ -20,7 +20,10 @@
  along with this; see the file COPYING.  If not, write to
  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  
  */
-package com.lodige.network.plc;
+package com.lodige.network.plc.msg;
+
+import com.lodige.network.plc.INoDave;
+import com.lodige.network.plc.Nodave;
 
 
 public class PDUReadBuilder extends PDUBuilder
@@ -99,44 +102,5 @@ public class PDUReadBuilder extends PDUBuilder
 	{
 		this.addToReadRequest(area, DBnum, start, len, true);
 	}
-
-//	void testReadResult()
-//	{
-//		if (this.mem.getDateFrom(this.param) != INoDave.FUNC_READ)
-//			throw new IllegalStateException(Nodave.strerror(Nodave.RESULT_UNEXPECTED_FUNC));
-//		testResultData();
-//	}
-//
-//	/*
-//	 * This method adjusts udlen - for a test method, this should not happen!
-//	*/
-//	void testResultData()
-//	{
-//		if ((this.mem.getDateFrom(this.data) != (byte)255) || (this.dlen <= 4))
-//			throw new IllegalStateException(Nodave.strerror(this.mem.getDateFrom(this.data)));
-//
-//		this.udata = this.data + 4;
-//		// udlen=data[2]*0x100+data[3];
-//		this.udlen = Nodave.USBEWord(this.mem, this.data + 2);
-//		final int type = this.mem.getDateFrom(this.data+1);
-//		if (type == 4)
-//		{
-//			this.udlen >>= 3; /* len is in bits, adjust */
-//		}
-//		else if (type == 9)
-//		{
-//			/* len is already in bytes, ok */
-//		}
-//		else if (type == 3)
-//		{
-//			/* len is in bits, but there is a byte per result bit, ok */
-//		}
-//		else
-//		{
-//			LOGGER.debug("fixme: what to do with data type {}", Integer.valueOf(type));
-//			throw new IllegalStateException(Nodave.strerror(Nodave.RESULT_UNKNOWN_DATA_UNIT_SIZE));
-//		}
-//	}
-
 
 }

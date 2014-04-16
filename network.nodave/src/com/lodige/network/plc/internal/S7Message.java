@@ -2,7 +2,7 @@
  * network.nodave Project at Loedige.
  * Closed Source. Not for licence.
  */
-package com.lodige.network.plc;
+package com.lodige.network.plc.internal;
 
 import github.javaappplatform.commons.collection.SemiDynamicByteArray;
 import github.javaappplatform.commons.events.IListener;
@@ -15,7 +15,7 @@ import com.lodige.network.internal.Message;
  * Usually such a request is build, using the PDU*RequestBuilder classes.
  * @author renken
  */
-class S7Message extends Message
+public class S7Message extends Message
 {
 
 	private int headerSize;

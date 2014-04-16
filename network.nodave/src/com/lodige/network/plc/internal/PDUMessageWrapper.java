@@ -2,7 +2,7 @@
  * network.nodave Project at Loedige.
  * Closed Source. Not for licence.
  */
-package com.lodige.network.plc;
+package com.lodige.network.plc.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +13,7 @@ import com.lodige.network.msg.IMessage;
  * TODO javadoc
  * @author renken
  */
-class PDUMessageWrapper implements IMessage
+public class PDUMessageWrapper implements IMessage
 {
 
 	private final byte[] pduHeader;

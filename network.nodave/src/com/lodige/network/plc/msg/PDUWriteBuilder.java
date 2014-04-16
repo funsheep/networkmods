@@ -20,7 +20,10 @@
  along with this; see the file COPYING.  If not, write to
  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  
  */
-package com.lodige.network.plc;
+package com.lodige.network.plc.msg;
+
+import com.lodige.network.plc.INoDave;
+import com.lodige.network.plc.Nodave;
 
 
 public class PDUWriteBuilder extends PDUBuilder
@@ -32,15 +35,6 @@ public class PDUWriteBuilder extends PDUBuilder
 		super(1);
 		addParam(WRITE_HEADER);
 		LOGGER.debug("{}", this);
-	}
-
-
-	/**
-	 * set the number of the PDU
-	 */
-	public void setNumber(int n)
-	{
-		Nodave.setUSBEWord(this.mem, this.header + 4, n);
 	}
 
 

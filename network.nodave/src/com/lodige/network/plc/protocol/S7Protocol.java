@@ -2,7 +2,7 @@
  * network.nodave Project at Loedige.
  * Closed Source. Not for licence.
  */
-package com.lodige.network.plc;
+package com.lodige.network.plc.protocol;
 
 import github.javaappplatform.commons.log.Logger;
 
@@ -10,6 +10,10 @@ import java.io.IOException;
 
 import com.lodige.network.internal.AStatefulProtocol;
 import com.lodige.network.msg.IMessage;
+import com.lodige.network.plc.Nodave;
+import com.lodige.network.plc.internal.S7Message;
+import com.lodige.network.plc.msg.PDUBuilder;
+import com.lodige.network.plc.msg.PDUResult;
 
 /**
  * TODO javadoc

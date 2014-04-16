@@ -20,12 +20,20 @@
  along with this; see the file COPYING.  If not, write to
  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  
  */
-package com.lodige.network.plc;
+package com.lodige.network.plc.msg;
+
+import github.javaappplatform.commons.log.Logger;
 
 import com.lodige.network.msg.IMessage;
+import com.lodige.network.plc.INoDave;
+import com.lodige.network.plc.Nodave;
+import com.lodige.network.plc.internal.S7Message;
 
 public class PDUResult
 {
+	
+	private static final Logger LOGGER = Logger.getLogger();
+
 
 	private final S7Message msg;
 	
@@ -48,7 +56,7 @@ public class PDUResult
 		this.param = this.header + getHeaderLength(this.msg);
 		this.data  = this.param + getParamLength(this.msg);
 		this.dlen  = getDataLength(this.msg);
-		
+		LOGGER.debug("Got PDU result with number {}", Integer.valueOf(this.getNumber()));
 	}
 
 
@@ -82,9 +90,7 @@ public class PDUResult
 	 */
 	public int getNumber()
 	{
-		byte[] tmp = new byte[2];
-		this.msg.data(tmp, this.header + 4);
-		return Nodave.USBEWord(tmp, 0);
+		return Nodave.USBEWord(this.word(this.header + 4), 0);
 	}
 
 	/**
@@ -92,20 +98,15 @@ public class PDUResult
 	 */
 	public int getFunc()
 	{
-		byte[] tmp = new byte[1];
-		this.msg.data(tmp, this.param);
-		return Nodave.USByte(tmp, 0);
+		return Nodave.USByte(this.date(this.param), 0);
 	}
 
 
 	public int getError()
 	{
 		if (this.param - this.header == 12)
-		{
-			byte[] tmp = new byte[2];
-			this.msg.data(tmp, this.header + 10);
-			return Nodave.USBEWord(tmp, 0);
-		}
+			return Nodave.USBEWord(this.word(this.header + 10), 0);
+
 		return 0;
 	}
 
@@ -131,74 +132,73 @@ public class PDUResult
 		return dest;
 	}
 
-//	/*		
-//			
-//	*/
-//	int testResultData()
-//	{
-//		int res = Nodave.RESULT_CANNOT_EVALUATE_PDU; // just assume the worst
-//		if ((mem[data] == (byte)255) && (dlen > 4))
-//		{
-//			res = Nodave.RESULT_OK;
-//			udata = data + 4;
-//			// udlen=data[2]*0x100+data[3];
-//			udlen = Nodave.USBEWord(mem, data + 2);
-//			if (mem[data + 1] == 4)
-//			{
-//				udlen >>= 3; /* len is in bits, adjust */
-//			}
-//			else if (mem[data + 1] == 9)
-//			{
-//				/* len is already in bytes, ok */
-//			}
-//			else if (mem[data + 1] == 3)
-//			{
-//				/* len is in bits, but there is a byte per result bit, ok */
-//			}
-//			else
-//			{
-//				if ((Nodave.Debug & Nodave.DEBUG_PDU) != 0)
-//					System.out.println("fixme: what to do with data type " + mem[data + 1]);
-//				res = Nodave.RESULT_UNKNOWN_DATA_UNIT_SIZE;
-//			}
-//		}
-//		else
-//		{
-//			res = mem[data];
-//		}
-//		return res;
-//	}
-//
-//	int testReadResult()
-//	{
-//		if (mem[param] != INoDave.FUNC_READ)
-//			return Nodave.RESULT_UNEXPECTED_FUNC;
-//		return testResultData();
-//	}
-//
-//	public int testPGReadResult()
-//	{
-//		if (mem[param] != 0)
-//			return Nodave.RESULT_UNEXPECTED_FUNC;
-//		return testResultData();
-//	}
-//
-//	int testWriteResult()
-//	{
-//		int res = Nodave.RESULT_CANNOT_EVALUATE_PDU;
-//		if (mem[param] != INoDave.FUNC_WRITE)
-//			return Nodave.RESULT_UNEXPECTED_FUNC;
-//		if ((mem[data] == 255))
-//		{
-//			res = Nodave.RESULT_OK;
-//		}
-//		else
-//			res = mem[data];
-//		if ((Nodave.Debug & Nodave.DEBUG_PDU) != 0)
-//		{
-//			dump();
-//		}
-//		return res;
-//	}
+
+	void testReadResult() throws PDUResultException
+	{
+		if (this.date(this.param)[0] != INoDave.FUNC_READ)
+			throw new IllegalStateException(Nodave.strerror(Nodave.RESULT_UNEXPECTED_FUNC));
+		testResultData();
+	}
+
+	/*
+	 * This method adjusts udlen - for a test method, this should not happen!
+	*/
+	void testResultData() throws PDUResultException
+	{
+		if ((this.date(this.data)[0] != (byte)255) || (this.dlen <= 4))
+			throw new PDUResultException(this.date(this.data)[0]);
+
+		int udata = this.data + 4;
+		// udlen=data[2]*0x100+data[3];
+		int udlen = Nodave.USBEWord(this.word(this.data + 2), 0);
+		final int type = this.date(this.data+1)[0];
+		if (type == 4)
+		{
+			udlen >>= 3; /* len is in bits, adjust */
+		}
+		else if (type == 9)
+		{
+			/* len is already in bytes, ok */
+		}
+		else if (type == 3)
+		{
+			/* len is in bits, but there is a byte per result bit, ok */
+		}
+		else
+		{
+			LOGGER.debug("fixme: what to do with data type {}", Integer.valueOf(type));
+			throw new PDUResultException(Nodave.RESULT_UNKNOWN_DATA_UNIT_SIZE);
+		}
+	}
+	
+
+	public void testPGReadResult() throws PDUResultException
+	{
+		if (this.date(this.param)[0] != 0)
+			throw new PDUResultException(Nodave.RESULT_UNEXPECTED_FUNC);
+		testResultData();
+	}
+
+	void testWriteResult() throws PDUResultException
+	{
+		if (this.date(this.param)[0] != INoDave.FUNC_WRITE)
+			throw new PDUResultException(Nodave.RESULT_UNEXPECTED_FUNC);
+		if ((this.date(this.data)[0] != 255))
+			throw new PDUResultException(this.date(this.data)[0]);
+	}
+
+	private final byte[] one = new byte[1];
+	private byte[] date(int position)
+	{
+		this.msg.data(this.one, this.param);
+		return this.one;
+	}
+
+	private final byte[] two = new byte[1];
+	private byte[] word(int position)
+	{
+		this.msg.data(this.two, this.param);
+		return this.two;
+	}
 
 }

@@ -2,7 +2,7 @@
  * network.nodave Project at Loedige.
  * Closed Source. Not for licence.
  */
-package com.lodige.network.plc;
+package com.lodige.network.plc.protocol;
 
 import github.javaappplatform.commons.collection.SemiDynamicByteArray;
 import github.javaappplatform.commons.util.Strings;
@@ -15,6 +15,9 @@ import java.net.Socket;
 import com.lodige.network.internal.InternalNetTools;
 import com.lodige.network.internal.Message;
 import com.lodige.network.msg.IMessage;
+import com.lodige.network.plc.INoDave;
+import com.lodige.network.plc.internal.PDUMessageWrapper;
+import com.lodige.network.plc.internal.S7Message;
 
 /**
  * TODO javadoc
