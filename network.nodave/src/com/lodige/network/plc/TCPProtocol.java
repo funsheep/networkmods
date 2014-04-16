@@ -88,21 +88,19 @@ public class TCPProtocol extends S7Protocol
 
 
 	private static final byte[] SEND_BUFFER = new byte[400];
-	private static final byte[] SEND_HEADER = { (byte) 0x03, (byte)0x0, 0, 0, (byte)0x02, (byte)0xf0, (byte)0x80 };
+	private static final byte HEADER_SIZE = 4;
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void send(IMessage msg) throws IOException
 	{
-		final byte[] header = new byte[SEND_HEADER.length];
-		System.arraycopy(SEND_HEADER, 0, header, 0, SEND_HEADER.length);
+		this.out.write(0x03);
+		this.out.write(0x0);
+		this.out.write((msg.size()+HEADER_SIZE) / 0x100);
+		this.out.write((msg.size()+HEADER_SIZE) % 0x100);
 		
-		final int headerSize = (msg instanceof PDUMessage) ? SEND_HEADER.length : SEND_HEADER.length-3;
-		header[2] = (byte) ((msg.size()+headerSize) / 0x100);
-		header[3] = (byte) ((msg.size()+headerSize) % 0x100);
-		LOGGER.debug("send packet header: {} ", Strings.toHexString(header, 0, headerSize));
-		this.out.write(header, 0, headerSize);
+//		LOGGER.debug("send packet header: {} ", Strings.toHexString(header, 0, headerSize));
 		
 		InputStream dataIn = msg.data();
 		int len;
@@ -163,14 +161,15 @@ public class TCPProtocol extends S7Protocol
 		return S7Message.create(INoDave.TCP_START_IN, array, array.size(), null);
 	}
 
+	private static final byte[] PDU_HEADER = { (byte)0x02, (byte)0xf0, (byte)0x80 };
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected S7Message exchange(PDUMessage req) throws IOException
+	protected S7Message exchange(IMessage req) throws IOException
 	{
 		LOGGER.debug(" enter TCP.Exchange");
-		this.send(req);
+		this.send(new PDUMessageWrapper(PDU_HEADER, req));
 		return this.read();
 	}
 

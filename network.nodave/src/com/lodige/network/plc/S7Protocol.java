@@ -9,6 +9,7 @@ import github.javaappplatform.commons.log.Logger;
 import java.io.IOException;
 
 import com.lodige.network.internal.AStatefulProtocol;
+import com.lodige.network.msg.IMessage;
 
 /**
  * TODO javadoc
@@ -261,7 +262,7 @@ public abstract class S7Protocol extends AStatefulProtocol
 //		return -33;
 //	};
 	
-	protected abstract S7Message exchange(PDUMessage reg) throws IOException;
+	protected abstract S7Message exchange(IMessage reg) throws IOException;
 
 	/*
 		build the PDU for a PDU length negotiation    

@@ -27,6 +27,7 @@ import github.javaappplatform.commons.log.Logger;
 import github.javaappplatform.commons.util.GenericsToolkit;
 import github.javaappplatform.commons.util.Strings;
 
+import com.lodige.network.internal.Message;
 import com.lodige.network.msg.IMessage;
 
 public class PDUBuilder
@@ -169,7 +170,7 @@ public class PDUBuilder
 	
 	public <M extends IMessage> M compile()
 	{
-		IMessage m = PDUMessage.create(this.mem, this.hlen + this.plen + this.dlen, null);
+		IMessage m = Message.create(-1, this.mem, this.hlen + this.plen + this.dlen, null);
 		return GenericsToolkit.convertUnchecked(m);
 	}
 

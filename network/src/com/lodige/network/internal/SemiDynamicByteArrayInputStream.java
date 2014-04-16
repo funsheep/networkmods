@@ -19,6 +19,7 @@ public class SemiDynamicByteArrayInputStream extends InputStream
 	private final SemiDynamicByteArray array;
 	private final int length;
 	private final int offset;
+	private int position = 0;
 
 
 	/**
@@ -39,9 +40,16 @@ public class SemiDynamicByteArrayInputStream extends InputStream
 	@Override
 	public int read() throws IOException
 	{
-		if (this.array.cursor() == this.length+this.offset)
+		if (this.position == this.length)
 			return -1;
-		return this.array.readDate();
+		try
+		{
+			return this.array.getDateFrom(this.offset + this.position);
+		}
+		finally
+		{
+			this.position++;
+		}
 	}
 
 }
