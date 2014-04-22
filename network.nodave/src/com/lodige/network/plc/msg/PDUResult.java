@@ -23,74 +23,68 @@
 package com.lodige.network.plc.msg;
 
 import github.javaappplatform.commons.log.Logger;
+import github.javaappplatform.commons.util.Strings;
 
 import com.lodige.network.msg.IMessage;
-import com.lodige.network.plc.INoDave;
-import com.lodige.network.plc.Nodave;
-import com.lodige.network.plc.internal.S7Message;
+import com.lodige.network.plc.INodave;
+import com.lodige.network.plc.util.Converter;
 
 public class PDUResult
 {
 	
-	private static final Logger LOGGER = Logger.getLogger();
+	protected static final Logger LOGGER = Logger.getLogger();
 
 
-	private final S7Message msg;
+	protected final IMessage msg;
 	
-	private int header; // the position of the header;
-	private int param; // the position of the parameters;
+	protected final int header; // the position of the header;
+	protected final int param; // the position of the parameters;
 //	private int hlen;
 //	private int plen;
-	private int dlen;
-//	private int udlen;
-	private int data;
-//	private int udata;
+	protected final int data;
+	protected final int dlen;
 
 
-	public PDUResult(IMessage msg)
+	public PDUResult(IMessage msg, int protocolHeaderSize)
 	{
-		if (!(msg instanceof S7Message) || ((S7Message) msg).headerSize() == 0)
-			throw new IllegalArgumentException("This message was not recieved over a S7 protocol.");
-		this.msg = (S7Message) msg;
-		this.header = this.msg.headerSize();
-		this.param = this.header + getHeaderLength(this.msg);
-		this.data  = this.param + getParamLength(this.msg);
-		this.dlen  = getDataLength(this.msg);
+		this.msg = msg;
+		this.header = protocolHeaderSize;
+		this.param = this.header + this.getHeaderLength();
+		this.data  = this.param + this.getParamLength();
+		this.dlen  = this.getDataLength();
 		LOGGER.debug("Got PDU result with number {}", Integer.valueOf(this.getNumber()));
 	}
 
-
-	private static final int getHeaderLength(S7Message msg)
+	private final int getHeaderLength()
 	{
 		byte[] tmp = new byte[1];
-		msg.data(tmp, msg.headerSize()+1);
+		this.msg.data(tmp, this.header+1);
 		int headerLength = 10;
 		if (tmp[0] == 2 || tmp[0] == 3)
 			headerLength = 12;
 		return headerLength;
 	}
 	
-	private static final int getParamLength(S7Message msg)
+	private final int getParamLength()
 	{
 		byte[] tmp = new byte[2];
-		msg.data(tmp, msg.headerSize() + 6);
-		return Nodave.USBEWord(tmp, 0);
+		this.msg.data(tmp, this.header + 6);
+		return Converter.USBEWord(tmp, 0);
 	}
 	
-	private static final int getDataLength(S7Message msg)
+	private final int getDataLength()
 	{
 		byte[] tmp = new byte[2];
-		msg.data(tmp, msg.headerSize() + 8);
-		return Nodave.USBEWord(tmp, 0);
+		this.msg.data(tmp, this.header + 8);
+		return Converter.USBEWord(tmp, 0);
 	}
 	
-
 	/**
 	 * return the number of the PDU
 	 */
 	public int getNumber()
 	{
-		return Nodave.USBEWord(this.word(this.header + 4), 0);
+		return Converter.USBEWord(this.word(this.header + 4), 0);
 	}
 
 	/**
@@ -98,14 +92,14 @@ public class PDUResult
 	 */
 	public int getFunc()
 	{
-		return Nodave.USByte(this.date(this.param), 0);
+		return Converter.USByte(this.date(this.param), 0);
 	}
 
 
 	public int getError()
 	{
 		if (this.param - this.header == 12)
-			return Nodave.USBEWord(this.word(this.header + 10), 0);
+			return Converter.USBEWord(this.word(this.header + 10), 0);
 
 		return 0;
 	}
@@ -133,72 +127,56 @@ public class PDUResult
 	}
 
 
-	void testReadResult() throws PDUResultException
-	{
-		if (this.date(this.param)[0] != INoDave.FUNC_READ)
-			throw new IllegalStateException(Nodave.strerror(Nodave.RESULT_UNEXPECTED_FUNC));
-		testResultData();
-	}
-
-	/*
-	 * This method adjusts udlen - for a test method, this should not happen!
-	*/
-	void testResultData() throws PDUResultException
-	{
-		if ((this.date(this.data)[0] != (byte)255) || (this.dlen <= 4))
-			throw new PDUResultException(this.date(this.data)[0]);
-
-		int udata = this.data + 4;
-		// udlen=data[2]*0x100+data[3];
-		int udlen = Nodave.USBEWord(this.word(this.data + 2), 0);
-		final int type = this.date(this.data+1)[0];
-		if (type == 4)
-		{
-			udlen >>= 3; /* len is in bits, adjust */
-		}
-		else if (type == 9)
-		{
-			/* len is already in bytes, ok */
-		}
-		else if (type == 3)
-		{
-			/* len is in bits, but there is a byte per result bit, ok */
-		}
-		else
-		{
-			LOGGER.debug("fixme: what to do with data type {}", Integer.valueOf(type));
-			throw new PDUResultException(Nodave.RESULT_UNKNOWN_DATA_UNIT_SIZE);
-		}
-	}
-	
-
-	public void testPGReadResult() throws PDUResultException
-	{
-		if (this.date(this.param)[0] != 0)
-			throw new PDUResultException(Nodave.RESULT_UNEXPECTED_FUNC);
-		testResultData();
-	}
-
-	void testWriteResult() throws PDUResultException
-	{
-		if (this.date(this.param)[0] != INoDave.FUNC_WRITE)
-			throw new PDUResultException(Nodave.RESULT_UNEXPECTED_FUNC);
-		if ((this.date(this.data)[0] != 255))
-			throw new PDUResultException(this.date(this.data)[0]);
-	}
-
 	private final byte[] one = new byte[1];
-	private byte[] date(int position)
+	protected byte[] date(int position)
 	{
-		this.msg.data(this.one, this.param);
+		this.msg.data(this.one, position);
 		return this.one;
 	}
 
-	private final byte[] two = new byte[1];
-	private byte[] word(int position)
+	private final byte[] two = new byte[2];
+	protected byte[] word(int position)
 	{
-		this.msg.data(this.two, this.param);
+		this.msg.data(this.two, position);
 		return this.two;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder(this.data + this.dlen);
+		sb.append("PDU header ");
+		sb.append(Strings.toHexString(this.header()));
+		sb.append('\n');
+		
+		sb.append("plen: "); sb.append(this.getParamLength()); sb.append(" dlen: "); sb.append(this.dlen); sb.append('\n');
+		
+		sb.append("Parameter ");
+		sb.append(Strings.toHexString(this.params()));
+		sb.append('\n');
+		if (this.dlen > 0)
+		{
+			sb.append("Data     ");
+			sb.append(Strings.toHexString(this.data()));
+			sb.append('\n');
+		}
+		return sb.toString();
+	}
+
+	public static final boolean isValidPDUResult(IMessage msg, int headerStart)
+	{
+		final byte[] one = new byte[1];
+		msg.data(one, headerStart + 1);
+		if (one[0] == 2 || one[0] == 3)
+		{
+			final byte[] two = new byte[2];
+			msg.data(two, headerStart + 10);
+			return Converter.USBEWord(two, 0) == INodave.RESULT_OK;
+		}
+		return false;
 	}
 
 }

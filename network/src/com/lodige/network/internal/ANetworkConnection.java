@@ -30,13 +30,13 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 {
 
 	protected static final Logger LOGGER = Logger.getLogger();
-	private static final AtomicLong SENDIDS = new AtomicLong(Long.MIN_VALUE);
+	private static final AtomicLong SENDIDS = new AtomicLong(123);
 
 
 	private Socket socket;
 	private SocketHandler handler;
 	private final IInternalNetworkService service;
-	private final IProtocol.Stateless protocol;
+	private final IProtocol protocol;
 	private final CloseableQueue sendQueue = new CloseableQueue(INetworkAPI.MAX_MESSAGE_COUNTER);
 	private final CloseableQueue receiveQueue = new CloseableQueue(INetworkAPI.MAX_MESSAGE_COUNTER);
 
@@ -92,14 +92,21 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long asyncSend(IMessage msg) throws InterruptedException
+	public long asyncSend(IMessage msg) throws IOException
 	{
 		if (this.state.get() == INetworkAPI.S_SHUTDOWN)
 			throw new IllegalStateException("Connection is shutdown.");
 		Message m = (Message) msg;
 		long sendID = SENDIDS.getAndIncrement();
 		m.setSendID(sendID);
-		this.sendQueue.put(m);
+		try
+		{
+			this.sendQueue.put(m);
+		}
+		catch (IllegalStateException | InterruptedException e)
+		{
+			throw new IOException("Could not send message", e);
+		}
 		return sendID;
 	}
 
@@ -171,7 +178,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IProtocol.Stateless _protocol()
+	public IProtocol _protocol()
 	{
 		return this.protocol;
 	}
@@ -194,7 +201,17 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 		try
 		{
 			if (this.receiveQueue.put(msg))
-				this.postEvent(INetworkAPI.E_MSG_RECEIVED);
+			{
+				JobPlatform.runJob(new Runnable()
+				{
+					
+					@Override
+					public void run()
+					{
+						ANetworkConnection.this.postEvent(INetworkAPI.E_MSG_RECEIVED);
+					}
+				}, INetworkAPI.NETWORK_THREAD);
+			}
 		}
 		catch (InterruptedException e)
 		{

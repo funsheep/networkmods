@@ -151,6 +151,16 @@ public class Converter
 	 * @param off
 	 * @return
 	 */
+	public static short getShortLittle(byte[] b, int off)
+	{
+		return (short) (((b[off + 0] & 0xFF) << 0) + ((b[off + 1] & 0xFF) << 8));
+	}
+
+	/**
+	 * @param b
+	 * @param off
+	 * @return
+	 */
 	public static int getIntLittle(byte[] b, int off)
 	{
 		return ((b[off + 0] & 0xFF) << 0) + ((b[off + 1] & 0xFF) << 8) + ((b[off + 2] & 0xFF) << 16) + ((b[off + 3] & 0xFF) << 24);

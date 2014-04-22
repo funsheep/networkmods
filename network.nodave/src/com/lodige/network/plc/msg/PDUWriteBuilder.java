@@ -22,21 +22,42 @@
  */
 package com.lodige.network.plc.msg;
 
-import com.lodige.network.plc.INoDave;
-import com.lodige.network.plc.Nodave;
+import com.lodige.network.plc.INodave;
+import com.lodige.network.plc.util.Converter;
 
 
 public class PDUWriteBuilder extends PDUBuilder
 {
 	
-	private static byte WRITE_HEADER[] = { INoDave.FUNC_WRITE, (byte) 0x00 };
+	private static byte WRITE_HEADER[] = { INodave.FUNC_WRITE, (byte) 0x00 };
 	public PDUWriteBuilder()
 	{
-		super(1);
+		super(1, INodave.MSG_PDU_WRITE);
 		addParam(WRITE_HEADER);
 		LOGGER.debug("{}", this);
 	}
 
+	
+	public void addByteToWriteRequest(int area, int DBnum, int start, byte value)
+	{
+		this.addVarToWriteRequest(area, DBnum, start, 1, new byte[] { value });
+	}
+
+	public void addShortToWriteRequest(int area, int DBnum, int start, short value)
+	{
+		this.addBitVarToWriteRequest(area, DBnum, start, 2, Converter.bswap_16(value));
+	}
+	
+	public void addIntToWriteRequest(int area, int DBnum, int start, int value)
+	{
+		this.addBitVarToWriteRequest(area, DBnum, start, 4, Converter.bswap_32(value));
+	}
+	
+	public void addFloatToWriteRequest(int area, int DBnum, int start, float value)
+	{
+		this.addBitVarToWriteRequest(area, DBnum, start, 4, Converter.toPLCfloat(value));
+	}
+	
 
 	public void addVarToWriteRequest(int area, int DBnum, int start, int byteCount, byte[] buffer)
 	{
@@ -53,15 +74,15 @@ public class PDUWriteBuilder extends PDUBuilder
 		this.addToWriteRequest(area, DBnum, start, byteCount, buffer, da, pa);
 	}
 	
-	public void addToWriteRequest(int area, int DBnum, int start, int byteCount, byte[] buffer, byte[] da, byte[] pa)
+	private void addToWriteRequest(int area, int DBnum, int start, int byteCount, byte[] buffer, byte[] da, byte[] pa)
 	{
-		if ((area == Nodave.TIMER) || (area == Nodave.COUNTER) || (area == Nodave.TIMER200) || (area == Nodave.COUNTER200))
+		if ((area == INodave.TIMER) || (area == INodave.COUNTER) || (area == INodave.TIMER200) || (area == INodave.COUNTER200))
 		{
 			pa[3] = (byte)area;
 			pa[4] = (byte)(((byteCount + 1) / 2) / 0x100);
 			pa[5] = (byte)(((byteCount + 1) / 2) & 0xff);
 		}
-		else if ((area == Nodave.ANALOGINPUTS200) || (area == Nodave.ANALOGOUTPUTS200))
+		else if ((area == INodave.ANALOGINPUTS200) || (area == INodave.ANALOGOUTPUTS200))
 		{
 			pa[3] = 4;
 			pa[4] = (byte)(((byteCount + 1) / 2) / 0x100);
@@ -93,7 +114,7 @@ public class PDUWriteBuilder extends PDUBuilder
 		}
 		System.arraycopy(pa, 0, this.mem, this.param+ this.plen, pa.length);
 		this.plen += pa.length;
-		Nodave.setUSBEWord(this.mem, this.header + 6, this.plen);
+		Converter.setUSBEWord(this.mem, 6, this.plen);
 		this.data = this.param + this.plen;
 		addData(da);
 		addValue(buffer);
@@ -112,14 +133,6 @@ public class PDUWriteBuilder extends PDUBuilder
 			0, 0, 0 /* insert start address in bits */
 		};
 		this.addToWriteRequest(area, DBnum, start, byteCount, buffer, da, pa);
-	}
-
-	void testWriteResult()
-	{
-		if (this.mem.getDateFrom(this.param) != INoDave.FUNC_WRITE)
-			throw new IllegalStateException(Nodave.strerror(Nodave.RESULT_UNEXPECTED_FUNC));
-		if (this.mem.getDateFrom(this.data) != 255)
-			throw new IllegalStateException(Nodave.strerror(this.mem.getDateFrom(this.data)));
 	}
 
 }

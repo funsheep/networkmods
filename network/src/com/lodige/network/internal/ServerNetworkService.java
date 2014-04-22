@@ -33,18 +33,12 @@ public class ServerNetworkService extends ANetworkService implements IServerNetw
 	private final SocketUnit unit;
 	
 	
-	public ServerNetworkService(String name, int localPort, IProtocol.Stateless protocol)
+	public ServerNetworkService(String name, int localPort, IProtocol protocol)
 	{
 		super(INetworkAPI.NETWORK_THREAD, protocol);
 		this.unit = new SocketUnit(localPort);
 	}
 	
-	public ServerNetworkService(String name, int localPort, Class<? extends IProtocol.Stateful> protocol)
-	{
-		super(INetworkAPI.NETWORK_THREAD, protocol);
-		this.unit = new SocketUnit(localPort);
-	}
-
 
 	/**
 	 * {@inheritDoc}

@@ -22,7 +22,7 @@ import com.lodige.network.msg.IMessage;
  * TODO javadoc
  * @author funsheep
  */
-public class Message implements IMessage.Simple
+public class Message implements IMessage
 {
 
 	public static final int BODYTYPE_BYTEARRAY = 0;

@@ -8,6 +8,8 @@
 */
 package com.lodige.network.internal;
 
+import github.javaappplatform.commons.log.Logger;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +26,8 @@ import com.lodige.network.server.PortRange;
  */
 public class InternalNetTools
 {
+	
+	private static final Logger LOGGER = Logger.getLogger();
 
 	public static final int TIMEOUT = 10 * 1000;	//sec
 	public static final boolean KEEP_ALIVE = true;
@@ -34,9 +38,9 @@ public class InternalNetTools
 
 	public static final void configureSocket(Socket socket) throws SocketException
 	{
-//		socket.setKeepAlive(KEEP_ALIVE);
-//		socket.setSoLinger(LINGER_ON, LINGER_TIMEOUT);
-//		socket.setTcpNoDelay(!BUFFERING_DELAY);
+		socket.setKeepAlive(KEEP_ALIVE);
+		socket.setSoLinger(LINGER_ON, LINGER_TIMEOUT);
+		socket.setTcpNoDelay(!BUFFERING_DELAY);
 	}
 
 
@@ -85,37 +89,43 @@ public class InternalNetTools
 		return true;
 	}
 
-	public static final boolean readDataCausious(InputStream in, byte[] b, int start, int len) throws IOException
+	public static final boolean readDataCausious(InputStream in, byte[] b, int off, int len) throws IOException
 	{
-		int res;
-		System.out.println("Interface.read");
-		try {
-			int retry = 0;
-			while ((in.available() <= 0) && (retry < 10)) {
-				try {
-					if(retry>0)Thread.sleep(5000 / 200);
-					retry++;
-					System.out.println("Interface.read delayed");
-				} catch (InterruptedException e) {
-					System.out.println(e);
-				}
+		LOGGER.trace("Interface.read");
+		int retry = 0;
+		while ((in.available() <= 0) && (retry < 10))
+		{
+			try
+			{
+				if (retry > 0)
+					Thread.sleep(5000 / 200);
+				retry++;
+				LOGGER.debug("Interface.read delayed");
 			}
-			res=0;
-			while ((in.available() > 0) && (len > 0)) {
-				//				if ((Nodave.Debug & Nodave.DEBUG_IFACE) != 0)
-				//				System.out.println("can read");
-				res = in.read(b, start, len);
-				start+=res;
-				len-=res;
-//				System.out.println(res+" bytes read");
+			catch (InterruptedException e)
+			{
+				throw new IOException(e);
 			}
-    				System.out.println("got "+res+"bytes");
-			return true;
-//			return 0;
-		} catch (IOException e) {
-			System.out.println(e);
-			return false;
 		}
+		if (in.available() > 0)
+		{
+			readData(in, b, off, len);
+			return true;
+		}
+		return false;
+//		int res = 0;
+//		while ((in.available() > 0) && (len > 0))
+//		{
+//			// if ((Nodave.Debug & Nodave.DEBUG_IFACE) != 0)
+//			// System.out.println("can read");
+//			res = in.read(b, off, len);
+//			off += res;
+//			len -= res;
+//			// System.out.println(res+" bytes read");
+//		}
+//		LOGGER.debug("got {} bytes", Integer.valueOf(res));
+//		return res;
+//		// return 0;
 	}
 
 

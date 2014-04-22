@@ -22,35 +22,27 @@
  */
 package com.lodige.network.plc.msg;
 
-import com.lodige.network.plc.INoDave;
-import com.lodige.network.plc.Nodave;
+import com.lodige.network.plc.INodave;
+import com.lodige.network.plc.util.Converter;
 
 
 public class PDUReadBuilder extends PDUBuilder
 {
 
-	private static byte READ_HEADER[] = { INoDave.FUNC_READ, (byte) 0x00 };
+	private static byte READ_HEADER[] = { INodave.FUNC_READ, (byte) 0x00 };
 
 	/**
 	 * prepare a read request with no item.
 	 */
 	public PDUReadBuilder()
 	{
-		super(1);
+		super(1, INodave.MSG_PDU_READ);
 		addParam(READ_HEADER);
 		LOGGER.debug("{}", this);
 	}
 
 
-	/**
-	 * return the number of the PDU
-	 */
-	public int getNumber()
-	{
-		return Nodave.USBEWord(this.mem, this.header + 4);
-	}
-
-	public void addVarToReadRequest(int area, int DBnum, int start, int len, boolean isBit)
+	public void addVarToReadRequest(int area, int DBnum, int start, int len)
 	{
 		this.addToReadRequest(area, DBnum, start, len, false);
 	}
@@ -67,12 +59,12 @@ public class PDUReadBuilder extends PDUBuilder
 	    	0,0,0		/* start address in bits */
 	    };
 
-		if ((area == Nodave.ANALOGINPUTS200) || (area == Nodave.ANALOGOUTPUTS200))
+		if ((area == INodave.ANALOGINPUTS200) || (area == INodave.ANALOGOUTPUTS200))
 		{
 			pa[3] = 4;
 			start *= 8; /* bits */
 		}
-		else if ((area == Nodave.TIMER) || (area == Nodave.COUNTER) || (area == Nodave.TIMER200) || (area == Nodave.COUNTER200))
+		else if ((area == INodave.TIMER) || (area == INodave.COUNTER) || (area == INodave.TIMER200) || (area == INodave.COUNTER200))
 		{
 			pa[3] = (byte) area;
 		}
@@ -85,16 +77,16 @@ public class PDUReadBuilder extends PDUBuilder
 			start *= 8; /* bits */
 		}
 
-		Nodave.setUSBEWord(pa, 4, len);
-		Nodave.setUSBEWord(pa, 6, DBnum);
-		Nodave.setUSBELong(pa, 8, start);
-		Nodave.setUSByte(pa, 8, area);
+		Converter.setUSBEWord(pa, 4, len);
+		Converter.setUSBEWord(pa, 6, DBnum);
+		Converter.setUSBELong(pa, 8, start);
+		Converter.setUSByte(pa, 8, area);
 
 		this.mem.putAt((byte) (this.mem.getDateFrom(this.param+1)+1), this.param+1);
 		
 		this.mem.putAt(pa, 0, pa.length, this.param + this.plen);
 		this.plen += pa.length;
-		Nodave.setUSBEWord(this.mem, this.header + 6, this.plen);
+		Converter.setUSBEWord(this.mem, 6, this.plen);
 		LOGGER.debug("{}", this);
 	}
 

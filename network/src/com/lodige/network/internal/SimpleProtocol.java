@@ -18,7 +18,7 @@ import com.lodige.network.msg.IMessage;
  * TODO javadoc
  * @author renken
  */
-public class SimpleProtocol implements IProtocol.Stateless
+public class SimpleProtocol implements IProtocol
 {
 	
 	public static final IProtocol INSTANCE = new SimpleProtocol();

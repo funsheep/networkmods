@@ -4,7 +4,7 @@
  */
 package com.lodige.network.plc.msg;
 
-import com.lodige.network.plc.Nodave;
+import com.lodige.network.plc.util.NodaveTools;
 
 /**
  * TODO javadoc
@@ -20,7 +20,7 @@ public class PDUResultException extends Exception
 	 */
 	public PDUResultException(int error)
 	{
-		super(Nodave.strerror(error));
+		super(NodaveTools.strerror(error));
 		this.error = error;
 	}
 

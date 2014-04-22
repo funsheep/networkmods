@@ -10,14 +10,14 @@ import github.javaappplatform.commons.util.Strings;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 
 import com.lodige.network.internal.InternalNetTools;
 import com.lodige.network.internal.Message;
 import com.lodige.network.msg.IMessage;
-import com.lodige.network.plc.INoDave;
-import com.lodige.network.plc.internal.PDUMessageWrapper;
-import com.lodige.network.plc.internal.S7Message;
+import com.lodige.network.plc.INodave;
+import com.lodige.network.plc.util.Converter;
 
 /**
  * TODO javadoc
@@ -27,6 +27,8 @@ public class TCPProtocol extends S7Protocol
 {
 
 	private static final int HEADER_LENGTH = 4;
+	private static final int TCP_START_IN  = 7;
+	//	public static final int TCP_START_OUT = 3;
 
 
 	private final byte[] b4;
@@ -43,7 +45,7 @@ public class TCPProtocol extends S7Protocol
 	
 	public TCPProtocol(byte rack, byte slot, byte commType)
 	{
-//		super(INoDave.TCP_START_IN, INoDave.TCP_START_OUT);
+		super(TCPProtocol.TCP_START_IN);
 		this.rack = rack;
 		this.slot = slot;
 		this.commType = commType;
@@ -66,70 +68,87 @@ public class TCPProtocol extends S7Protocol
 	@Override
 	public void onConnect(Socket socket) throws IOException
 	{
-		super.onConnect(socket);
 		LOGGER.debug("daveConnectPLC() step 1. rack: {} slot: {}", Integer.valueOf(this.rack), Integer.valueOf(this.slot));
-		this.send(Message.create(0, this.b4));
+		this.send(Message.create(INodave.MSG_OTHER, this.b4), socket.getOutputStream());
 
-		IMessage msg = this.read();
+		IMessage msg = this.read(socket.getInputStream());
 		LOGGER.debug("daveConnectPLC() step 1 - got {}", msg);
+		if (msg == null)
+			throw new IOException("Could not connect to PLC.");
 		
-		if (msg.size() != 22)
-			throw new IOException("Could not retreive tPDUsize.");
-
-		final byte[] header = new byte[msg.size()-2-6];
-		msg.data(header, 6);
-		for (int i = 0; i < header.length; i++)
+		if (msg.size() == 22)
 		{
-			if (header[i] == (byte)0xc0)
+			final byte[] header = new byte[msg.size()-2-6];
+			msg.data(header, 6);
+			for (int i = 0; i < header.length; i++)
 			{
-				this.tPDUsize = 128 << (header[i+2] - 7);
-				LOGGER.debug("tPDU size: {}", Integer.valueOf(this.tPDUsize));
+				if (header[i] == (byte)0xc0)
+				{
+					this.tPDUsize = 128 << (header[i+2] - 7);
+					LOGGER.debug("tPDU size: {}", Integer.valueOf(this.tPDUsize));
+				}
 			}
 		}
-		this.negPDUlengthRequest();
+		this.negPDUlengthRequest(socket);
 	}
 
 
-	private static final byte[] SEND_BUFFER = new byte[400];
-	private static final byte HEADER_SIZE = 4;
+	private static final byte[] PDU_HEADER = { (byte)0x02, (byte)0xf0, (byte)0x80 };
+	private final byte[] sendBuffer = new byte[400];
+	private final byte[] pduHeader = new byte[400];
+
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void send(IMessage msg) throws IOException
+	public void send(IMessage msg, OutputStream out) throws IOException
 	{
-		this.out.write(0x03);
-		this.out.write(0x0);
-		this.out.write((msg.size()+HEADER_SIZE) / 0x100);
-		this.out.write((msg.size()+HEADER_SIZE) % 0x100);
-		
-//		LOGGER.debug("send packet header: {} ", Strings.toHexString(header, 0, headerSize));
+		final int headerSize = HEADER_LENGTH + (((msg.type() & INodave.MSG_PDU) != 0) ? 3 : 0);
+		out.write(0x03);
+		out.write(0x0);
+		out.write((msg.size()+headerSize) / 0x100);
+		out.write((msg.size()+headerSize) % 0x100);
+
 		
 		InputStream dataIn = msg.data();
+		LOGGER.debug("send packet header: {} ", Strings.toHexString(new byte[] { 0x03, 0, (byte)((msg.size()+headerSize) / 0x100), (byte)((msg.size()+headerSize) % 0x100)}, 0, 4));
+		if ((msg.type() & INodave.MSG_PDU) != 0)
+		{
+			LOGGER.debug("send PDU header: {} ", Strings.toHexString(PDU_HEADER, 0, PDU_HEADER.length));
+			out.write(PDU_HEADER);
+			int len = dataIn.read(this.pduHeader);
+			if (len == -1)
+				throw new IOException("Unexpected end of stream");
+			Converter.setUSBEWord(this.pduHeader, 4, (int) ((Message) msg).sendID());
+			out.write(this.pduHeader, 0, len);
+		}
+		
 		int len;
 		LOGGER.debug("payload:");
-		while ((len = dataIn.read(SEND_BUFFER)) != -1)
+		while ((len = dataIn.read(this.sendBuffer)) != -1)
 		{
-			this.out.write(SEND_BUFFER, 0, len);
-			LOGGER.debug(Strings.toHexString(SEND_BUFFER, 0, len));
+			out.write(this.sendBuffer, 0, len);
+			LOGGER.debug(Strings.toHexString(this.sendBuffer, 0, len));
 			if (Thread.interrupted())
 				break;
 		}
-		this.out.flush();
+		out.flush();
 	}
-
+	
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public S7Message read() throws IOException
+	public IMessage read(InputStream in) throws IOException
 	{
 		SemiDynamicByteArray array = new SemiDynamicByteArray();
 
 		final byte[] header = new byte[4];
-		if (!InternalNetTools.readData(this.in, header, 0, header.length))	//header
+		if (!InternalNetTools.readData(in, header, 0, header.length))	//header
 			return null;
+		
 		array.putAll(header);
 	
 		int length = header[3]+0x100*header[2];
@@ -137,43 +156,41 @@ public class TCPProtocol extends S7Protocol
 			throw new IOException("Message body has negative size " + (length - HEADER_LENGTH));
 
 		byte[] data = new byte[length - HEADER_LENGTH];
-		if (data.length > 0 && !InternalNetTools.readData(this.in, data, 0, data.length))
+		if (data.length > 0 && !InternalNetTools.readData(in, data, 0, data.length))
 			throw new EOFException("Unexpected end of stream.");
-		LOGGER.debug("read package of {} bytes: {}", Integer.valueOf(data.length), Strings.toHexString(data));
 		array.putAll(data);
 		
 		boolean follow = ((data[1]==0xf0)&& ((data[2] & 0x80)==0) );
 		while (follow)
 		{
-			LOGGER.debug("read more data: {}", Byte.valueOf(header[2]));
+			LOGGER.trace("read more data: {}", Byte.valueOf(header[2]));
 			final byte[] lheader = new byte[7];
-			if (!InternalNetTools.readData(this.in, lheader, 0, lheader.length))
+			if (!InternalNetTools.readData(in, lheader, 0, lheader.length))
 				break;
 			
 			length = lheader[3]+0x100*lheader[2];
-			LOGGER.debug("read more data length: {}", Integer.valueOf(length));
+			LOGGER.trace("read more data length: {}", Integer.valueOf(length));
 			data = new byte[length-7];
-			if (!InternalNetTools.readData(this.in, data, 0, data.length))
+			if (!InternalNetTools.readData(in, data, 0, data.length))
 				break;
 			array.putAll(data);
 			
-			LOGGER.debug("Read payload:", Strings.toHexString(data));
+			LOGGER.trace("Read payload:", Strings.toHexString(data));
 			follow=((lheader[5]==0xf0) && ((lheader[6] & 0x80)==0) );
 		}
 		
-		return S7Message.create(INoDave.TCP_START_IN, array, array.size(), null);
+		LOGGER.debug("read message of {} bytes: {}", Integer.valueOf(array.size()), Strings.toHexString(array.getData()));
+		return Message.create(INodave.MSG_OTHER, array, array.size(), null);
 	}
 
-	private static final byte[] PDU_HEADER = { (byte)0x02, (byte)0xf0, (byte)0x80 };
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected S7Message exchange(IMessage req) throws IOException
+	public void onDisconnect(Socket socket)
 	{
-		LOGGER.debug(" enter TCP.Exchange");
-		this.send(new PDUMessageWrapper(PDU_HEADER, req));
-		return this.read();
+		//do nothing
 	}
+
 
 }

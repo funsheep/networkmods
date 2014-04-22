@@ -11,6 +11,7 @@ package com.lodige.network;
 import github.javaappplatform.commons.events.ITalker;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.net.InetAddress;
 
 import com.lodige.network.msg.IMessage;
@@ -31,7 +32,7 @@ public interface INetworkConnection extends ITalker, Closeable
 	public void shutdown();
 
 	
-	public long asyncSend(IMessage msg) throws InterruptedException;
+	public long asyncSend(IMessage msg) throws IOException;
 	
 	
 	public boolean hasReceivedMSGs();

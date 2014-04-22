@@ -20,24 +20,10 @@ public interface IProtocol
 	
 	public void onConnect(Socket socket) throws IOException;
 	
-	public interface Stateless extends IProtocol
-	{
-		
-		public void send(IMessage msg, OutputStream out) throws IOException;
-	
-		public IMessage read(InputStream in) throws IOException;
-	
-		public void onDisconnect(Socket socket);
-	}
-	
-	public interface Stateful extends IProtocol
-	{
-		
-		public void send(IMessage msg) throws IOException;
-	
-		public IMessage read() throws IOException;
-	
-		public void onDisconnect();
-	}
+	public void send(IMessage msg, OutputStream out) throws IOException;
+
+	public IMessage read(InputStream in) throws IOException;
+
+	public void onDisconnect(Socket socket);
 
 }

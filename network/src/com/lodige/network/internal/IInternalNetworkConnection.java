@@ -20,7 +20,7 @@ public interface IInternalNetworkConnection extends INetworkConnection
 
 	public Socket _socket();
 
-	public IProtocol.Stateless _protocol();
+	public IProtocol _protocol();
 
 
 	public void _put(Message msg);

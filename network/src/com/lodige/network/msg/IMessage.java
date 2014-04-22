@@ -16,6 +16,7 @@ import java.io.InputStream;
  */
 public interface IMessage
 {
+	public int type();
 
 	public void data(byte[] dest, int off);
 	
@@ -23,10 +24,4 @@ public interface IMessage
 
 	public int size();
 
-
-	public interface Simple extends IMessage
-	{
-		
-		public int type();
-	}
 }

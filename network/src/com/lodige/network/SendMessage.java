@@ -8,6 +8,8 @@
 */
 package com.lodige.network;
 
+import java.io.IOException;
+
 import github.javaappplatform.commons.collection.SemiDynamicByteArray;
 
 import com.lodige.network.internal.Message;
@@ -122,7 +124,7 @@ public class SendMessage
 //	}
 
 
-	public boolean now() throws InterruptedException
+	public boolean now() throws IOException
 	{
 		if(this.con == null || this.con.state() != INetworkAPI.S_CONNECTED)
 			return false;

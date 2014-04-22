@@ -22,16 +22,16 @@
  */
 package com.lodige.network.plc.msg;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import github.javaappplatform.commons.collection.SemiDynamicByteArray;
+import github.javaappplatform.commons.events.IListener;
 import github.javaappplatform.commons.log.Logger;
 import github.javaappplatform.commons.util.GenericsToolkit;
 import github.javaappplatform.commons.util.Strings;
 
 import com.lodige.network.internal.Message;
 import com.lodige.network.msg.IMessage;
-import com.lodige.network.plc.Nodave;
+import com.lodige.network.plc.INodave;
+import com.lodige.network.plc.util.Converter;
 
 public class PDUBuilder
 {
@@ -47,7 +47,6 @@ public class PDUBuilder
 	 */
 	protected final SemiDynamicByteArray mem = new SemiDynamicByteArray(100);
 	
-	protected final int header = 0; // the position of the header;
 	protected int param; // the position of the parameters;
 	protected int hlen;
 	protected int plen;
@@ -56,19 +55,20 @@ public class PDUBuilder
 	protected int data;
 	protected int udata;
 
-	private static AtomicInteger IDs = new AtomicInteger(123);
+	private final int pduType;
 
 
 	public PDUBuilder()
 	{
-		this(1);
+		this(1, INodave.MSG_PDU);
 	}
 
-	protected PDUBuilder(int type)
+	protected PDUBuilder(int type, int pduType)
 	{
 		this.initHeader(type);
-		this.setNumber(IDs.incrementAndGet());
+		this.pduType = pduType;
 	}
+
 
 	/**
 	 * reserve space for the header of a new PDU
@@ -84,8 +84,8 @@ public class PDUBuilder
 		{
 			this.mem.put((byte) 0);
 		}
-		this.param = this.header + this.hlen;
-		this.mem.cursor(this.header);
+		this.param = this.hlen;
+		this.mem.cursor(0);
 		this.mem.put((byte)0x32);
 		this.mem.put((byte)type);
 		this.dlen = 0;
@@ -95,22 +95,18 @@ public class PDUBuilder
 		this.udata = 0;
 	}
 
-	/**
-	 * set the number of the PDU
-	 */
-	private void setNumber(int n)
+	
+	public int type()
 	{
-		LOGGER.debug("Initialized PDU with number {}", Integer.valueOf(n));
-		Nodave.setUSBEWord(this.mem, this.header + 4, n);
+		return this.pduType;
 	}
-
 
 	public void addParam(byte[] pa)
 	{
 		this.plen = pa.length;
 		this.mem.ensureSize(this.param + pa.length);
 		this.mem.putAt(pa, 0, pa.length, this.param);
-		Nodave.setUSBEWord(this.mem, this.header + 6, this.plen);
+		Converter.setUSBEWord(this.mem, 6, this.plen);
 		// this.mem[header + 6] = (byte) (pa.length / 256);
 		// this.mem[header + 7] = (byte) (pa.length % 256);
 		this.data = this.param + this.plen;
@@ -135,7 +131,7 @@ public class PDUBuilder
 		this.dlen += len;
 		this.mem.ensureSize(appPos + len);
 		this.mem.putAt(newData, 0, len, appPos);
-		Nodave.setUSBEWord(this.mem, this.header + 8, this.dlen);
+		Converter.setUSBEWord(this.mem, 8, this.dlen);
 	}
 
 	/**
@@ -165,7 +161,7 @@ public class PDUBuilder
 		this.udlen += values.length;
 		
 		LOGGER.debug("valCount: {}", Integer.valueOf(valCount));
-		Nodave.setUSBEWord(this.mem, this.data + 2, valCount);
+		Converter.setUSBEWord(this.mem, this.data + 2, valCount);
 		addData(values);
 	}
 
@@ -183,10 +179,10 @@ public class PDUBuilder
 		addValue(da);
 	}
 
-	
-	public <M extends IMessage> M compile()
+
+	public final <M extends IMessage> M compile(IListener callback)
 	{
-		IMessage m = Message.create(-1, this.mem, this.hlen + this.plen + this.dlen, null);
+		IMessage m = Message.create(this.type(), this.mem, this.hlen + this.plen + this.dlen, callback);
 		return GenericsToolkit.convertUnchecked(m);
 	}
 
@@ -199,7 +195,7 @@ public class PDUBuilder
 	{
 		StringBuilder sb = new StringBuilder(this.hlen + this.plen + this.dlen + this.udlen);
 		sb.append("PDU header ");
-		sb.append(Strings.toHexString(this.mem.getDataFrom(new byte[this.hlen], this.header)));
+		sb.append(Strings.toHexString(this.mem.getDataFrom(new byte[this.hlen], 0)));
 		sb.append('\n');
 		
 		sb.append("plen: "); sb.append(this.plen); sb.append(" dlen: "); sb.append(this.dlen); sb.append('\n');
