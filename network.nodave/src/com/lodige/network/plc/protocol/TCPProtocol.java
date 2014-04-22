@@ -16,8 +16,9 @@ import java.net.Socket;
 import com.lodige.network.internal.InternalNetTools;
 import com.lodige.network.internal.Message;
 import com.lodige.network.msg.IMessage;
-import com.lodige.network.plc.INodave;
+import com.lodige.network.plc.INodaveAPI;
 import com.lodige.network.plc.util.Converter;
+import com.lodige.network.plc.util.NodaveTools;
 
 /**
  * TODO javadoc
@@ -69,7 +70,7 @@ public class TCPProtocol extends S7Protocol
 	public void onConnect(Socket socket) throws IOException
 	{
 		LOGGER.debug("daveConnectPLC() step 1. rack: {} slot: {}", Integer.valueOf(this.rack), Integer.valueOf(this.slot));
-		this.send(Message.create(INodave.MSG_OTHER, this.b4), socket.getOutputStream());
+		this.send(Message.create(INodaveAPI.MSG_OTHER, this.b4), socket.getOutputStream());
 
 		IMessage msg = this.read(socket.getInputStream());
 		LOGGER.debug("daveConnectPLC() step 1 - got {}", msg);
@@ -104,7 +105,7 @@ public class TCPProtocol extends S7Protocol
 	@Override
 	public void send(IMessage msg, OutputStream out) throws IOException
 	{
-		final int headerSize = HEADER_LENGTH + (((msg.type() & INodave.MSG_PDU) != 0) ? 3 : 0);
+		final int headerSize = HEADER_LENGTH + (((msg.type() & INodaveAPI.MSG_PDU) != 0) ? 3 : 0);
 		out.write(0x03);
 		out.write(0x0);
 		out.write((msg.size()+headerSize) / 0x100);
@@ -113,7 +114,7 @@ public class TCPProtocol extends S7Protocol
 		
 		InputStream dataIn = msg.data();
 		LOGGER.debug("send packet header: {} ", Strings.toHexString(new byte[] { 0x03, 0, (byte)((msg.size()+headerSize) / 0x100), (byte)((msg.size()+headerSize) % 0x100)}, 0, 4));
-		if ((msg.type() & INodave.MSG_PDU) != 0)
+		if ((msg.type() & INodaveAPI.MSG_PDU) != 0)
 		{
 			LOGGER.debug("send PDU header: {} ", Strings.toHexString(PDU_HEADER, 0, PDU_HEADER.length));
 			out.write(PDU_HEADER);
@@ -180,7 +181,8 @@ public class TCPProtocol extends S7Protocol
 		}
 		
 		LOGGER.debug("read message of {} bytes: {}", Integer.valueOf(array.size()), Strings.toHexString(array.getData()));
-		return Message.create(INodave.MSG_OTHER, array, array.size(), null);
+		
+		return Message.create(NodaveTools.msgType(array, TCP_START_IN), array, array.size(), null);
 	}
 
 	/**
@@ -191,6 +193,5 @@ public class TCPProtocol extends S7Protocol
 	{
 		//do nothing
 	}
-
 
 }

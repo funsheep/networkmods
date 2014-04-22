@@ -22,44 +22,46 @@
  */
 package com.lodige.network.plc.msg;
 
-import com.lodige.network.plc.INodave;
+import com.lodige.network.plc.INodaveAPI;
+import com.lodige.network.plc.INodaveAPI.Area;
+import com.lodige.network.plc.INodaveAPI.Func;
 import com.lodige.network.plc.util.Converter;
 
 
 public class PDUWriteBuilder extends PDUBuilder
 {
 	
-	private static byte WRITE_HEADER[] = { INodave.FUNC_WRITE, (byte) 0x00 };
+	private static byte WRITE_HEADER[] = { (byte) Func.WRITE.code, (byte) 0x00 };
 	public PDUWriteBuilder()
 	{
-		super(1, INodave.MSG_PDU_WRITE);
+		super(1, INodaveAPI.MSG_PDU_WRITE);
 		addParam(WRITE_HEADER);
 		LOGGER.debug("{}", this);
 	}
 
 	
-	public void addByteToWriteRequest(int area, int DBnum, int start, byte value)
+	public void addByteToWriteRequest(Area area, int DBnum, int start, byte value)
 	{
 		this.addVarToWriteRequest(area, DBnum, start, 1, new byte[] { value });
 	}
 
-	public void addShortToWriteRequest(int area, int DBnum, int start, short value)
+	public void addShortToWriteRequest(Area area, int DBnum, int start, short value)
 	{
 		this.addBitVarToWriteRequest(area, DBnum, start, 2, Converter.bswap_16(value));
 	}
 	
-	public void addIntToWriteRequest(int area, int DBnum, int start, int value)
+	public void addIntToWriteRequest(Area area, int DBnum, int start, int value)
 	{
 		this.addBitVarToWriteRequest(area, DBnum, start, 4, Converter.bswap_32(value));
 	}
 	
-	public void addFloatToWriteRequest(int area, int DBnum, int start, float value)
+	public void addFloatToWriteRequest(Area area, int DBnum, int start, float value)
 	{
 		this.addBitVarToWriteRequest(area, DBnum, start, 4, Converter.toPLCfloat(value));
 	}
 	
 
-	public void addVarToWriteRequest(int area, int DBnum, int start, int byteCount, byte[] buffer)
+	public void addVarToWriteRequest(Area area, int DBnum, int start, int byteCount, byte[] buffer)
 	{
 		byte da[] = { 0, 4, 0, 0, };
 		byte pa[] =
@@ -74,15 +76,15 @@ public class PDUWriteBuilder extends PDUBuilder
 		this.addToWriteRequest(area, DBnum, start, byteCount, buffer, da, pa);
 	}
 	
-	private void addToWriteRequest(int area, int DBnum, int start, int byteCount, byte[] buffer, byte[] da, byte[] pa)
+	private void addToWriteRequest(Area area, int DBnum, int start, int byteCount, byte[] buffer, byte[] da, byte[] pa)
 	{
-		if ((area == INodave.TIMER) || (area == INodave.COUNTER) || (area == INodave.TIMER200) || (area == INodave.COUNTER200))
+		if ((area == Area.TIMER) || (area == Area.COUNTER) || (area == Area.TIMER_200) || (area == Area.COUNTER_200))
 		{
-			pa[3] = (byte)area;
+			pa[3] = (byte)area.code;
 			pa[4] = (byte)(((byteCount + 1) / 2) / 0x100);
 			pa[5] = (byte)(((byteCount + 1) / 2) & 0xff);
 		}
-		else if ((area == INodave.ANALOGINPUTS200) || (area == INodave.ANALOGOUTPUTS200))
+		else if ((area == Area.ANALOGINPUTS_200) || (area == Area.ANALOGOUTPUTS_200))
 		{
 			pa[3] = 4;
 			pa[4] = (byte)(((byteCount + 1) / 2) / 0x100);
@@ -96,7 +98,7 @@ public class PDUWriteBuilder extends PDUBuilder
 
 		pa[6] = (byte)(DBnum / 256);
 		pa[7] = (byte)(DBnum & 0xff);
-		pa[8] = (byte)(area);
+		pa[8] = (byte)(area.code);
 		start *= 8; /* number of bits */
 		pa[11] = (byte)(start & 0xff);
 		pa[10] = (byte)((start / 0x100) & 0xff);
@@ -121,7 +123,7 @@ public class PDUWriteBuilder extends PDUBuilder
 		LOGGER.debug("{}", this);
 	}
 
-	public void addBitVarToWriteRequest(int area, int DBnum, int start, int byteCount, byte[] buffer)
+	public void addBitVarToWriteRequest(Area area, int DBnum, int start, int byteCount, byte[] buffer)
 	{
 		byte da[] = { 0, 3, 0, 0, };
 		byte pa[] =

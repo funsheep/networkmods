@@ -30,7 +30,7 @@ import github.javaappplatform.commons.util.Strings;
 
 import com.lodige.network.internal.Message;
 import com.lodige.network.msg.IMessage;
-import com.lodige.network.plc.INodave;
+import com.lodige.network.plc.INodaveAPI;
 import com.lodige.network.plc.util.Converter;
 
 public class PDUBuilder
@@ -60,7 +60,7 @@ public class PDUBuilder
 
 	public PDUBuilder()
 	{
-		this(1, INodave.MSG_PDU);
+		this(1, INodaveAPI.MSG_PDU);
 	}
 
 	protected PDUBuilder(int type, int pduType)
@@ -180,7 +180,7 @@ public class PDUBuilder
 	}
 
 
-	public final <M extends IMessage> M compile(IListener callback)
+	public final IMessage compile(IListener callback)
 	{
 		IMessage m = Message.create(this.type(), this.mem, this.hlen + this.plen + this.dlen, callback);
 		return GenericsToolkit.convertUnchecked(m);

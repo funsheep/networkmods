@@ -1,14 +1,13 @@
 package com.lodige.network.plc;
 
-import java.nio.ByteBuffer;
-
 import github.javaappplatform.commons.log.Logger;
 import github.javaappplatform.commons.util.Close;
 
+import com.lodige.network.client.ClientConnection;
 import com.lodige.network.client.ClientNetworkService;
-import com.lodige.network.plc.msg.PDUReadBuilder;
+import com.lodige.network.plc.INodaveAPI.Area;
 import com.lodige.network.plc.msg.PDUReadResult;
-import com.lodige.network.plc.msg.Result;
+import com.lodige.network.plc.msg.Variable;
 import com.lodige.network.plc.protocol.TCPProtocol;
 import com.lodige.network.plc.util.Converter;
 
@@ -19,17 +18,15 @@ public class ConnectDemoTest
 	{
 		Logger.configureDefault();
 		ClientNetworkService service = new ClientNetworkService("PLC", new TCPProtocol());
-		PLC con = new PLC("192.168.130.110", 102, null, service);
+		ClientConnection con = new ClientConnection("192.168.130.110", 102, null, service);
 		con.connect();
 
-		PDUReadBuilder rb = new PDUReadBuilder();
-		rb.addVarToReadRequest(INodave.DB, 1, 0, 2);
-		PDUReadResult rr = con.sendPDU(rb);
+		PDUReadResult rr = Read.fromPLC(con).bytes(2).from(Area.DB).andDatabase(1).andWaitForResult();
 
 		System.out.println(rr);
-		Result[] results = rr.getResults();
+		Variable[] results = rr.getResults();
 
-		for (Result r : results)
+		for (Variable r : results)
 		{
 			System.out.println(r);
 			System.out.println("DB1:DW0: " + Converter.USBEWord(r.data(), 0));
@@ -50,9 +47,7 @@ public class ConnectDemoTest
 //
 		System.out.println("Trying to read 16 bytes from FW0.\n");
 
-		rb = new PDUReadBuilder();
-		rb.addVarToReadRequest(INodave.FLAGS, 0, 0, 16);
-		rr = con.sendPDU(rb);
+		rr = Read.fromPLC(con).bytes(16).from(Area.FLAGS).andDatabase(0).andWaitForResult();
 //		System.out.println(ByteBuffer.allocate(16).put(rr.resultData()).getFloat(12));
 		System.out.println(Converter.BEFloat(rr.resultData(), 12));
 		

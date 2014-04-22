@@ -11,7 +11,7 @@ import java.net.Socket;
 
 import com.lodige.network.IProtocol;
 import com.lodige.network.msg.IMessage;
-import com.lodige.network.plc.INodave;
+import com.lodige.network.plc.INodaveAPI.Result;
 import com.lodige.network.plc.msg.PDUBuilder;
 import com.lodige.network.plc.msg.PDUResult;
 import com.lodige.network.plc.util.Converter;
@@ -55,7 +55,7 @@ public abstract class S7Protocol implements IProtocol
 		IMessage resmsg = this.read(socket.getInputStream());
 
 		PDUResult result = new PDUResult(resmsg, this.pduInHeaderSize);
-		if (result.getError() != INodave.RESULT_OK)
+		if (result.getError() != Result.OK.code)
 			throw new IOException(NodaveTools.strerror(result.getError()));
 		this.maxPDUlength = Converter.USBEWord(result.params(), 6);
 		LOGGER.debug("*** Partner offered PDU length: {}", Integer.valueOf(this.maxPDUlength));

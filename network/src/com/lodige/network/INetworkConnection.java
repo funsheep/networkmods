@@ -33,10 +33,5 @@ public interface INetworkConnection extends ITalker, Closeable
 
 	
 	public long asyncSend(IMessage msg) throws IOException;
-	
-	
-	public boolean hasReceivedMSGs();
-
-	public IMessage receiveMSG();
-
+		
 }

@@ -59,7 +59,8 @@ class CloseableQueue implements Closeable
 			IMessage msg = this.queue.removeFirst();
 			this.isFull.signalAll();
 			return msg;
-		} catch (InterruptedException e)
+		}
+		catch (InterruptedException e)
 		{
 			return null;
 		}
@@ -109,12 +110,28 @@ class CloseableQueue implements Closeable
 
 	public int size()
 	{
-		return this.queue.size();
+		this.lock.lock();
+		try
+		{
+			return this.queue.size();
+		}
+		finally
+		{
+			this.lock.unlock();
+		}
 	}
 
 	public boolean isClosed()
 	{
-		return this.closed;
+		this.lock.lock();
+		try
+		{
+			return this.closed;
+		}
+		finally
+		{
+			this.lock.unlock();
+		}
 	}
 
 	/**

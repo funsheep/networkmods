@@ -22,32 +22,34 @@
  */
 package com.lodige.network.plc.msg;
 
-import com.lodige.network.plc.INodave;
+import com.lodige.network.plc.INodaveAPI;
+import com.lodige.network.plc.INodaveAPI.Area;
+import com.lodige.network.plc.INodaveAPI.Func;
 import com.lodige.network.plc.util.Converter;
 
 
 public class PDUReadBuilder extends PDUBuilder
 {
 
-	private static byte READ_HEADER[] = { INodave.FUNC_READ, (byte) 0x00 };
+	private static byte READ_HEADER[] = { (byte) Func.READ.code, (byte) 0x00 };
 
 	/**
 	 * prepare a read request with no item.
 	 */
 	public PDUReadBuilder()
 	{
-		super(1, INodave.MSG_PDU_READ);
+		super(1, INodaveAPI.MSG_PDU_READ);
 		addParam(READ_HEADER);
 		LOGGER.debug("{}", this);
 	}
 
 
-	public void addVarToReadRequest(int area, int DBnum, int start, int len)
+	public void addVarToReadRequest(Area area, int DBnum, int start, int len)
 	{
 		this.addToReadRequest(area, DBnum, start, len, false);
 	}
 	
-	public void addToReadRequest(int area, int DBnum, int start, int len, boolean isBit)
+	public void addToReadRequest(Area area, int DBnum, int start, int len, boolean isBit)
 	{
 	    byte[] pa =
 	    {
@@ -59,14 +61,14 @@ public class PDUReadBuilder extends PDUBuilder
 	    	0,0,0		/* start address in bits */
 	    };
 
-		if ((area == INodave.ANALOGINPUTS200) || (area == INodave.ANALOGOUTPUTS200))
+		if ((area == Area.ANALOGINPUTS_200) || (area == Area.ANALOGOUTPUTS_200))
 		{
 			pa[3] = 4;
 			start *= 8; /* bits */
 		}
-		else if ((area == INodave.TIMER) || (area == INodave.COUNTER) || (area == INodave.TIMER200) || (area == INodave.COUNTER200))
+		else if ((area == Area.TIMER) || (area == Area.COUNTER) || (area == Area.TIMER_200) || (area == Area.COUNTER_200))
 		{
-			pa[3] = (byte) area;
+			pa[3] = (byte) area.code;
 		}
 		else if (isBit)
 		{
@@ -80,7 +82,7 @@ public class PDUReadBuilder extends PDUBuilder
 		Converter.setUSBEWord(pa, 4, len);
 		Converter.setUSBEWord(pa, 6, DBnum);
 		Converter.setUSBELong(pa, 8, start);
-		Converter.setUSByte(pa, 8, area);
+		Converter.setUSByte(pa, 8, area.code);
 
 		this.mem.putAt((byte) (this.mem.getDateFrom(this.param+1)+1), this.param+1);
 		
@@ -90,7 +92,7 @@ public class PDUReadBuilder extends PDUBuilder
 		LOGGER.debug("{}", this);
 	}
 
-	public void addBitVarToReadRequest(int area, int DBnum, int start, int len)
+	public void addBitVarToReadRequest(Area area, int DBnum, int start, int len)
 	{
 		this.addToReadRequest(area, DBnum, start, len, true);
 	}

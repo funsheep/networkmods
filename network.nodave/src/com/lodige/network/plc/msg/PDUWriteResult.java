@@ -23,7 +23,8 @@
 package com.lodige.network.plc.msg;
 
 import com.lodige.network.msg.IMessage;
-import com.lodige.network.plc.INodave;
+import com.lodige.network.plc.INodaveAPI.Func;
+import com.lodige.network.plc.INodaveAPI.Result;
 
 public class PDUWriteResult extends PDUResult
 {
@@ -37,8 +38,8 @@ public class PDUWriteResult extends PDUResult
 
 	public void checkWriteResult() throws PDUResultException
 	{
-		if (this.date(this.param)[0] != INodave.FUNC_WRITE)
-			throw new PDUResultException(INodave.RESULT_UNEXPECTED_FUNC);
+		if (this.date(this.param)[0] != Func.WRITE.code)
+			throw new PDUResultException(Result.UNEXPECTED_FUNC);
 		if ((this.date(this.data)[0] != 255))
 			throw new PDUResultException(this.date(this.data)[0]);
 	}

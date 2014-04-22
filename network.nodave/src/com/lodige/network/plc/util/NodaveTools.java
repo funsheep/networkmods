@@ -4,7 +4,12 @@
  */
 package com.lodige.network.plc.util;
 
-import com.lodige.network.plc.INodave;
+import github.javaappplatform.commons.collection.SemiDynamicByteArray;
+
+import com.lodige.network.msg.IMessage;
+import com.lodige.network.plc.INodaveAPI;
+import com.lodige.network.plc.INodaveAPI.Func;
+import com.lodige.network.plc.INodaveAPI.Result;
 
 /**
  * TODO javadoc
@@ -14,106 +19,143 @@ import com.lodige.network.plc.INodave;
 public class NodaveTools
 {
 
-	public static String areaName(int area)
+	/**
+	 * return the number of the PDU
+	 */
+	public static final int getPDUNumber(IMessage msg, int header)
 	{
-		switch (area)
-		{
-			case INodave.DB:
-				return "DB";
-			case INodave.INPUTS:
-				return "E";
-			case INodave.OUTPUTS:
-				return "A";
-			case INodave.FLAGS:
-				return "M";
-			default:
-				return "unknown area!";
-		}
+		byte[] tmp = new byte[2];
+		msg.data(tmp, header + 4);
+		return Converter.USBEWord(tmp, 0);
 	}
 
+
+	public static final int msgType(SemiDynamicByteArray array, int headerStart)
+	{
+		final byte one = array.getDateFrom(headerStart + 1);
+		if (one == 2 || one == 3)
+		{
+			final byte[] two = new byte[2];
+			array.getDataFrom(two, headerStart + 10);
+			if (Converter.USBEWord(two, 0) == Result.OK.code)
+			{
+				switch (getFunc(array, headerStart))
+				{
+					case READ:
+						return INodaveAPI.MSG_PDU_READ;
+					case WRITE:
+						return INodaveAPI.MSG_PDU_WRITE;
+					default:
+						;
+				}
+				return INodaveAPI.MSG_PDU;
+			}
+		}
+		return INodaveAPI.MSG_OTHER;
+	}
+
+	private static final int getHeaderLength(SemiDynamicByteArray array, int header)
+	{
+		byte[] tmp = new byte[1];
+		array.getDataFrom(tmp, header + 1);
+		int headerLength = 10;
+		if (tmp[0] == 2 || tmp[0] == 3)
+			headerLength = 12;
+		return headerLength;
+	}
+	
+	private static final Func getFunc(SemiDynamicByteArray array, int protocolHeaderSize)
+	{
+		return Func.convert(Converter.USByte(new byte[] { array.getDateFrom(protocolHeaderSize + getHeaderLength(array, protocolHeaderSize)) }, 0));
+	}
+
+
+	public static String strerror(Result result)
+	{
+		return strerror(result.code);
+	}
+	
 	public static String strerror(int code)
 	{
-		switch (code)
+		switch (Result.convert(code))
 		{
-			case INodave.RESULT_OK:
+			case OK:
 				return "ok";
-			case INodave.RESULT_MULTIPLE_BITS_NOT_SUPPORTED:
+			case MULTIPLE_BITS_NOT_SUPPORTED:
 				return "the CPU does not support reading a bit block of length<>1";
-			case INodave.RESULT_ITEM_NOT_AVAILABLE:
+			case ITEM_NOT_AVAILABLE:
 				return "the desired item is not available in the PLC";
-			case INodave.RESULT_ITEM_NOT_AVAILABLE200:
+			case ITEM_NOT_AVAILABLE200:
 				return "the desired item is not available in the PLC (200 family)";
-			case INodave.RESULT_ADDRESS_OUT_OF_RANGE:
+			case ADDRESS_OUT_OF_RANGE:
 				return "the desired address is beyond limit for this PLC";
-			case INodave.RESULT_CPU_RETURNED_NO_DATA:
+			case CPU_RETURNED_NO_DATA:
 				return "the PLC returned a packet with no result data";
-			case INodave.RESULT_UNKNOWN_ERROR:
-				return "the PLC returned an error code not understood by this library";
-			case INodave.RESULT_EMPTY_RESULT_ERROR:
+			case UNKNOWN_ERROR:
+				return "the PLC returned the error code "+code+" not understood by this library";
+			case EMPTY_RESULT:
 				return "this result contains no data";
-			case INodave.RESULT_EMPTY_RESULT_SET_ERROR:
+			case EMPTY_RESULTSET:
 				return "cannot work with an undefined result set";
-			case INodave.RESULT_CANNOT_EVALUATE_PDU:
+			case CANNOT_EVALUATE_PDU:
 				return "cannot evaluate the received PDU";
-			case INodave.RESULT_WRITE_DATA_SIZE_MISMATCH:
+			case WRITE_DATA_SIZE_MISMATCH:
 				return "Write data size error";
-			case INodave.RESULT_NO_PERIPHERAL_AT_ADDRESS:
+			case NO_PERIPHERAL_AT_ADDRESS:
 				return "No data from I/O module";
-			case INodave.RESULT_UNEXPECTED_FUNC:
+			case UNEXPECTED_FUNC:
 				return "Unexpected function code in answer";
-			case INodave.RESULT_UNKNOWN_DATA_UNIT_SIZE:
+			case UNKNOWN_DATA_UNIT_SIZE:
 				return "PLC responds wit an unknown data type";
-			case INodave.RESULT_SHORT_PACKET:
+			case SHORT_PACKET:
 				return "Short packet from PLC";
-			case INodave.RESULT_TIMEOUT:
+			case TIMEOUT:
 				return "Timeout when waiting for PLC response";
-			case 0x8000:
+			case FUNCTION_ALREADY_OCCUPIED:
 				return "function already occupied.";
-			case 0x8001:
+			case CURRENTLY_NOT_ALLOWED:
 				return "not allowed in current operating status.";
-			case 0x8101:
+			case HARDWARE_FAULT:
 				return "hardware fault.";
-			case 0x8103:
+			case ACCESS_NOT_ALLOWED:
 				return "object access not allowed.";
-			case 0x8104:
+			case CONTEXT_UNSUPPORTED:
 				return "context is not supported.";
-			case 0x8105:
+			case INVALID_ADDRESS:
+			case INVALID_ADDRESS2:
 				return "invalid address.";
-			case 0x8106:
+			case DATATYPE_UNSUPPORTED:
 				return "data type not supported.";
-			case 0x8107:
+			case DATATYPE_INCONSITENT:
 				return "data type not consistent.";
-			case 0x810A:
+			case OBJECT_NOT_EXISTENT:
 				return "object does not exist.";
-			case 0x8500:
+			case INCORRECT_PDU_SIZE:
 				return "incorrect PDU size.";
-			case 0x8702:
-				return "address invalid.";
-			case 0xd201:
+			case BLOCKNAME_SYNTAX_ERROR:
 				return "block name syntax error.";
-			case 0xd202:
+			case FUNCTION_PARAMETER_SYNTAX_ERROR:
 				return "syntax error function parameter.";
-			case 0xd203:
+			case BLOCKTYPE_SYNTAX_ERROR:
 				return "syntax error block type.";
-			case 0xd204:
+			case NO_BLOCK_ON_STORAGE:
 				return "no linked block in storage medium.";
-			case 0xd205:
+			case OBJECT_ALREADY_EXISTS:
+			case OBJECT_ALREADY_EXISTS2:
 				return "object already exists.";
-			case 0xd206:
-				return "object already exists.";
-			case 0xd207:
+			case BLOCK_ALREADY_EXISTS:
 				return "block exists in EPROM.";
-			case 0xd209:
+			case BLOCK_NOT_EXISTENT:
 				return "block does not exist.";
-			case 0xd20e:
+			case BLOCK_ALREADY_EXISTS2:
 				return "no block does not exist.";
-			case 0xd210:
+			case BLOCK_NUMBER_TOO_BIG:
 				return "block number too big.";
-			case 0xd240:
+			case UNFINISHED_BLOCK_TRANSFER:
 				return "unfinished block transfer in progress?";
-			case 0xd241:
+			case PASSWORD_PROTECTED:
 				return "protected by password.";
-			default:
+		default:
 				return "no message defined for code: " + code + "!";
 		}
 	}

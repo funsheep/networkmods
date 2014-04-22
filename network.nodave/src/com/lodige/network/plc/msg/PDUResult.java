@@ -26,7 +26,6 @@ import github.javaappplatform.commons.log.Logger;
 import github.javaappplatform.commons.util.Strings;
 
 import com.lodige.network.msg.IMessage;
-import com.lodige.network.plc.INodave;
 import com.lodige.network.plc.util.Converter;
 
 public class PDUResult
@@ -54,6 +53,7 @@ public class PDUResult
 		this.dlen  = this.getDataLength();
 		LOGGER.debug("Got PDU result with number {}", Integer.valueOf(this.getNumber()));
 	}
+
 
 	private final int getHeaderLength()
 	{
@@ -88,7 +88,7 @@ public class PDUResult
 	}
 
 	/**
-	 * return the function code of the PDU
+	 * return the function code of the PDU - read/write differentiation.
 	 */
 	public int getFunc()
 	{
@@ -164,19 +164,6 @@ public class PDUResult
 			sb.append('\n');
 		}
 		return sb.toString();
-	}
-
-	public static final boolean isValidPDUResult(IMessage msg, int headerStart)
-	{
-		final byte[] one = new byte[1];
-		msg.data(one, headerStart + 1);
-		if (one[0] == 2 || one[0] == 3)
-		{
-			final byte[] two = new byte[2];
-			msg.data(two, headerStart + 10);
-			return Converter.USBEWord(two, 0) == INodave.RESULT_OK;
-		}
-		return false;
 	}
 
 }

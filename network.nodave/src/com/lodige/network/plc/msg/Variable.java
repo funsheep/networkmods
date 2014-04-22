@@ -25,12 +25,12 @@ package com.lodige.network.plc.msg;
 import java.nio.ByteBuffer;
 
 import com.lodige.network.msg.IMessage;
-import com.lodige.network.plc.INodave;
+import com.lodige.network.plc.INodaveAPI.Result;
 
 /**
  * 
  */
-public class Result
+public class Variable
 {
 	public final int error;
 	public final int length;
@@ -38,18 +38,18 @@ public class Result
 	private IMessage msg;
 	
 	
-	public Result(int error)
+	public Variable(int error)
 	{
 		this(error, -1, -1);
 	}
 
-	public Result(int length, int bufferStart, IMessage msg)
+	public Variable(int length, int bufferStart, IMessage msg)
 	{
-		this(INodave.RESULT_OK, length, bufferStart);
+		this(Result.OK.code, length, bufferStart);
 		this.msg = msg;
 	}
 
-	private Result(int error, int length, int bufferStart)
+	private Variable(int error, int length, int bufferStart)
 	{
 		this.error = error;
 		this.length = length;
@@ -59,7 +59,7 @@ public class Result
 	
 	public byte[] data() throws PDUResultException
 	{
-		if (this.error != INodave.RESULT_OK)
+		if (this.error != Result.OK.code)
 			throw new PDUResultException(this.error);
 		byte[] data = new byte[this.length];
 		this.msg.data(data, this.bufferStart);

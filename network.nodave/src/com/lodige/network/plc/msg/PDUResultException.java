@@ -4,6 +4,7 @@
  */
 package com.lodige.network.plc.msg;
 
+import com.lodige.network.plc.INodaveAPI.Result;
 import com.lodige.network.plc.util.NodaveTools;
 
 /**
@@ -22,6 +23,11 @@ public class PDUResultException extends Exception
 	{
 		super(NodaveTools.strerror(error));
 		this.error = error;
+	}
+
+	public PDUResultException(Result result)
+	{
+		this(result.code);
 	}
 
 	

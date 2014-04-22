@@ -22,12 +22,13 @@
  */
 package com.lodige.network.plc.msg;
 
-import java.nio.ByteBuffer;
-
 import github.javaappplatform.commons.util.Strings;
 
+import java.nio.ByteBuffer;
+
 import com.lodige.network.msg.IMessage;
-import com.lodige.network.plc.INodave;
+import com.lodige.network.plc.INodaveAPI.Func;
+import com.lodige.network.plc.INodaveAPI.Result;
 import com.lodige.network.plc.util.Converter;
 import com.lodige.network.plc.util.NodaveTools;
 
@@ -37,7 +38,7 @@ public class PDUReadResult extends PDUResult
 
 	private final int udata;
 	private final int udlen;
-	private Result[] results = null;
+	private Variable[] results = null;
 
 	private int cursor = 0;
 	
@@ -83,8 +84,8 @@ public class PDUReadResult extends PDUResult
 
 	public void checkReadResult() throws PDUResultException
 	{
-		if (this.date(this.param)[0] != INodave.FUNC_READ)
-			throw new IllegalStateException(NodaveTools.strerror(INodave.RESULT_UNEXPECTED_FUNC));
+		if (this.date(this.param)[0] != Func.READ.code)
+			throw new IllegalStateException(NodaveTools.strerror(Result.UNEXPECTED_FUNC));
 		checkResultData();
 	}
 
@@ -98,7 +99,7 @@ public class PDUReadResult extends PDUResult
 	public void checkPGReadResult() throws PDUResultException
 	{
 		if (this.date(this.param)[0] != 0)
-			throw new PDUResultException(INodave.RESULT_UNEXPECTED_FUNC);
+			throw new PDUResultException(Result.UNEXPECTED_FUNC);
 		checkResultData();
 	}
 
@@ -141,7 +142,7 @@ public class PDUReadResult extends PDUResult
 		return value >= 0 ? value : 0x10000 + value;
 	}
 	
-	public Result[] getResults()
+	public Variable[] getResults()
 	{
 		if (this.results == null)
 			try
@@ -151,7 +152,7 @@ public class PDUReadResult extends PDUResult
 			catch (PDUResultException e)
 			{
 				LOGGER.debug("Could not parse pdu results", e);
-				this.results = new Result[0];
+				this.results = new Variable[0];
 			}
 		return results;
 	}
@@ -161,16 +162,16 @@ public class PDUReadResult extends PDUResult
 	 * is provided, data will be copied into this buffer. If it's NULL you can get your data from
 	 * the resultPointer in daveConnection long as you do not send further requests.
 	 */
-	private Result[] parseResults() throws PDUResultException
+	private Variable[] parseResults() throws PDUResultException
 	{
 		this.checkReadResult();
 
 		final int numResults = this.date(this.param + 1)[0];
-		Result[] results = new Result[numResults];
+		Variable[] results = new Variable[numResults];
 		int pos = this.data;
 		for (int i = 0; i < numResults; i++)
 		{
-			Result r;
+			Variable r;
 			final int error = Converter.USByte(this.date(pos), 0);
 			if (error == 255)
 			{
@@ -181,14 +182,14 @@ public class PDUReadResult extends PDUResult
 //				else if (type == 3)
 //					; // length is ok
 
-				r = new Result(len, pos + 4, this.msg);
+				r = new Variable(len, pos + 4, this.msg);
 				pos += len;
 				if ((len % 2) == 1)
 					pos++;
 			}
 			else
 			{
-				r = new Result(error);
+				r = new Variable(error);
 				LOGGER.debug("Error {}", Integer.valueOf(r.error));
 			}
 
