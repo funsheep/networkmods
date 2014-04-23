@@ -15,8 +15,8 @@ import com.lodige.network.INetworkAPI;
 import com.lodige.network.client.ClientConnection;
 import com.lodige.network.msg.IMessage;
 import com.lodige.network.plc.INodaveAPI.Area;
-import com.lodige.network.plc.msg.PDUReadBuilder;
-import com.lodige.network.plc.msg.PDUReadResult;
+import com.lodige.network.plc.msg.PDUWriteBuilder;
+import com.lodige.network.plc.msg.PDUWriteResult;
 import com.lodige.network.plc.protocol.S7Protocol;
 import com.lodige.network.plc.util.NodaveTools;
 
@@ -24,7 +24,7 @@ import com.lodige.network.plc.util.NodaveTools;
  * TODO javadoc
  * @author renken
  */
-public class Read
+public class Write
 {
 	
 	private final class PDUResultListener implements IListener
@@ -43,64 +43,63 @@ public class Read
 		public void handleEvent(Event e)
 		{
 			IMessage msg = e.getData();
-			if (msg.type() == INodaveAPI.MSG_PDU_READ)
+			if (msg.type() == INodaveAPI.MSG_PDU_WRITE)
 			{
-				int gotID = NodaveTools.getPDUNumber(msg, Read.this.headerSize());
+				int gotID = NodaveTools.getPDUNumber(msg, Write.this.headerSize());
 				if (gotID == this.msgID)
-					this.callback.handleEvent(new Event(e.getSource(), INodaveAPI.E_PDU_RESULT_RECIEVED, new PDUReadResult(msg, Read.this.headerSize())));
+					this.callback.handleEvent(new Event(e.getSource(), INodaveAPI.E_PDU_RESULT_RECIEVED, new PDUWriteResult(msg, Write.this.headerSize())));
 			}
 		}
 	}
 	
-	public class Read1
+	public class Write1
 	{
-		private Read1() {}
+		private Write1() {}
 		
-		public Read2 from(Area area)
+		public Write2 to(Area area)
 		{
-			Read.this.area = area;
-			return new Read2();
+			Write.this.area = area;
+			return new Write2();
 		}
 	}
 	
-	public class Read2
+	public class Write2
 	{
-		private Read2() {}
+		private Write2() {}
 		
-		public Read3 andDatabase(int dbNum)
+		public Write3 andDatabase(int dbNum)
 		{
-			Read.this.dbNum = dbNum;
-			return new Read3();
+			Write.this.dbNum = dbNum;
+			return new Write3();
 		}
 	}
 
-	public class Read3
+	public class Write3
 	{
-		private Read3() {}
+		private Write3() {}
 		
-		public Read3 startAt(int start)
+		public Write3 startAt(int start)
 		{
-			Read.this.start = start;
+			Write.this.start = start;
 			return this;
 		}
 		
-		public Read andRead()
+		public Write andRead()
 		{
-			Read.this.addToRB();
-			return Read.this;
+			Write.this.addToWB();
+			return Write.this;
 		}
 		
-		
-		public PDUReadResult andWaitForResult() throws IOException
+		public PDUWriteResult andWaitForResult() throws IOException
 		{
-			Read.this.addToRB();
+			Write.this.addToWB();
 			Compute getter = new Compute();
 			JobPlatform.runJob(() ->
 			{
 				try
 				{
-					long msgID = Read.this.connection.asyncSend(Read.this.rb.compile(null));
-					Read.this.connection.addListener(INetworkAPI.E_MSG_RECEIVED, new PDUResultListener(msgID, (e) ->
+					long msgID = Write.this.connection.asyncSend(Write.this.wb.compile(null));
+					Write.this.connection.addListener(INetworkAPI.E_MSG_RECEIVED, new PDUResultListener(msgID, (e) ->
 					{
 						getter.put(e.getData());
 					}));
@@ -113,7 +112,7 @@ public class Read
 			}, INetworkAPI.NETWORK_THREAD);
 			try
 			{
-				return getter.<PDUReadResult>get();
+				return getter.<PDUWriteResult>get();
 			}
 			catch (Exception e)
 			{
@@ -125,14 +124,14 @@ public class Read
 
 		public long andInformMeOnResult(IListener listener) throws IOException
 		{
-			Read.this.addToRB();
+			Write.this.addToWB();
 			Compute getter = new Compute();
 			JobPlatform.runJob(() ->
 			{
 				try
 				{
-					long msgID = Read.this.connection.asyncSend(Read.this.rb.compile(null));
-					Read.this.connection.addListener(INetworkAPI.E_MSG_RECEIVED, new PDUResultListener(msgID, listener));
+					long msgID = Write.this.connection.asyncSend(Write.this.wb.compile(null));
+					Write.this.connection.addListener(INetworkAPI.E_MSG_RECEIVED, new PDUResultListener(msgID, listener));
 					getter.put(Long.valueOf(msgID));
 				}
 				catch (Exception e)
@@ -157,42 +156,50 @@ public class Read
 
 
 	private final ClientConnection connection;
-	private final PDUReadBuilder rb = new PDUReadBuilder();
-	private int byteCount;
+	private final PDUWriteBuilder wb = new PDUWriteBuilder();
+	private byte[] buffer;
 	private Area area;
 	private int dbNum;
 	private int start = 0;
 	
 
-	private Read(ClientConnection connection)
+	private Write(ClientConnection connection)
 	{
 		this.connection = connection;
 	}
 
 	
-	public Read1 bytes(int count)
+	public Write1 data(byte[] buffer, int off, int len)
 	{
-		this.byteCount = count;
-		return new Read1();
+		this.buffer = new byte[len];
+		System.arraycopy(buffer, off, this.buffer, 0, len);
+		return new Write1();
 	}
 
-	private void addToRB()
+	public Write1 data(byte... buffer)
 	{
-		this.rb.addVarToReadRequest(this.area, this.dbNum, this.start, this.byteCount);
+		this.buffer = buffer;
+		return new Write1();
+	}
+
+
+	private void addToWB()
+	{
+		this.wb.addVarToWriteRequest(this.area, this.dbNum, this.start, this.buffer.length, this.buffer);
 		this.area = null;
+		this.buffer = null;
 		this.dbNum = 0;
 		this.start = 0;
-		this.byteCount = 0;
 	}
 	
 	private int headerSize()
 	{
-		return ((S7Protocol) Read.this.connection._protocol()).pduInHeaderSize();
+		return ((S7Protocol) Write.this.connection._protocol()).pduInHeaderSize();
 	}
 
-	public static final Read fromPLC(ClientConnection connection)
+	public static final Write toPLC(ClientConnection connection)
 	{
-		return new Read(connection);
+		return new Write(connection);
 	}
 
 }

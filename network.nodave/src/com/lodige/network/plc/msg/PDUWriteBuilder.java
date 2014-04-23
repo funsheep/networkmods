@@ -114,7 +114,7 @@ public class PDUWriteBuilder extends PDUBuilder
 			this.mem.getDataFrom(saveData, this.data);
 			this.mem.putAt(saveData, 0, saveData.length, this.data + pa.length);
 		}
-		System.arraycopy(pa, 0, this.mem, this.param+ this.plen, pa.length);
+		this.mem.putAt(pa, 0, pa.length, this.param + this.plen);
 		this.plen += pa.length;
 		Converter.setUSBEWord(this.mem, 6, this.plen);
 		this.data = this.param + this.plen;

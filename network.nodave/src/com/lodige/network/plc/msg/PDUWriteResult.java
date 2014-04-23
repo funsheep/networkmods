@@ -40,7 +40,7 @@ public class PDUWriteResult extends PDUResult
 	{
 		if (this.date(this.param)[0] != Func.WRITE.code)
 			throw new PDUResultException(Result.UNEXPECTED_FUNC);
-		if ((this.date(this.data)[0] != 255))
+		if ((this.date(this.data)[0] != (byte)255))
 			throw new PDUResultException(this.date(this.data)[0]);
 	}
 }

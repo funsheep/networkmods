@@ -2,11 +2,13 @@ package com.lodige.network.plc;
 
 import github.javaappplatform.commons.log.Logger;
 import github.javaappplatform.commons.util.Close;
+import github.javaappplatform.commons.util.FastMersenneTwister;
 
 import com.lodige.network.client.ClientConnection;
 import com.lodige.network.client.ClientNetworkService;
 import com.lodige.network.plc.INodaveAPI.Area;
 import com.lodige.network.plc.msg.PDUReadResult;
+import com.lodige.network.plc.msg.PDUWriteResult;
 import com.lodige.network.plc.msg.Variable;
 import com.lodige.network.plc.protocol.TCPProtocol;
 import com.lodige.network.plc.util.Converter;
@@ -50,6 +52,10 @@ public class ConnectDemoTest
 		rr = Read.fromPLC(con).bytes(16).from(Area.FLAGS).andDatabase(0).andWaitForResult();
 //		System.out.println(ByteBuffer.allocate(16).put(rr.resultData()).getFloat(12));
 		System.out.println(Converter.BEFloat(rr.resultData(), 12));
+		
+		byte b = (byte) (new FastMersenneTwister()).nextInt(255);
+		PDUWriteResult result = Write.toPLC(con).data(b, b).to(Area.P).andDatabase(0).startAt(4).andWaitForResult();
+		result.checkWriteResult();
 		
 //		dc.readBytes(Nodave.FLAGS, 0, 0, 16, null);
 //		a = dc.getU32();
