@@ -43,7 +43,8 @@ public class BootEntry implements IBootEntry
 		ServerConnector http = new ServerConnector(this.server);
 		http.setHost(e.getProperty("host", "localhost"));
 		http.setPort(e.getProperty("port", 80));
-		http.setIdleTimeout(e.getProperty("idle_timeout", 180000));
+		http.setIdleTimeout(e.getProperty("idle_timeout", 500000));
+		LOGGER.info("Server Address is {}:{}", http.getHost(), Integer.valueOf(http.getPort()));
 		this.server.addConnector(http);
 		
 		//set handler for requests
@@ -55,12 +56,16 @@ public class BootEntry implements IBootEntry
 		}
 		Handler handler = null;
 		if (found.size() == 1)
+		{
 			handler = found.get(0);
+			LOGGER.info("Found one handler definition {}", handler);
+		}
 		else
 		{
 			HandlerCollection col = new HandlerCollection();
 			col.setHandlers(found.toArray(new Handler[found.size()]));
 			handler = col;
+			LOGGER.info("Found several handler definitions: {}", Arrays.toString(found.toArray()));
 		}
 		this.server.setHandler(handler);
 		
