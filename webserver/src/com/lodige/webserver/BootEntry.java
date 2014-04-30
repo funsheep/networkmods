@@ -5,6 +5,7 @@
 package com.lodige.webserver;
 
 import github.javaappplatform.commons.log.Logger;
+import github.javaappplatform.platform.Platform;
 import github.javaappplatform.platform.PlatformException;
 import github.javaappplatform.platform.boot.IBootEntry;
 import github.javaappplatform.platform.extension.Extension;
@@ -26,6 +27,9 @@ import org.eclipse.jetty.server.handler.HandlerCollection;
 public class BootEntry implements IBootEntry
 {
 	
+	public static final String O_WEBSERVER_HOST = "webhost";
+	public static final String O_WEBSERVER_PORT = "webport";
+	
 	private static final Logger LOGGER = Logger.getLogger();
 
 
@@ -41,8 +45,8 @@ public class BootEntry implements IBootEntry
 		this.server = new Server();
 		//set http connection
 		ServerConnector http = new ServerConnector(this.server);
-		http.setHost(e.getProperty("host", "localhost"));
-		http.setPort(e.getProperty("port", 80));
+		http.setHost(Platform.getOptionValue(O_WEBSERVER_HOST, e.getProperty("host", "localhost")));
+		http.setPort(Platform.getOptionValue(O_WEBSERVER_PORT, e.getProperty("port", 80)));
 		http.setIdleTimeout(e.getProperty("idle_timeout", 500000));
 		LOGGER.info("Server Address is {}:{}", http.getHost(), Integer.valueOf(http.getPort()));
 		this.server.addConnector(http);

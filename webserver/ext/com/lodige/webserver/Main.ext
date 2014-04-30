@@ -12,6 +12,26 @@
 		"point" : "github.javaappplatform.platform.logging.Level",
 		"logger" : "org.eclipse.jetty",
 		"level" : "ERROR"
-	}
+	},
 	
+	"com.lodige.webserver.host" :
+	{
+		"point" : "github.javaappplatform.platform.option",
+		"name" : "webhost",
+		"description" : "The host name to which the webserver socket will be bound. Usually, the network name of the current computer.",
+		"isRequired" : false,
+		"ArgName" : "name",
+		"numOfArgs" : 1
+	},
+
+	"com.lodige.webserver.port" :
+	{
+		"point" : "github.javaappplatform.platform.option",
+		"name" : "webport",
+		"description" : "The port on which the webserver should process incoming HTTP requests.",
+		"isRequired" : false,
+		"ArgName" : "number",
+		"numOfArgs" : 1
+	}
+
 }
