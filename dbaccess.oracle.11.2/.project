@@ -13,5 +13,6 @@
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>github.javaappplatform.eclipse.project.builder.Nature</nature>
 	</natures>
 </projectDescription>

@@ -11,7 +11,7 @@ import com.lodige.dbaccess.IjdbcURIGenerator;
  * jdbc:oracle:thin:@//<host>:<port>/<service_name> 
  * @author renken
  */
-public class OrcaleThinURIGenerator implements IjdbcURIGenerator
+public class OracleThinURIGenerator implements IjdbcURIGenerator
 {
 
 	/**
