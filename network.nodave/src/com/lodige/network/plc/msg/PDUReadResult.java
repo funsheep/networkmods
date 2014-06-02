@@ -24,8 +24,6 @@ package com.lodige.network.plc.msg;
 
 import github.javaappplatform.commons.util.Strings;
 
-import java.nio.ByteBuffer;
-
 import com.lodige.network.msg.IMessage;
 import com.lodige.network.plc.INodaveAPI.Func;
 import com.lodige.network.plc.INodaveAPI.Result;
@@ -126,19 +124,14 @@ public class PDUReadResult extends PDUResult
 		return this.date(this.cursor++)[0];
 	}
 	
-	public int readShort()
+	public short readShort()
 	{
-		byte[] b = this.word(this.cursor);
-		this.cursor += 2;
-		short value = ByteBuffer.wrap(b).getShort();
-		return value >= 0 ? value : 0x10000 + value;
+		return com.lodige.network.msg.Converter.getShortLittle(this.word(this.cursor), 0);
 	}
 	
 	public int readUnsignedShort()
 	{
-		byte[] b = this.word(this.cursor);
-		this.cursor += 2;
-		short value = ByteBuffer.wrap(b).getShort();
+		short value = this.readShort();
 		return value >= 0 ? value : 0x10000 + value;
 	}
 	

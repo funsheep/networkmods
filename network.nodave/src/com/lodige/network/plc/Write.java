@@ -84,7 +84,7 @@ public class Write
 			return this;
 		}
 		
-		public Write andRead()
+		public Write andWrite()
 		{
 			Write.this.addToWB();
 			return Write.this;
