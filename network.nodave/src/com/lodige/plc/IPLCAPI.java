@@ -54,7 +54,7 @@ public interface IPLCAPI
 		}
 	}
 	
-	public static final int EVENT_VALUE_CHANGED = StringID.id("EVENT_VALUE_CHANGED");
+	public static final int EVENT_INPUT_CHANGED = StringID.id("EVENT_VALUE_CHANGED");
 	
 	public static final String PLC_UPDATE_THREAD = "PLC UPDATE_THREAD";
 

@@ -1,5 +1,6 @@
 package com.lodige.plc;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import com.lodige.plc.IPLCAPI.UpdateFrequency;
@@ -22,7 +23,7 @@ public interface IPLC
 
 	public void beginTransaction();
 	public boolean transactionActive();
-	public void endTransaction();
+	public void endTransaction() throws IOException;
 
 	public boolean connected();
 }

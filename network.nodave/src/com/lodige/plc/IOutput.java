@@ -1,5 +1,7 @@
 package com.lodige.plc;
 
+import java.io.IOException;
+
 import com.lodige.plc.IPLCAPI.Type;
 
 /**
@@ -16,17 +18,17 @@ public interface IOutput
 	public void delete();
 	
 
-	public void writeBit(boolean bit);
+	public void writeBit(boolean bit) throws IOException;
 
-	public void writeShort(short value);
+	public void writeShort(short value) throws IOException;
 
-	public void writeInt(int value);
+	public void writeInt(int value) throws IOException;
 
-	public void writeFloat(float value);
+	public void writeFloat(float value) throws IOException;
 
-	public void writeUByte(short value);
+	public void writeUByte(short value) throws IOException;
 
-	public void writeUShort(int value);
+	public void writeUShort(int value) throws IOException;
 
-	public void writeUInt(long value);
+	public void writeUInt(long value) throws IOException;
 }

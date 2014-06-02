@@ -14,6 +14,7 @@ import com.lodige.network.client.ClientConnection;
 import com.lodige.network.client.ClientNetworkService;
 import com.lodige.network.plc.INodaveAPI.Area;
 import com.lodige.network.plc.Write;
+import com.lodige.network.plc.Write.Write3;
 import com.lodige.plc.IInput;
 import com.lodige.plc.IOutput;
 import com.lodige.plc.IPLC;
@@ -153,10 +154,6 @@ public class PLC implements IPLC
 	@Override
 	public synchronized void beginTransaction()
 	{
-		if (!this.transactionActive)
-		{
-			//FIXME initiate transaction
-		}
 		this.transactionActive = true;
 	}
 
@@ -173,18 +170,27 @@ public class PLC implements IPLC
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void endTransaction()
+	public synchronized void endTransaction() throws IOException
 	{
-		if (this.transactionActive)
+		if (this.transactionActive && this.writer != null)
 		{
-			//FIXME write data
+			this.writer.execute();
 		}
 		this.transactionActive = false;
 	}
 	
-	void writeOutput(Output out, byte... data)
+	private Write3 writer;
+	synchronized void writeOutput(Output out, byte... data) throws IOException
 	{
-		Write.toPLC(this.cc).data(data).to(out.area).andDatabase(out.database).startAt(out.offset);
+		Write base = (this.writer == null) ? Write.toPLC(this.cc) : this.writer.andWrite();
+		this.writer = base.data(data).to(out.area).andDatabase(out.database).startAt(out.offset);
+		
+		if (!this.transactionActive)
+		{
+			this.writer.execute();
+			this.writer = null;
+			return;
+		}
 	}
 
 	/**

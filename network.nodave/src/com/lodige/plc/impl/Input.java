@@ -18,6 +18,7 @@ import com.lodige.network.INetworkAPI;
 import com.lodige.network.plc.INodaveAPI.Area;
 import com.lodige.plc.IInput;
 import com.lodige.plc.IPLC;
+import com.lodige.plc.IPLCAPI;
 import com.lodige.plc.IPLCAPI.Type;
 import com.lodige.plc.IPLCAPI.UpdateFrequency;
 
@@ -218,19 +219,23 @@ class Input extends TalkerStub implements IInput
 				break;
 		}
 		
+		Object old = null;
 		this.lock.lock();
 		try
 		{
+			old = this.value;
 			this.value = val;
 			this.lastUpdate = Platform.currentTime();
 			this.updateScheduled = false;
 			this.waitForUpdate.signalAll();
-			LOGGER.debug("Input {} updated.", this.id);
 		}
 		finally
 		{
 			this.lock.unlock();
 		}
+		LOGGER.debug("Input {} updated.", this.id);
+		if (!this.value.equals(old))
+			this.postEvent(IPLCAPI.EVENT_INPUT_CHANGED, this);
 	}
 	
 	private void triggerInternalUpdate() throws IOException

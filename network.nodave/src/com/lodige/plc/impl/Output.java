@@ -4,6 +4,8 @@
  */
 package com.lodige.plc.impl;
 
+import java.io.IOException;
+
 import com.lodige.network.plc.INodaveAPI.Area;
 import com.lodige.plc.IOutput;
 import com.lodige.plc.IPLCAPI.Type;
@@ -80,7 +82,7 @@ class Output implements IOutput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void writeBit(boolean bit)
+	public void writeBit(boolean bit) throws IOException
 	{
 		if (this.type != Type.BIT)
 			throw new IllegalStateException("Output is of type " + this.type);
@@ -92,7 +94,7 @@ class Output implements IOutput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void writeShort(short value)
+	public void writeShort(short value) throws IOException
 	{
 		if (this.type != Type.SHORT)
 			throw new IllegalStateException("Output is of type " + this.type);
@@ -104,7 +106,7 @@ class Output implements IOutput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void writeInt(int value)
+	public void writeInt(int value) throws IOException
 	{
 		if (this.type != Type.INT)
 			throw new IllegalStateException("Output is of type " + this.type);
@@ -116,7 +118,7 @@ class Output implements IOutput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void writeFloat(float fvalue)
+	public void writeFloat(float fvalue) throws IOException
 	{
 		if (this.type != Type.FLOAT)
 			throw new IllegalStateException("Output is of type " + this.type);
@@ -129,7 +131,7 @@ class Output implements IOutput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void writeUByte(short value)
+	public void writeUByte(short value) throws IOException
 	{
 		if (this.type != Type.UBYTE)
 			throw new IllegalStateException("Output is of type " + this.type);
@@ -141,7 +143,7 @@ class Output implements IOutput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void writeUShort(int value)
+	public void writeUShort(int value) throws IOException
 	{
 		if (this.type != Type.USHORT)
 			throw new IllegalStateException("Output is of type " + this.type);
@@ -153,7 +155,7 @@ class Output implements IOutput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void writeUInt(long value)
+	public void writeUInt(long value) throws IOException
 	{
 		if (this.type != Type.UINT)
 			throw new IllegalStateException("Output is of type " + this.type);

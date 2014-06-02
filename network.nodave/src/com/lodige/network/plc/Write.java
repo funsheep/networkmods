@@ -90,6 +90,12 @@ public class Write
 			return Write.this;
 		}
 		
+		public void execute() throws IOException
+		{
+			Write.this.addToWB();
+			Write.this.connection.asyncSend(Write.this.wb.compile(null));
+		}
+		
 		public PDUWriteResult andWaitForResult() throws IOException
 		{
 			Write.this.addToWB();
