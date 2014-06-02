@@ -20,6 +20,7 @@ import com.lodige.plc.IPLC;
 import com.lodige.plc.IPLCAPI.Type;
 import com.lodige.plc.IPLCAPI.UpdateFrequency;
 
+
 /**
  * TODO javadoc
  * @author renken
@@ -58,12 +59,12 @@ public class PLC implements IPLC
 	
 	public IInput createBitInput(String id, int database, int offset, int bitnr)
 	{
-		return this.createInput(id, Area.DB, 0, offset, bitnr, Type.BIT);
+		return this.createInput(id, Area.DB, database, offset, bitnr, Type.BIT);
 	}
 	
 	public IInput createInput(String id, int database, int offset, Type type)
 	{
-		return this.createInput(id, Area.DB, 0, offset, 0, type);
+		return this.createInput(id, Area.DB, database, offset, 0, type);
 	}
 	
 	public IInput createInput(String id, Area area, int offset, Type type)
@@ -141,7 +142,7 @@ public class PLC implements IPLC
 		return this.frequency;
 	}
 
-	synchronized boolean updateOnTrigger()
+	synchronized boolean onTrigger()
 	{
 		return this.updateOnTrigger;
 	}

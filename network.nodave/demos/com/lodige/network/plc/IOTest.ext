@@ -1,0 +1,23 @@
+/*
+	This file is part of the network.nodave library.
+	Copyright (C) 2011-2014 Loedige Systems
+
+	This library is Closed Source.
+*/
+{
+
+	"com.lodige.plc.demo.BootEntry" :
+	{
+		"point" : "github.javaappplatform.platform.boot",
+		"class" : "com.lodige.network.plc.IOTest",
+		"singleton" : true
+	},
+
+	"com.lodige.nodave.logging" :
+	{
+		"point" : "github.javaappplatform.platform.logging.Level",
+		"logger" : "com.lodige.network.plc",
+		"level" : "INFO"
+	}
+	
+}

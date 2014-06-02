@@ -8,8 +8,13 @@ import github.javaappplatform.commons.events.TalkerStub;
 import github.javaappplatform.commons.log.Logger;
 import github.javaappplatform.platform.Platform;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
+import com.lodige.network.INetworkAPI;
 import com.lodige.network.plc.INodaveAPI.Area;
 import com.lodige.plc.IInput;
 import com.lodige.plc.IPLC;
@@ -25,6 +30,7 @@ class Input extends TalkerStub implements IInput
 	
 	private static final Logger LOGGER = Logger.getLogger();
 
+	
 	protected final String id;
 	protected final Area area;
 	protected final int database;
@@ -32,8 +38,13 @@ class Input extends TalkerStub implements IInput
 	protected final int bitnr;
 	protected final Type type;
 	protected final PLC parent;
+	
+	private final ReentrantLock lock = new ReentrantLock();
+	private final Condition waitForUpdate = this.lock.newCondition();
 	private Boolean onTrigger = null;
 	private UpdateFrequency frequency = null;
+	private boolean updateScheduled = false;
+	
 	private Object value;
 	private long lastUpdate = 0;
 
@@ -93,83 +104,157 @@ class Input extends TalkerStub implements IInput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void resetUpdateMethod()
+	public void resetUpdateMethod()
 	{
-		this.onTrigger = null;
-		this.frequency = null;
+		this.lock.lock();
+		try
+		{
+			this.onTrigger = null;
+			this.frequency = null;
+		}
+		finally
+		{
+			this.lock.unlock();
+		}
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void setUpdateMethod(UpdateFrequency frequency, boolean onTrigger)
+	public void setUpdateMethod(UpdateFrequency frequency, boolean onTrigger)
 	{
-		this.onTrigger = Boolean.valueOf(onTrigger);
-		this.frequency = frequency;
+		this.lock.lock();
+		try
+		{
+			this.onTrigger = Boolean.valueOf(onTrigger);
+			this.frequency = frequency;
+		}
+		finally
+		{
+			this.lock.unlock();
+		}
 	}
 	
-	public synchronized UpdateFrequency frequency()
+	private UpdateFrequency frequency()
 	{
 		return this.frequency != null ? this.frequency : this.parent.frequency();
 	}
 
-	synchronized boolean externalUpdateNeeded()
+	private boolean onTrigger()
 	{
-		UpdateFrequency freq = this.frequency();
-		return freq != UpdateFrequency.OFF && (Platform.currentTime() - this.lastUpdate > freq.schedule);
+		return this.onTrigger != null ? this.onTrigger.booleanValue() : this.parent.onTrigger();
+	}
+
+	boolean startExternalUpdate()
+	{
+		this.lock.lock();
+		try
+		{
+			if (!this.updateScheduled && (this.value == null || this.frequency() != UpdateFrequency.OFF && (Platform.currentTime() - this.lastUpdate > this.frequency().schedule)))
+			{
+				this.updateScheduled = true;
+				return true;
+			}
+			return false;
+		}
+		finally
+		{
+			this.lock.unlock();
+		}
 	}
 	
-	synchronized void update(byte[] data, int offset)
+	boolean startInternalUpdate()
 	{
+		this.lock.lock();
+		try
+		{
+			if (!this.updateScheduled && (this.value == null || this.onTrigger() && this.frequency() != UpdateFrequency.HIGH && Platform.currentTime() - this.lastUpdate > UpdateFrequency.HIGH.schedule))
+			{
+				this.updateScheduled = true;
+				return true;
+			}
+			return false;
+		}
+		finally
+		{
+			this.lock.unlock();
+		}
+
+	}
+	
+	void update(byte[] data, int offset)
+	{
+		Object val = null;
 		switch (this.type)
 		{
 			case BIT:
 				final boolean b = (data[0] & (1 << this.bitnr)) != 0;
-				this.value = Boolean.valueOf(b);
+				val = Boolean.valueOf(b);
 				break;
 			case SHORT:
 				final short s = (short) (((data[0] & 0xFF) << 8) | (data[1] & 0xFF));
-				this.value = Short.valueOf(s);
+				val = Short.valueOf(s);
 				break;
 			case INT:
 				final int i = ByteBuffer.wrap(data).getInt();
-				this.value = Integer.valueOf(i);
+				val = Integer.valueOf(i);
 				break;
 			case FLOAT:
 				final float f = ByteBuffer.wrap(data).getFloat();
-				this.value = Float.valueOf(f);
+				val = Float.valueOf(f);
 				break;
 			case UBYTE:
 				final short ub = (short) (data[0] & 0xFF);
-				this.value = Short.valueOf(ub);
+				val = Short.valueOf(ub);
 				break;
 			case USHORT:
 				final int us = Short.toUnsignedInt((short) (((data[0] & 0xFF) << 8) | (data[1] & 0xFF)));
-				this.value = Integer.valueOf(us);
+				val = Integer.valueOf(us);
 				break;
 			case UINT:
 				final long ui = Integer.toUnsignedLong(ByteBuffer.wrap(data).getInt());
-				this.value = Long.valueOf(ui);
+				val = Long.valueOf(ui);
 				break;
 		}
-		this.lastUpdate = Platform.currentTime();
+		
+		this.lock.lock();
+		try
+		{
+			this.value = val;
+			this.lastUpdate = Platform.currentTime();
+			this.updateScheduled = false;
+			this.waitForUpdate.signalAll();
+			LOGGER.debug("Input {} updated.", this.id);
+		}
+		finally
+		{
+			this.lock.unlock();
+		}
 	}
 	
-	private void triggerUpdate()
+	private void triggerInternalUpdate() throws IOException
 	{
-		final boolean triggerFlag = this.onTrigger != null ? this.onTrigger.booleanValue() : this.parent.updateOnTrigger();
-		final boolean timerExpired = this.frequency() != UpdateFrequency.HIGH && Platform.currentTime() - this.lastUpdate > UpdateFrequency.HIGH.schedule;
-		if (triggerFlag && timerExpired)
+		if (this.startInternalUpdate())
 		{
+			this.lock.lock();
 			try
 			{
-				byte[] data = (new InputTriggering(this)).get();
-				this.update(data, 0);
+				new InputTriggering(this);
+				if (this.updateScheduled)
+					try
+					{
+						if (!this.waitForUpdate.await(INetworkAPI.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS))
+							throw new IOException("Timeout: Did not get update for input " + this.id + " for PLC " + this.parent.id() + " in time.");
+					}
+					catch (InterruptedException e)
+					{
+						throw new RuntimeException(e);
+					}
 			}
-			catch (Exception e)
+			finally
 			{
-				LOGGER.severe("Could not read data from input {} from plc {}.", this.id, this.parent.id(), e);
+				this.lock.unlock();
 			}
 		}
 	}
@@ -178,9 +263,9 @@ class Input extends TalkerStub implements IInput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized boolean bitValue()
+	public boolean bitValue() throws IOException
 	{
-		this.triggerUpdate();
+		this.triggerInternalUpdate();
 		return ((Boolean) this.value).booleanValue();
 	}
 
@@ -188,9 +273,9 @@ class Input extends TalkerStub implements IInput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized short shortValue()
+	public  short shortValue() throws IOException
 	{
-		this.triggerUpdate();
+		this.triggerInternalUpdate();
 		return ((Short) this.value).shortValue();
 	}
 
@@ -198,9 +283,9 @@ class Input extends TalkerStub implements IInput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized int intValue()
+	public  int intValue() throws IOException
 	{
-		this.triggerUpdate();
+		this.triggerInternalUpdate();
 		return ((Integer) this.value).intValue();
 	}
 
@@ -208,9 +293,9 @@ class Input extends TalkerStub implements IInput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized float floatValue()
+	public  float floatValue() throws IOException
 	{
-		this.triggerUpdate();
+		this.triggerInternalUpdate();
 		return ((Float) this.value).floatValue();
 	}
 
@@ -218,7 +303,7 @@ class Input extends TalkerStub implements IInput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized short ubyteValue()
+	public  short ubyteValue() throws IOException
 	{
 		return this.shortValue();
 	}
@@ -227,7 +312,7 @@ class Input extends TalkerStub implements IInput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized int ushortValue()
+	public  int ushortValue() throws IOException
 	{
 		return this.intValue();
 	}
@@ -236,9 +321,9 @@ class Input extends TalkerStub implements IInput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized long uintValue()
+	public  long uintValue() throws IOException
 	{
-		this.triggerUpdate();
+		this.triggerInternalUpdate();
 		return ((Long) this.value).longValue();
 	}
 

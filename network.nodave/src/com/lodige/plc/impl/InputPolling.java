@@ -10,11 +10,11 @@ import github.javaappplatform.platform.job.ADoJob;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.lodige.network.INetworkAPI;
 import com.lodige.network.plc.Read;
 import com.lodige.network.plc.msg.PDUResultException;
 import com.lodige.network.plc.msg.Variable;
 import com.lodige.plc.IInput;
+import com.lodige.plc.IPLCAPI;
 import com.lodige.plc.IPLCAPI.Type;
 import com.lodige.plc.IPLCAPI.UpdateFrequency;
 
@@ -36,7 +36,7 @@ class InputPolling extends ADoJob
 	{
 		super("Input Polling for " + plc.id());
 		this.plc = plc;
-		this.schedule(INetworkAPI.NETWORK_THREAD, true, UpdateFrequency.HIGH.schedule / 2);
+		this.schedule(IPLCAPI.PLC_UPDATE_THREAD, true, UpdateFrequency.HIGH.schedule / 2);
 	}
 
 
@@ -58,7 +58,7 @@ class InputPolling extends ADoJob
 		for (IInput input : this.plc.inputs())
 		{
 			Input in = (Input) input;
-			if (in.externalUpdateNeeded())
+			if (in.startExternalUpdate())
 			{
 				r3 = r.bytes(in.type != Type.BIT ? in.type.size : 1).from(in.area).andDatabase(in.database).startAt(in.offset);
 				inputs.add(in);

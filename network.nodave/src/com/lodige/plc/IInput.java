@@ -1,5 +1,7 @@
 package com.lodige.plc;
 
+import java.io.IOException;
+
 import github.javaappplatform.commons.events.ITalker;
 
 import com.lodige.plc.IPLCAPI.Type;
@@ -23,17 +25,17 @@ public interface IInput extends ITalker
 
 	public void setUpdateMethod(UpdateFrequency frequency, boolean onTrigger);
 	
-	public boolean bitValue();
+	public boolean bitValue() throws IOException;
 
-	public short shortValue();
+	public short shortValue() throws IOException;
 
-	public int intValue();
+	public int intValue() throws IOException;
 
-	public float floatValue();
+	public float floatValue() throws IOException;
 
-	public short ubyteValue();
+	public short ubyteValue() throws IOException;
 
-	public int ushortValue();
+	public int ushortValue() throws IOException;
 
-	public long uintValue();
+	public long uintValue() throws IOException;
 }

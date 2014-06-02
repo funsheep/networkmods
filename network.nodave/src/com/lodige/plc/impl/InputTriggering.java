@@ -4,22 +4,26 @@
  */
 package com.lodige.plc.impl;
 
-import github.javaappplatform.platform.job.AComputeDoJob;
+import github.javaappplatform.commons.log.Logger;
+import github.javaappplatform.platform.job.ADoJob;
 
 import java.io.IOException;
 
-import com.lodige.network.INetworkAPI;
 import com.lodige.network.plc.Read;
 import com.lodige.network.plc.msg.PDUReadResult;
 import com.lodige.network.plc.msg.PDUResultException;
 import com.lodige.network.plc.msg.Variable;
+import com.lodige.plc.IPLCAPI;
 
 /**
  * TODO javadoc
  * @author renken
  */
-class InputTriggering extends AComputeDoJob
+class InputTriggering extends ADoJob
 {
+	
+	private static final Logger LOGGER = Logger.getLogger();
+	
 	
 	private final Input input;
 
@@ -27,7 +31,7 @@ class InputTriggering extends AComputeDoJob
 	{
 		super("Update Trigger for Input " + input.id() + " for PLC " + input.plc().id());
 		this.input = input;
-		this.schedule(INetworkAPI.NETWORK_THREAD, false, 0);
+		this.schedule(IPLCAPI.PLC_UPDATE_THREAD, false, 0);
 	}
 
 	/**
@@ -40,12 +44,20 @@ class InputTriggering extends AComputeDoJob
 		{
 			PDUReadResult rr = Read.fromPLC(this.input.parent.cc).bytes(this.input.type.size).from(this.input.area).andDatabase(this.input.database).startAt(this.input.offset).andWaitForResult();
 			Variable[] vars = rr.getResults();
-			this.finished(vars[0].data());
+			try
+			{
+				this.input.update(vars[0].data(), 0);
+			}
+			catch (PDUResultException e)
+			{
+				LOGGER.severe("Could not read data from input {} from plc {}.", this.input.id, this.input.parent.id(), e);
+			}
 		}
-		catch (IOException | PDUResultException ex)
+		catch (IOException e)
 		{
-			this.finishedWithError(ex);
+			LOGGER.severe("Could not read data from plc {}.", this.input.parent.id(), e);
 		}
+		this.shutdown();
 	}
 
 }
