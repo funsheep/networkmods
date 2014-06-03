@@ -8,6 +8,8 @@
 */
 package com.lodige.network.client;
 
+import github.javaappplatform.platform.extension.Extension;
+import github.javaappplatform.platform.extension.ServiceInstantiationException;
 import github.javaappplatform.platform.job.ADoJob;
 import github.javaappplatform.platform.job.JobPlatform;
 
@@ -27,6 +29,11 @@ public class ClientNetworkService extends ANetworkService
 
 	private final AtomicInteger state = new AtomicInteger(INetworkAPI.S_RUNNING);
 
+
+	public ClientNetworkService(Extension ex) throws ServiceInstantiationException
+	{
+		super(ex.name, instantiateProtocol(ex.getProperty("protocol")));
+	}
 	
 	public ClientNetworkService(String name, IProtocol protocol)
 	{
@@ -91,4 +98,16 @@ public class ClientNetworkService extends ANetworkService
 		}, INetworkAPI.NETWORK_THREAD);
 	}
 
+	private static final IProtocol instantiateProtocol(String protocol) throws ServiceInstantiationException
+	{
+		try
+		{
+			Class<?> clazz = Class.forName(protocol);
+			return (IProtocol) clazz.newInstance();
+		}
+		catch (ClassNotFoundException | InstantiationException | IllegalAccessException e)
+		{
+			throw new ServiceInstantiationException(e);
+		}
+	}
 }
