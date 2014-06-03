@@ -10,6 +10,7 @@ import github.javaappplatform.platform.Platform;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -36,6 +37,7 @@ class Input extends TalkerStub implements IInput
 	protected final Area area;
 	protected final int database;
 	protected final int offset;
+	protected final int length;
 	protected final Type type;
 	protected final PLC parent;
 	
@@ -52,12 +54,13 @@ class Input extends TalkerStub implements IInput
 	/**
 	 * 
 	 */
-	protected Input(String id, Area area, int database, int offset, Type type, PLC parent)
+	protected Input(String id, Area area, int database, int offset, int length, Type type, PLC parent)
 	{
 		this.id = id;
 		this.area = area;
 		this.database = database;
 		this.offset = offset;
+		this.length = length;
 		this.type = type;
 		this.parent = parent;
 	}
@@ -165,6 +168,9 @@ class Input extends TalkerStub implements IInput
 		Object val = null;
 		switch (this.type)
 		{
+			case GENERIC:
+				val = data;
+				break;
 			case SHORT:
 				final short s = (short) (((data[0] & 0xFF) << 8) | (data[1] & 0xFF));
 				val = Short.valueOf(s);
@@ -193,23 +199,27 @@ class Input extends TalkerStub implements IInput
 				throw new RuntimeException("Should not happen.");
 		}
 		
-		Object old = null;
+		boolean postEvent = false;
 		this.lock.lock();
 		try
 		{
-			old = this.value;
+			Object old = this.value;
 			this.value = val;
 			this.lastUpdate = Platform.currentTime();
 			this.triggerUpdate = false;
 			this.waitForUpdate.signalAll();
+			postEvent = this.type != Type.GENERIC && !this.value.equals(old) ||
+						this.type == Type.GENERIC && Arrays.equals((byte[]) old, (byte[]) this.value);
 		}
 		finally
 		{
 			this.lock.unlock();
 		}
-		LOGGER.debug("Input {} updated.", this.id);
-		if (!this.value.equals(old))
+		if (postEvent)
+		{
+			LOGGER.debug("Input {} updated.", this.id);
 			this.postEvent(IPLCAPI.EVENT_INPUT_CHANGED, this);
+		}
 	}
 	
 	private boolean waitForUpdate()
@@ -244,21 +254,21 @@ class Input extends TalkerStub implements IInput
 		}
 	}
 
+//	/**
+//	 * {@inheritDoc}
+//	 */
+//	@Override
+//	public boolean bitValue() throws IOException
+//	{
+//		this.triggerInternalUpdate();
+//		return ((Boolean) this.value).booleanValue();
+//	}
+//
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean bitValue() throws IOException
-	{
-		this.triggerInternalUpdate();
-		return ((Boolean) this.value).booleanValue();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public  short shortValue() throws IOException
+	public short shortValue() throws IOException
 	{
 		this.triggerInternalUpdate();
 		return ((Short) this.value).shortValue();
@@ -268,7 +278,7 @@ class Input extends TalkerStub implements IInput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public  int intValue() throws IOException
+	public int intValue() throws IOException
 	{
 		this.triggerInternalUpdate();
 		return ((Integer) this.value).intValue();
@@ -278,7 +288,7 @@ class Input extends TalkerStub implements IInput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public  float floatValue() throws IOException
+	public float floatValue() throws IOException
 	{
 		this.triggerInternalUpdate();
 		return ((Float) this.value).floatValue();
@@ -288,7 +298,7 @@ class Input extends TalkerStub implements IInput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public  short ubyteValue() throws IOException
+	public short ubyteValue() throws IOException
 	{
 		return this.shortValue();
 	}
@@ -297,7 +307,7 @@ class Input extends TalkerStub implements IInput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public  int ushortValue() throws IOException
+	public int ushortValue() throws IOException
 	{
 		return this.intValue();
 	}
@@ -306,10 +316,20 @@ class Input extends TalkerStub implements IInput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public  long uintValue() throws IOException
+	public long uintValue() throws IOException
 	{
 		this.triggerInternalUpdate();
 		return ((Long) this.value).longValue();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public byte[] genericValue() throws IOException
+	{
+		this.triggerInternalUpdate();
+		return (byte[]) this.value;
 	}
 
 }

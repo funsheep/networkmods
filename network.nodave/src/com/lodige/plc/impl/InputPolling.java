@@ -61,7 +61,7 @@ class InputPolling extends ADoJob
 			{
 				if (r3 != null)
 					r = r3.andRead();
-				r3 = r.bytes(in.type.size).from(in.area).andDatabase(in.database).startAt(in.offset);
+				r3 = r.bytes(in.length).from(in.area).andDatabase(in.database).startAt(in.offset);
 				inputs.add(in);
 			}
 		}

@@ -18,8 +18,8 @@ public interface IOutput
 	public void delete();
 	
 
-	public void writeBit(boolean bit) throws IOException;
-
+//	public void writeBit(boolean bit) throws IOException;
+//
 	public void writeShort(short value) throws IOException;
 
 	public void writeInt(int value) throws IOException;
@@ -31,4 +31,7 @@ public interface IOutput
 	public void writeUShort(int value) throws IOException;
 
 	public void writeUInt(long value) throws IOException;
+	
+	public void writeGeneric(byte... data) throws IOException;
+
 }

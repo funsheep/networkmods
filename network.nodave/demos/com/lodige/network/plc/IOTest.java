@@ -32,8 +32,8 @@ public class IOTest implements IBootEntry
 		try
 		{
 			final PLC plc = new PLC("192.168.130.110", service);
-			plc.createInput("Drive Motor", 15, 20, Type.UINT).setUpdateMethod(UpdateFrequency.OFF, true);
-			plc.createInput("Operating Mode", 15, 10, Type.UBYTE).setUpdateMethod(UpdateFrequency.LOW, false);
+			plc.createDBInput("Drive Motor", 15, 20, Type.UINT).setUpdateMethod(UpdateFrequency.OFF, true);
+			plc.createDBInput("Operating Mode", 15, 10, Type.UBYTE).setUpdateMethod(UpdateFrequency.LOW, false);
 			(new ADoJob("Manually Poll PLCs")
 			{
 				

@@ -25,8 +25,8 @@ public interface IInput extends ITalker
 
 	public void setUpdateMethod(UpdateFrequency frequency, boolean onTrigger);
 	
-	public boolean bitValue() throws IOException;
-
+//	public boolean bitValue() throws IOException;
+//
 	public short shortValue() throws IOException;
 
 	public int intValue() throws IOException;
@@ -38,4 +38,7 @@ public interface IInput extends ITalker
 	public int ushortValue() throws IOException;
 
 	public long uintValue() throws IOException;
+	
+	public byte[] genericValue() throws IOException;
+
 }

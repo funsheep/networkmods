@@ -23,19 +23,21 @@ class Output implements IOutput
 	protected final int database;
 	protected final int offset;
 //	private final int bitnr;
+	private final int length;
 	private final PLC parent; 
 
 	
 	/**
 	 * 
 	 */
-	public Output(String id, Area area, int database, int offset, Type type, PLC parent)
+	public Output(String id, Area area, int database, int offset, int length, Type type, PLC parent)
 	{
 		this.id = id;
 		this.area = area;
 		this.database = database;
 		this.offset = offset;
 //		this.bitnr = bitnr;
+		this.length = length;
 		this.type = type;
 		this.parent = parent;
 	}
@@ -78,19 +80,18 @@ class Output implements IOutput
 	}
 
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void writeBit(boolean bit) throws IOException
-	{
+//	/**
+//	 * {@inheritDoc}
+//	 */
+//	@Override
+//	public void writeBit(boolean bit) throws IOException
+//	{
 //		if (this.type != Type.BIT)
 //			throw new IllegalStateException("Output is of type " + this.type);
 //		byte b = (byte) (bit ? 1 << this.bitnr : 0);
 //		this.parent.writeOutput(this, new byte[] { b });
-		throw new UnsupportedOperationException();
-	}
-
+//	}
+//
 	/**
 	 * {@inheritDoc}
 	 */
@@ -161,6 +162,19 @@ class Output implements IOutput
 		if (this.type != Type.UINT)
 			throw new IllegalStateException("Output is of type " + this.type);
 		byte[] data = { (byte) (value >>> 24), (byte) (value >>> 16), (byte) (value >>> 8), (byte) value };
+		this.parent.writeOutput(this, data);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void writeGeneric(byte... data) throws IOException
+	{
+		if (this.type != Type.GENERIC)
+			throw new IllegalStateException("Output is of type " + this.type);
+		if (this.length != data.length)
+			throw new IllegalArgumentException("Size of data ["+data.length+"] does not match expected data length ["+this.length+"].");
 		this.parent.writeOutput(this, data);
 	}
 

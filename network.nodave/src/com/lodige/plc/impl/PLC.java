@@ -58,23 +58,33 @@ public class PLC implements IPLC
 	}
 
 	
-	public IInput createInput(String id, int database, int offset, Type type)
+	public IInput createDBInput(String id, int database, int offset, Type type)
 	{
-		return this.createInput(id, Area.DB, database, offset, type);
+		return this.createInput(id, Area.DB, database, offset, type.size, type);
 	}
 	
-	public IInput createInput(String id, Area area, int offset, Type type)
+	public IInput createGenericDBInput(String id, int database, int offset, int length)
 	{
-		return this.createInput(id, area, 0, offset, type);
+		return this.createInput(id, Area.DB, database, offset, length, Type.GENERIC);
 	}
 	
-	private synchronized Input createInput(String id, Area area, int database, int offset, Type type)
+	public IInput createNonDBInput(String id, Area area, int offset, Type type)
+	{
+		return this.createInput(id, area, 0, offset, type.size, type);
+	}
+	
+	public IInput createGenericNonDBInput(String id, Area area, int offset, int length)
+	{
+		return this.createInput(id, area, 0, offset, length, Type.GENERIC);
+	}
+	
+	private synchronized Input createInput(String id, Area area, int database, int offset, int length, Type type)
 	{
 //		if (type == Type.BIT)
 //			throw new UnsupportedOperationException("Use FlagInput wrapper instead.");
 		if (this.inputs.containsKey(id))
 			throw new IllegalArgumentException("Input with id " + id + " is already known.");
-		Input input = new Input(id, area, database, offset, type, this);
+		Input input = new Input(id, area, database, offset, length, type, this);
 		this.inputs.put(id, input);
 		return input;
 	}
@@ -102,23 +112,33 @@ public class PLC implements IPLC
 		return new ArrayList<>(this.inputs.values());
 	}
 
-	public IOutput createOutput(String id, int database, int offset, Type type)
+	public IOutput createDBOutput(String id, int database, int offset, Type type)
 	{
-		return this.createOutput(id, Area.DB, database, offset, type);
+		return this.createOutput(id, Area.DB, database, offset, type.size, type);
 	}
 	
-	public IOutput createOutput(String id, Area area, int offset, Type type)
+	public IOutput createGenericDBOutput(String id, int database, int offset, int length)
 	{
-		return this.createOutput(id, area, 0, offset, type);
+		return this.createOutput(id, Area.DB, database, offset, length, Type.GENERIC);
 	}
 	
-	private synchronized Output createOutput(String id, Area area, int database, int offset, Type type)
+	public IOutput createNonDBOutput(String id, Area area, int offset, Type type)
+	{
+		return this.createOutput(id, area, 0, offset, type.size, type);
+	}
+	
+	public IOutput createGenericNonDBOutput(String id, Area area, int offset, int length)
+	{
+		return this.createOutput(id, area, 0, offset, length, Type.GENERIC);
+	}
+	
+	private synchronized Output createOutput(String id, Area area, int database, int offset, int length, Type type)
 	{
 //		if (type == Type.BIT)
 //			throw new UnsupportedOperationException();
 		if (this.outputs.containsKey(id))
 			throw new IllegalArgumentException("Output with id " + id + " is already known.");
-		Output output = new Output(id, area, database, offset, type, this);
+		Output output = new Output(id, area, database, offset, length, type, this);
 		this.outputs.put(id, output);
 		return output;
 	}

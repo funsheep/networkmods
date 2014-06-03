@@ -24,7 +24,9 @@ public interface IPLCAPI
 		/** Unsigned short, 2 bytes, PLC-Term: 'Word' */
 		USHORT(true, 2),
 		/** Unsigned int, 4 bytes, PLC-Term: 'Double-Word' */
-		UINT(true, 4);
+		UINT(true, 4),
+		/** Generic data area with arbitrary size. */
+		GENERIC(false, -1);
 		
 		/** Flag, whether the type is signed or unsigned. */
 		public final boolean unsigned;
