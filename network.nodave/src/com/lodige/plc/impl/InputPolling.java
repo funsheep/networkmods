@@ -15,7 +15,6 @@ import com.lodige.network.plc.msg.PDUResultException;
 import com.lodige.network.plc.msg.Variable;
 import com.lodige.plc.IInput;
 import com.lodige.plc.IPLCAPI;
-import com.lodige.plc.IPLCAPI.Type;
 import com.lodige.plc.IPLCAPI.UpdateFrequency;
 
 /**
@@ -58,20 +57,24 @@ class InputPolling extends ADoJob
 		for (IInput input : this.plc.inputs())
 		{
 			Input in = (Input) input;
-			if (in.startExternalUpdate())
+			if (in.startUpdate())
 			{
-				r3 = r.bytes(in.type != Type.BIT ? in.type.size : 1).from(in.area).andDatabase(in.database).startAt(in.offset);
+				if (r3 != null)
+					r = r3.andRead();
+				r3 = r.bytes(in.type.size).from(in.area).andDatabase(in.database).startAt(in.offset);
 				inputs.add(in);
 			}
 		}
 		
-		if (r3 == null)
+		if (inputs.size() == 0)
 			return;
 		
 		try
 		{
 			int i = 0;
 			Variable[] vars = r3.andWaitForResult().getResults();
+			if (vars.length != inputs.size())
+				throw new IOException("Number of results does not match number of requests.");
 			for (Input input : inputs)
 				try
 				{

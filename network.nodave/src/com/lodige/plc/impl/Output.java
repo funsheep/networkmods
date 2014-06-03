@@ -22,20 +22,20 @@ class Output implements IOutput
 	protected final Area area;
 	protected final int database;
 	protected final int offset;
-	private final int bitnr;
+//	private final int bitnr;
 	private final PLC parent; 
 
 	
 	/**
 	 * 
 	 */
-	public Output(String id, Area area, int database, int offset, int bitnr, Type type, PLC parent)
+	public Output(String id, Area area, int database, int offset, Type type, PLC parent)
 	{
 		this.id = id;
 		this.area = area;
 		this.database = database;
 		this.offset = offset;
-		this.bitnr = bitnr;
+//		this.bitnr = bitnr;
 		this.type = type;
 		this.parent = parent;
 	}
@@ -84,10 +84,11 @@ class Output implements IOutput
 	@Override
 	public void writeBit(boolean bit) throws IOException
 	{
-		if (this.type != Type.BIT)
-			throw new IllegalStateException("Output is of type " + this.type);
-		byte b = (byte) (bit ? 1 << this.bitnr : 0);
-		this.parent.writeOutput(this, new byte[] { b });
+//		if (this.type != Type.BIT)
+//			throw new IllegalStateException("Output is of type " + this.type);
+//		byte b = (byte) (bit ? 1 << this.bitnr : 0);
+//		this.parent.writeOutput(this, new byte[] { b });
+		throw new UnsupportedOperationException();
 	}
 
 	/**

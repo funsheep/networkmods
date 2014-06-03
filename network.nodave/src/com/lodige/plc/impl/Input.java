@@ -36,7 +36,6 @@ class Input extends TalkerStub implements IInput
 	protected final Area area;
 	protected final int database;
 	protected final int offset;
-	protected final int bitnr;
 	protected final Type type;
 	protected final PLC parent;
 	
@@ -44,7 +43,7 @@ class Input extends TalkerStub implements IInput
 	private final Condition waitForUpdate = this.lock.newCondition();
 	private Boolean onTrigger = null;
 	private UpdateFrequency frequency = null;
-	private boolean updateScheduled = false;
+	private boolean triggerUpdate = false;
 	
 	private Object value;
 	private long lastUpdate = 0;
@@ -53,13 +52,12 @@ class Input extends TalkerStub implements IInput
 	/**
 	 * 
 	 */
-	protected Input(String id, Area area, int database, int offset, int bitnr, Type type, PLC parent)
+	protected Input(String id, Area area, int database, int offset, Type type, PLC parent)
 	{
 		this.id = id;
 		this.area = area;
 		this.database = database;
 		this.offset = offset;
-		this.bitnr = bitnr;
 		this.type = type;
 		this.parent = parent;
 	}
@@ -147,41 +145,19 @@ class Input extends TalkerStub implements IInput
 		return this.onTrigger != null ? this.onTrigger.booleanValue() : this.parent.onTrigger();
 	}
 
-	boolean startExternalUpdate()
+	boolean startUpdate()
 	{
 		this.lock.lock();
 		try
 		{
-			if (!this.updateScheduled && (this.value == null || this.frequency() != UpdateFrequency.OFF && (Platform.currentTime() - this.lastUpdate > this.frequency().schedule)))
-			{
-				this.updateScheduled = true;
-				return true;
-			}
-			return false;
+			return Platform.currentTime() - this.lastUpdate > this.frequency().schedule ||
+				   this.triggerUpdate ||
+				   this.value == null;
 		}
 		finally
 		{
 			this.lock.unlock();
 		}
-	}
-	
-	boolean startInternalUpdate()
-	{
-		this.lock.lock();
-		try
-		{
-			if (!this.updateScheduled && (this.value == null || this.onTrigger() && this.frequency() != UpdateFrequency.HIGH && Platform.currentTime() - this.lastUpdate > UpdateFrequency.HIGH.schedule))
-			{
-				this.updateScheduled = true;
-				return true;
-			}
-			return false;
-		}
-		finally
-		{
-			this.lock.unlock();
-		}
-
 	}
 	
 	void update(byte[] data, int offset)
@@ -189,10 +165,6 @@ class Input extends TalkerStub implements IInput
 		Object val = null;
 		switch (this.type)
 		{
-			case BIT:
-				final boolean b = (data[0] & (1 << this.bitnr)) != 0;
-				val = Boolean.valueOf(b);
-				break;
 			case SHORT:
 				final short s = (short) (((data[0] & 0xFF) << 8) | (data[1] & 0xFF));
 				val = Short.valueOf(s);
@@ -217,6 +189,8 @@ class Input extends TalkerStub implements IInput
 				final long ui = Integer.toUnsignedLong(ByteBuffer.wrap(data).getInt());
 				val = Long.valueOf(ui);
 				break;
+			default:
+				throw new RuntimeException("Should not happen.");
 		}
 		
 		Object old = null;
@@ -226,7 +200,7 @@ class Input extends TalkerStub implements IInput
 			old = this.value;
 			this.value = val;
 			this.lastUpdate = Platform.currentTime();
-			this.updateScheduled = false;
+			this.triggerUpdate = false;
 			this.waitForUpdate.signalAll();
 		}
 		finally
@@ -238,29 +212,35 @@ class Input extends TalkerStub implements IInput
 			this.postEvent(IPLCAPI.EVENT_INPUT_CHANGED, this);
 	}
 	
+	private boolean waitForUpdate()
+	{
+		if (this.value == null || this.onTrigger() && Platform.currentTime() - this.lastUpdate > UpdateFrequency.HIGH.schedule)
+		{
+			this.triggerUpdate = true;
+			return true;
+		}
+		return false;
+	}
+	
 	private void triggerInternalUpdate() throws IOException
 	{
-		if (this.startInternalUpdate())
+		this.lock.lock();
+		try
 		{
-			this.lock.lock();
-			try
+			if (this.waitForUpdate())
 			{
-				new InputTriggering(this);
-				if (this.updateScheduled)
-					try
-					{
-						if (!this.waitForUpdate.await(INetworkAPI.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS))
-							throw new IOException("Timeout: Did not get update for input " + this.id + " for PLC " + this.parent.id() + " in time.");
-					}
-					catch (InterruptedException e)
-					{
-						throw new RuntimeException(e);
-					}
+				if (!this.waitForUpdate.await(INetworkAPI.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS))
+					throw new IOException("Timeout: Did not get update for input " + this.id + " for PLC " + this.parent.id() + " in time.");
 			}
-			finally
-			{
-				this.lock.unlock();
-			}
+		}
+		catch (InterruptedException e)
+		{
+			throw new RuntimeException(e);
+		}
+		finally
+		{
+			this.triggerUpdate = false;
+			this.lock.unlock();
 		}
 	}
 

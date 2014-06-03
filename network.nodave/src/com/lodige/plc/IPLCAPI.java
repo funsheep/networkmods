@@ -11,8 +11,8 @@ public interface IPLCAPI
 
 	public enum Type
 	{
-		/** Bit Flag, stored in a byte somewhere. */
-		BIT(true, -1),
+//		/** Bit Flag, stored in a byte somewhere. */
+//		BIT(true, -1),
 		/** Signed short, 2 bytes, PLC-Term: 'Integer' */
 		SHORT(false, 2),
 		/** Signed int, 4 bytes, PLC-Term: 'Double-Integer' */
@@ -44,7 +44,7 @@ public interface IPLCAPI
 		HIGH(1000),
 		MEDIUM(4000),
 		LOW(8000),
-		OFF(0);
+		OFF(Integer.MAX_VALUE);
 		
 		public final int schedule;
 		

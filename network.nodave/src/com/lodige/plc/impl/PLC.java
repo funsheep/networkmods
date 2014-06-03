@@ -58,26 +58,23 @@ public class PLC implements IPLC
 	}
 
 	
-	public IInput createBitInput(String id, int database, int offset, int bitnr)
-	{
-		return this.createInput(id, Area.DB, database, offset, bitnr, Type.BIT);
-	}
-	
 	public IInput createInput(String id, int database, int offset, Type type)
 	{
-		return this.createInput(id, Area.DB, database, offset, 0, type);
+		return this.createInput(id, Area.DB, database, offset, type);
 	}
 	
 	public IInput createInput(String id, Area area, int offset, Type type)
 	{
-		return this.createInput(id, area, 0, offset, 0, type);
+		return this.createInput(id, area, 0, offset, type);
 	}
 	
-	private synchronized Input createInput(String id, Area area, int database, int offset, int bitNr, Type type)
+	private synchronized Input createInput(String id, Area area, int database, int offset, Type type)
 	{
+//		if (type == Type.BIT)
+//			throw new UnsupportedOperationException("Use FlagInput wrapper instead.");
 		if (this.inputs.containsKey(id))
 			throw new IllegalArgumentException("Input with id " + id + " is already known.");
-		Input input = new Input(id, area, database, offset, bitNr, type, this);
+		Input input = new Input(id, area, database, offset, type, this);
 		this.inputs.put(id, input);
 		return input;
 	}
@@ -103,6 +100,27 @@ public class PLC implements IPLC
 	public synchronized Collection<IInput> inputs()
 	{
 		return new ArrayList<>(this.inputs.values());
+	}
+
+	public IOutput createOutput(String id, int database, int offset, Type type)
+	{
+		return this.createOutput(id, Area.DB, database, offset, type);
+	}
+	
+	public IOutput createOutput(String id, Area area, int offset, Type type)
+	{
+		return this.createOutput(id, area, 0, offset, type);
+	}
+	
+	private synchronized Output createOutput(String id, Area area, int database, int offset, Type type)
+	{
+//		if (type == Type.BIT)
+//			throw new UnsupportedOperationException();
+		if (this.outputs.containsKey(id))
+			throw new IllegalArgumentException("Output with id " + id + " is already known.");
+		Output output = new Output(id, area, database, offset, type, this);
+		this.outputs.put(id, output);
+		return output;
 	}
 
 	/**
