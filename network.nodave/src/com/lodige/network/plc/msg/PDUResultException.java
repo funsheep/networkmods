@@ -36,4 +36,6 @@ public class PDUResultException extends Exception
 		return this.error;
 	}
 
+	/**  */
+	private static final long serialVersionUID = -2821623806688611512L;
 }

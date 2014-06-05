@@ -9,7 +9,6 @@ import github.javaappplatform.commons.log.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.servlet.AsyncContext;
@@ -81,9 +80,9 @@ public class ClasspathHandler extends HandlerWrapper implements Handler
         baseRequest.setHandled(true);
 
         // set the headers
-        String mime=_mimeTypes.getMimeByExtension(resource.toString());
+        String mime=this._mimeTypes.getMimeByExtension(resource.toString());
         if (mime==null)
-            mime=_mimeTypes.getMimeByExtension(request.getPathInfo());
+            mime=this._mimeTypes.getMimeByExtension(request.getPathInfo());
         doResponseHeaders(response,resource,mime);
         
         if(skipContentBody)
@@ -137,12 +136,12 @@ public class ClasspathHandler extends HandlerWrapper implements Handler
         }
     }
 
-    protected String getResource(HttpServletRequest request) throws MalformedURLException
+    protected String getResource(HttpServletRequest request)
     {
         String servletPath;
         String pathInfo;
-        Boolean included = request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI) != null;
-        if (included != null && included.booleanValue())
+        boolean included = request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI) != null;
+        if (included)
         {
             servletPath = (String)request.getAttribute(RequestDispatcher.INCLUDE_SERVLET_PATH);
             pathInfo = (String)request.getAttribute(RequestDispatcher.INCLUDE_PATH_INFO);
@@ -159,8 +158,6 @@ public class ClasspathHandler extends HandlerWrapper implements Handler
             pathInfo = request.getPathInfo();
         }
 
-        System.out.println(servletPath);
-        System.out.println(pathInfo);
         String pathInContext=URIUtil.addPaths(servletPath,pathInfo);
         return pathInContext;
     }
@@ -181,13 +178,13 @@ public class ClasspathHandler extends HandlerWrapper implements Handler
         {
             HttpFields fields = ((Response)response).getHttpFields();
 
-            if (_cacheControl!=null)
-                fields.put(HttpHeader.CACHE_CONTROL,_cacheControl);
+            if (this._cacheControl!=null)
+                fields.put(HttpHeader.CACHE_CONTROL,this._cacheControl);
         }
         else
         {
-            if (_cacheControl!=null)
-                response.setHeader(HttpHeader.CACHE_CONTROL.asString(),_cacheControl);
+            if (this._cacheControl!=null)
+                response.setHeader(HttpHeader.CACHE_CONTROL.asString(),this._cacheControl);
         }
     }
 

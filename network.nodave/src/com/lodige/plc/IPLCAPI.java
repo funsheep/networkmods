@@ -60,4 +60,5 @@ public interface IPLCAPI
 	
 	public static final String PLC_UPDATE_THREAD = "PLC UPDATE_THREAD";
 
+	public static final String TCP_PLC_CLIENT_NETWORK_SERVICE = "com.lodige.network.plc.TCPNetworkService";
 }

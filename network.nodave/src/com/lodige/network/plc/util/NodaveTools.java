@@ -46,9 +46,8 @@ public class NodaveTools
 					case WRITE:
 						return INodaveAPI.MSG_PDU_WRITE;
 					default:
-						;
+						return INodaveAPI.MSG_PDU;
 				}
-				return INodaveAPI.MSG_PDU;
 			}
 		}
 		return INodaveAPI.MSG_OTHER;

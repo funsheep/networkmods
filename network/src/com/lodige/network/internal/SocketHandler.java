@@ -42,7 +42,7 @@ class SocketHandler
 				{
 					try 
 					{
-						final Message msg = (Message) con._protocol().read(in);
+						final Message msg = (Message) SocketHandler.this.con._protocol().read(in);
 						if (msg != null)
 						{
 							assert LOGGER.trace("Received {}", msg);
@@ -77,13 +77,13 @@ class SocketHandler
 			{
 				while (SocketHandler.this.isConnected())
 				{
-					final Message msg = (Message) SocketHandler.this.con._take();
+					final Message msg = SocketHandler.this.con._take();
 					if (msg != null)
 					{
 						if (msg.type() != IInternalNetworkConnection.T_CLOSED_SEND_QUEUE)
 						{
 							assert LOGGER.trace("Send {}", msg);
-							con._protocol().send(msg, out);
+							SocketHandler.this.con._protocol().send(msg, out);
 						}
 						SocketHandler.this.con._msgSend(msg);
 						msg.dispose();

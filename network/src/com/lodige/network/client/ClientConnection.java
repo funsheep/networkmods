@@ -25,12 +25,12 @@ public class ClientConnection extends ANetworkConnection
 	private final PortRange localRange;
 
 
-	public ClientConnection(String remoteHost, int remotePort, PortRange localPortRange, String networkservice) throws IOException
+	public ClientConnection(String remoteHost, int remotePort, PortRange localPortRange, String networkservice)
 	{
 		this(remoteHost, remotePort, localPortRange, ExtensionRegistry.<INetworkService>getService(networkservice));
 	}
 	
-	public ClientConnection(String remoteHost, int remotePort, PortRange localPortRange, INetworkService service) throws IOException
+	public ClientConnection(String remoteHost, int remotePort, PortRange localPortRange, INetworkService service)
 	{
 		super((IInternalNetworkService) service);
 		this.remoteAddress = new InetSocketAddress(remoteHost, remotePort);

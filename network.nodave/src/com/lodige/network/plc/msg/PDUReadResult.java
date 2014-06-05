@@ -147,7 +147,7 @@ public class PDUReadResult extends PDUResult
 				LOGGER.debug("Could not parse pdu results", e);
 				this.results = new Variable[0];
 			}
-		return results;
+		return this.results;
 	}
 	
 	/*

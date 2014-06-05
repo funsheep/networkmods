@@ -41,6 +41,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 			super("Message Dispatcher");
 		}
 	
+		@Override
 		public synchronized void schedule(String thread, boolean loop, long delay)
 		{
 			this.hasFinished = false;
@@ -82,7 +83,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 			return isFinished;
 		}
 
-	};
+	}
 
 
 	protected static final Logger LOGGER = Logger.getLogger();
