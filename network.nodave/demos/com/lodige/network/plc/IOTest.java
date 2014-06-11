@@ -16,7 +16,7 @@ import com.lodige.network.client.ClientNetworkService;
 import com.lodige.network.plc.protocol.TCPProtocol;
 import com.lodige.plc.IPLCAPI.Type;
 import com.lodige.plc.IPLCAPI.UpdateFrequency;
-import com.lodige.plc.impl.PLC;
+import com.lodige.plc.nodave.NodavePLC;
 
 /**
  * TODO javadoc
@@ -28,10 +28,10 @@ public class IOTest implements IBootEntry
 	@Override
 	public void startup(Extension e) throws PlatformException
 	{
-		ClientNetworkService service = new ClientNetworkService("PLC", new TCPProtocol());
+		ClientNetworkService service = new ClientNetworkService("NodavePLC", new TCPProtocol());
 		try
 		{
-			final PLC plc = new PLC("192.168.130.110", service);
+			final NodavePLC plc = new NodavePLC("192.168.130.110", service);
 			plc.createDBInput("Drive Motor", 15, 20, Type.UINT).setUpdateMethod(UpdateFrequency.OFF, true);
 			plc.createDBInput("Operating Mode", 15, 10, Type.UBYTE).setUpdateMethod(UpdateFrequency.LOW, false);
 			(new ADoJob("Manually Poll PLCs")

@@ -26,7 +26,6 @@ public interface INetworkAPI
 	public static final int S_NOT_CONNECTED = 4;
 	public static final int S_CONNECTION_PENDING = 7;
 	public static final int S_CONNECTED = 8;
-	public static final int S_SHUTDOWN = 9;
 	public static final int S_CLOSING = 10;
 
 	public static final int E_CLIENT_CONNECTED = 1;

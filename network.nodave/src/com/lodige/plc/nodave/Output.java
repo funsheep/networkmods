@@ -2,19 +2,19 @@
  * lodige.platform Project at Loedige.
  * Closed Source. Not for licence.
  */
-package com.lodige.plc.impl;
+package com.lodige.plc.nodave;
 
 import java.io.IOException;
 
 import com.lodige.network.plc.INodaveAPI.Area;
 import com.lodige.plc.IOutput;
-import com.lodige.plc.IPLCAPI.Type;
+import com.lodige.plc.IPLCAPI;
 
 /**
  * TODO javadoc
  * @author renken
  */
-class Output implements IOutput
+class Output implements IOutput, IPLCAPI
 {
 	
 	private final String id;
@@ -22,15 +22,14 @@ class Output implements IOutput
 	protected final Area area;
 	protected final int database;
 	protected final int offset;
-//	private final int bitnr;
 	private final int length;
-	private final PLC parent; 
+	private final NodavePLC parent; 
 
 	
 	/**
 	 * 
 	 */
-	public Output(String id, Area area, int database, int offset, int length, Type type, PLC parent)
+	public Output(String id, Area area, int database, int offset, int length, Type type, NodavePLC parent)
 	{
 		this.id = id;
 		this.area = area;
@@ -65,7 +64,7 @@ class Output implements IOutput
 	 * {@inheritDoc}
 	 */
 	@Override
-	public PLC plc()
+	public NodavePLC plc()
 	{
 		return this.parent;
 	}

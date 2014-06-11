@@ -153,7 +153,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	@Override
 	public long asyncSend(IMessage msg) throws IOException
 	{
-		if (this.state.get() == INetworkAPI.S_SHUTDOWN)
+		if (this.state.get() == INetworkAPI.S_NOT_CONNECTED)
 			throw new IllegalStateException("Connection is shutdown.");
 		Message m = (Message) msg;
 		long sendID = SENDIDS.getAndIncrement();
@@ -267,7 +267,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	@Override
 	public void shutdown()
 	{
-		if (this.state.getAndSet(INetworkAPI.S_SHUTDOWN) == INetworkAPI.S_SHUTDOWN)
+		if (this.state.getAndSet(INetworkAPI.S_NOT_CONNECTED) == INetworkAPI.S_NOT_CONNECTED)
 			return;
 		
 		this.handler.shutdown();

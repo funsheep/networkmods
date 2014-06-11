@@ -1,5 +1,7 @@
 package com.lodige.plc;
 
+import github.javaappplatform.commons.events.ITalker;
+
 import java.io.IOException;
 import java.util.Collection;
 
@@ -9,7 +11,7 @@ import com.lodige.plc.IPLCAPI.UpdateFrequency;
  * TODO javadoc
  * @author renken
  */
-public interface IPLC
+public interface IPLC extends ITalker
 {
 
 	public String id();
@@ -26,4 +28,5 @@ public interface IPLC
 	public void endTransaction() throws IOException;
 
 	public boolean connected();
+	
 }

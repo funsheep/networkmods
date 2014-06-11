@@ -2,7 +2,9 @@
  * network.nodave Project at Loedige.
  * Closed Source. Not for licence.
  */
-package com.lodige.plc.impl;
+package com.lodige.plc.nodave;
+
+import github.javaappplatform.commons.events.TalkerStub;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +28,7 @@ import com.lodige.plc.IPLCAPI.UpdateFrequency;
  * TODO javadoc
  * @author renken
  */
-public class PLC implements IPLC
+public class NodavePLC extends TalkerStub implements IPLC
 {
 
 	protected final ClientConnection cc;
@@ -40,10 +42,16 @@ public class PLC implements IPLC
 	/**
 	 * 
 	 */
-	public PLC(String host, ClientNetworkService service) throws IOException
+	public NodavePLC(String host, ClientNetworkService service) throws IOException
 	{
 		this.cc = new ClientConnection(host, 102, null, service);
 		this.cc.connect();
+		new InputPolling(this);
+	}
+
+	public NodavePLC(ClientConnection connection)
+	{
+		this.cc = connection;
 		new InputPolling(this);
 	}
 

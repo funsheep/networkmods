@@ -9,21 +9,20 @@ import github.javaappplatform.commons.util.StringID;
 public interface IPLCAPI
 {
 
+
 	public enum Type
 	{
-//		/** Bit Flag, stored in a byte somewhere. */
-//		BIT(true, -1),
-		/** Signed short, 2 bytes, PLC-Term: 'Integer' */
+		/** Signed short, 2 bytes, NodavePLC-Term: 'Integer' */
 		SHORT(false, 2),
-		/** Signed int, 4 bytes, PLC-Term: 'Double-Integer' */
+		/** Signed int, 4 bytes, NodavePLC-Term: 'Double-Integer' */
 		INT(false, 4),
-		/** Floating Point, 4 bytes, PLC-Term: 'Real' */
+		/** Floating Point, 4 bytes, NodavePLC-Term: 'Real' */
 		FLOAT(false, 4),
-		/** Unsigned byte, 1 byte, PLC-Term: 'Byte' */
+		/** Unsigned byte, 1 byte, NodavePLC-Term: 'Byte' */
 		UBYTE(true, 1),
-		/** Unsigned short, 2 bytes, PLC-Term: 'Word' */
+		/** Unsigned short, 2 bytes, NodavePLC-Term: 'Word' */
 		USHORT(true, 2),
-		/** Unsigned int, 4 bytes, PLC-Term: 'Double-Word' */
+		/** Unsigned int, 4 bytes, NodavePLC-Term: 'Double-Word' */
 		UINT(true, 4),
 		/** Generic data area with arbitrary size. */
 		GENERIC(false, -1);
@@ -58,7 +57,7 @@ public interface IPLCAPI
 	
 	public static final int EVENT_INPUT_CHANGED = StringID.id("EVENT_VALUE_CHANGED");
 	
-	public static final String PLC_UPDATE_THREAD = "PLC UPDATE_THREAD";
+	public static final String PLC_UPDATE_THREAD = "NodavePLC UPDATE_THREAD";
 
 	public static final String TCP_PLC_CLIENT_NETWORK_SERVICE = "com.lodige.network.plc.TCPNetworkService";
 }

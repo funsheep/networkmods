@@ -47,7 +47,8 @@ public class ClientConnection extends ANetworkConnection
 			@Override
 			public void doJob()
 			{
-				ClientConnection.this.state.set(INetworkAPI.S_CONNECTION_PENDING);
+				if (!ClientConnection.this.state.compareAndSet(INetworkAPI.S_NOT_CONNECTED, INetworkAPI.S_CONNECTION_PENDING))
+					this.finishedWithError(new IllegalStateException("Client Already Connected."));
 				ClientConnection.this.postEvent(INetworkAPI.E_STATE_CHANGED);
 				try
 				{
@@ -59,7 +60,7 @@ public class ClientConnection extends ANetworkConnection
 				catch (IOException e)
 				{
 //					LOGGER.warn("Could not establish connection.", e);
-					ClientConnection.this.state.set(INetworkAPI.S_SHUTDOWN);
+					ClientConnection.this.state.set(INetworkAPI.S_NOT_CONNECTED);
 					this.finishedWithError(e);
 				}
 				ClientConnection.this.postEvent(INetworkAPI.E_STATE_CHANGED);

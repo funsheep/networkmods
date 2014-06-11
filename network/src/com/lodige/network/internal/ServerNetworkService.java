@@ -72,7 +72,7 @@ public class ServerNetworkService extends ANetworkService implements IServerNetw
 				}
 				catch (IOException e)
 				{
-					ServerNetworkService.this.state.set(INetworkAPI.S_SHUTDOWN);
+					ServerNetworkService.this.state.set(INetworkAPI.S_NOT_CONNECTED);
 					this.finishedWithError(e);
 				}
 				ServerNetworkService.this.state.set(INetworkAPI.S_RUNNING);
@@ -114,7 +114,7 @@ public class ServerNetworkService extends ANetworkService implements IServerNetw
 				
 				ServerNetworkService.this.closeAllConnections();
 
-				ServerNetworkService.this.state.set(INetworkAPI.S_SHUTDOWN);
+				ServerNetworkService.this.state.set(INetworkAPI.S_NOT_CONNECTED);
 				ServerNetworkService.this.postEvent(INetworkAPI.E_STATE_CHANGED);
 			}
 		}, INetworkAPI.NETWORK_THREAD);
@@ -126,7 +126,7 @@ public class ServerNetworkService extends ANetworkService implements IServerNetw
 	@Override
 	public void shutdown()
 	{
-		if (this.state.getAndSet(INetworkAPI.S_SHUTDOWN) == INetworkAPI.S_SHUTDOWN)
+		if (this.state.getAndSet(INetworkAPI.S_NOT_CONNECTED) == INetworkAPI.S_NOT_CONNECTED)
 			return;
 		
 		ServerNetworkService.this.postEvent(INetworkAPI.E_STATE_CHANGED);

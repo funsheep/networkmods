@@ -181,7 +181,7 @@ public abstract class ANetworkService extends JobbedTalkerStub implements IInter
 	@Override
 	public void _unregister(final INetworkConnection connection)
 	{
-		if (connection.state() == INetworkAPI.S_SHUTDOWN)
+		if (connection.state() == INetworkAPI.S_NOT_CONNECTED)
 		{
 			this.connectionLock.lock();
 			try

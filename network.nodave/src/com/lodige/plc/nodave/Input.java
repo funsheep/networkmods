@@ -2,9 +2,9 @@
  * network.nodave Project at Loedige.
  * Closed Source. Not for licence.
  */
-package com.lodige.plc.impl;
+package com.lodige.plc.nodave;
 
-import github.javaappplatform.commons.events.TalkerStub;
+import github.javaappplatform.commons.events.IInnerTalker;
 import github.javaappplatform.commons.log.Logger;
 import github.javaappplatform.platform.Platform;
 
@@ -20,14 +20,12 @@ import com.lodige.network.plc.INodaveAPI.Area;
 import com.lodige.plc.IInput;
 import com.lodige.plc.IPLC;
 import com.lodige.plc.IPLCAPI;
-import com.lodige.plc.IPLCAPI.Type;
-import com.lodige.plc.IPLCAPI.UpdateFrequency;
 
 /**
  * TODO javadoc
  * @author renken
  */
-class Input extends TalkerStub implements IInput
+class Input implements IInput, IPLCAPI
 {
 	
 	private static final Logger LOGGER = Logger.getLogger();
@@ -39,7 +37,7 @@ class Input extends TalkerStub implements IInput
 	protected final int offset;
 	protected final int length;
 	protected final Type type;
-	protected final PLC parent;
+	protected final NodavePLC parent;
 	
 	private final ReentrantLock lock = new ReentrantLock();
 	private final Condition waitForUpdate = this.lock.newCondition();
@@ -54,7 +52,7 @@ class Input extends TalkerStub implements IInput
 	/**
 	 * 
 	 */
-	protected Input(String id, Area area, int database, int offset, int length, Type type, PLC parent)
+	protected Input(String id, Area area, int database, int offset, int length, Type type, NodavePLC parent)
 	{
 		this.id = id;
 		this.area = area;
@@ -218,7 +216,7 @@ class Input extends TalkerStub implements IInput
 		if (postEvent)
 		{
 			LOGGER.debug("Input {} updated.", this.id);
-			this.postEvent(IPLCAPI.EVENT_INPUT_CHANGED, this);
+			((IInnerTalker) this.parent).postEvent(IPLCAPI.EVENT_INPUT_CHANGED, this);
 		}
 	}
 	
@@ -240,7 +238,7 @@ class Input extends TalkerStub implements IInput
 			if (this.waitForUpdate())
 			{
 				if (!this.waitForUpdate.await(INetworkAPI.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS))
-					throw new IOException("Timeout: Did not get update for input " + this.id + " for PLC " + this.parent.id() + " in time.");
+					throw new IOException("Timeout: Did not get update for input " + this.id + " for NodavePLC " + this.parent.id() + " in time.");
 			}
 		}
 		catch (InterruptedException e)

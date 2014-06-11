@@ -69,7 +69,7 @@ public class ClientNetworkService extends ANetworkService
 			{
 				ClientNetworkService.this.closeAllConnections();
 
-				ClientNetworkService.this.state.set(INetworkAPI.S_SHUTDOWN);
+				ClientNetworkService.this.state.set(INetworkAPI.S_NOT_CONNECTED);
 				ClientNetworkService.this.postEvent(INetworkAPI.E_STATE_CHANGED);
 			}
 		}, INetworkAPI.NETWORK_THREAD);
@@ -81,7 +81,7 @@ public class ClientNetworkService extends ANetworkService
 	@Override
 	public void shutdown()
 	{
-		if (this.state.getAndSet(INetworkAPI.S_SHUTDOWN) == INetworkAPI.S_SHUTDOWN)
+		if (this.state.getAndSet(INetworkAPI.S_NOT_CONNECTED) == INetworkAPI.S_NOT_CONNECTED)
 			return;
 		
 		ClientNetworkService.this.postEvent(INetworkAPI.E_STATE_CHANGED);

@@ -2,7 +2,7 @@
  * lodige.platform Project at Loedige.
  * Closed Source. Not for licence.
  */
-package com.lodige.plc.impl;
+package com.lodige.plc.nodave;
 
 import github.javaappplatform.commons.log.Logger;
 import github.javaappplatform.platform.job.ADoJob;
@@ -25,13 +25,13 @@ class InputPolling extends ADoJob
 {
 	
 	private static final Logger LOGGER = Logger.getLogger();
-	private final PLC plc;
+	private final NodavePLC plc;
 
 
 	/**
 	 * @param name
 	 */
-	public InputPolling(PLC plc)
+	public InputPolling(NodavePLC plc)
 	{
 		super("Input Polling for " + plc.id());
 		this.plc = plc;
