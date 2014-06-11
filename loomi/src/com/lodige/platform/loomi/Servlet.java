@@ -25,9 +25,9 @@ import com.lodige.loomi.engine.LoomiServlet;
 public class Servlet extends LoomiServlet
 {
 
-	public static final String EP_UI_LIFECYCLE = "com.lodige.platform.loomi.ui.lifecycle";
-	public static final String EP_USERDATA_PROVIDER = "com.lodige.platform.loomi.userdataprovider";
-	public static final String EP_MODELTHREAD_PROVIDER = "com.lodige.platform.loomi.modelthreadprovider";
+	public static final String EXTPOINT_UI_LIFECYCLE = "com.lodige.platform.loomi.ui.lifecycle";
+	public static final String EXTPOINT_USERDATA_PROVIDER = "com.lodige.platform.loomi.userdataprovider";
+	public static final String EXTPOINT_MODELTHREAD_PROVIDER = "com.lodige.platform.loomi.modelthreadprovider";
 
 
 	/**
@@ -37,16 +37,16 @@ public class Servlet extends LoomiServlet
 	public void servletInitialized() throws ServletException
 	{
 		super.servletInitialized();
-		Set<IListener> listeners = ExtensionRegistry.getServices(EP_UI_LIFECYCLE);
+		Set<IListener> listeners = ExtensionRegistry.getServices(EXTPOINT_UI_LIFECYCLE);
 		for (IListener li : listeners)
 		{
 			this.addListener(ILoomiAPI.E_UISESSION_STARTED, li);
 			this.addListener(ILoomiAPI.E_UISESSION_CLOSED, li);
 		}
 		if (this.udp == null)
-			this.udp = ExtensionRegistry.getService(EP_USERDATA_PROVIDER);
+			this.udp = ExtensionRegistry.getService(EXTPOINT_USERDATA_PROVIDER);
 		if (this.mtp == null)
-			this.mtp = ExtensionRegistry.getService(EP_MODELTHREAD_PROVIDER);
+			this.mtp = ExtensionRegistry.getService(EXTPOINT_MODELTHREAD_PROVIDER);
 	}
 	
 	private static final long serialVersionUID = 1L;

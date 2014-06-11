@@ -24,7 +24,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 public class BootEntry implements IBootEntry
 {
 
-	public static final String EP_DBCP = "com.lodige.dbaccess.pool";
+	public static final String EXTPOINT_DBCP = "com.lodige.dbaccess.pool";
 
 	private static final Logger LOGGER = Logger.getLogger();
 
@@ -48,7 +48,7 @@ public class BootEntry implements IBootEntry
 		String dbuser = Platform.getOptionValue(O_DBUSER, null);
 		String dbpswd = Platform.getOptionValue(O_DBPSWD, null);
 
-		IjdbcURIGenerator generator = ExtensionRegistry.getService(IjdbcURIGenerator.EP_JDBCURIGEN);
+		IjdbcURIGenerator generator = ExtensionRegistry.getService(IjdbcURIGenerator.EXTPOINT_JDBCURIGEN);
 		if (generator == null)
 			throw new PlatformException("Could not instantiate IjdbcURIGenerator.");
 		
@@ -56,7 +56,7 @@ public class BootEntry implements IBootEntry
 		pool.setUsername(dbuser);
 		pool.setPassword(dbpswd);
 		pool.setUrl(generator.generateURI(dbhost, dbport, dbname));
-		ExtensionRegistry.registerSingleton(DataSource.class.getName(), EP_DBCP, pool, null);
+		ExtensionRegistry.registerSingleton(DataSource.class.getName(), EXTPOINT_DBCP, pool, null);
 		
 		LOGGER.info("Started connection pool with URI {}", pool.getUrl());
 	}
@@ -67,7 +67,7 @@ public class BootEntry implements IBootEntry
 	@Override
 	public void shutdown() throws PlatformException
 	{
-		BasicDataSource pool = ExtensionRegistry.getService(EP_DBCP);
+		BasicDataSource pool = ExtensionRegistry.getService(EXTPOINT_DBCP);
 		if (pool != null)
 		{
 			try
