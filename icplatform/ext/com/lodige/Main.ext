@@ -8,4 +8,5 @@
 		"sync" : false,
 		"description" : "Lists all registered sub systems and their current state."
 	}
+	
 }
