@@ -1,0 +1,11 @@
+{
+	"com.lodige.sys.states.SystemStatesCommand" :
+	{
+		"point" : "github.javaappplatform.platform.console.Command",
+		"class" : "com.lodige.sys.states.SystemStatesCommand",
+		"singleton" : true,
+		"command" : "sysstates",
+		"sync" : false,
+		"description" : "Lists all registered sub systems and their current state."
+	}
+}

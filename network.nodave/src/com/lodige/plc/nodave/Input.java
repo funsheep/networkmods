@@ -207,7 +207,8 @@ class Input implements IInput, IPLCAPI
 			this.triggerUpdate = false;
 			this.waitForUpdate.signalAll();
 			postEvent = this.type != Type.GENERIC && !this.value.equals(old) ||
-						this.type == Type.GENERIC && Arrays.equals((byte[]) old, (byte[]) this.value);
+						this.type == Type.GENERIC && !Arrays.equals((byte[]) old, (byte[]) this.value);
+			LOGGER.debug("Input {} updated.", this.id);
 		}
 		finally
 		{
@@ -215,7 +216,7 @@ class Input implements IInput, IPLCAPI
 		}
 		if (postEvent)
 		{
-			LOGGER.debug("Input {} updated.", this.id);
+			LOGGER.info("Value of Input {} changed.", this.id);
 			((IInnerTalker) this.parent).postEvent(IPLCAPI.EVENT_INPUT_CHANGED, this);
 		}
 	}
@@ -252,16 +253,6 @@ class Input implements IInput, IPLCAPI
 		}
 	}
 
-//	/**
-//	 * {@inheritDoc}
-//	 */
-//	@Override
-//	public boolean bitValue() throws IOException
-//	{
-//		this.triggerInternalUpdate();
-//		return ((Boolean) this.value).booleanValue();
-//	}
-//
 	/**
 	 * {@inheritDoc}
 	 */
@@ -330,4 +321,12 @@ class Input implements IInput, IPLCAPI
 		return (byte[]) this.value;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString()
+	{
+		return this.id;
+	}
 }

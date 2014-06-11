@@ -41,6 +41,7 @@ public class InternalNetTools
 		socket.setKeepAlive(KEEP_ALIVE);
 		socket.setSoLinger(LINGER_ON, LINGER_TIMEOUT);
 		socket.setTcpNoDelay(!BUFFERING_DELAY);
+//		socket.setSoTimeout(TIMEOUT);
 	}
 
 

@@ -43,11 +43,11 @@ class SocketHandler
 					try 
 					{
 						final Message msg = (Message) SocketHandler.this.con._protocol().read(in);
-						if (msg != null)
-						{
-							assert LOGGER.trace("Received {}", msg);
-							SocketHandler.this.con._put(msg);
-						}
+						if (msg == null)	//we got an EOF
+							break;
+
+						assert LOGGER.trace("Received {}", msg);
+						SocketHandler.this.con._put(msg);
 					}
 					catch (final IOException e)
 					{
@@ -58,6 +58,7 @@ class SocketHandler
 			catch (final IOException ex)
 			{
 				LOGGER.debug("TCP MSG Handler shutdown.", ex);
+				ex.printStackTrace();
 			}
 			SocketHandler.this.shutdown();
 		}

@@ -90,8 +90,13 @@ public class Read
 			return Read.this;
 		}
 		
-		
+
 		public PDUReadResult andWaitForResult() throws IOException
+		{
+			return this.andWaitForResult(0);
+		}
+
+		public PDUReadResult andWaitForResult(int timeout) throws IOException
 		{
 			Read.this.addToRB();
 			Compute getter = new Compute();
@@ -113,7 +118,7 @@ public class Read
 			}, INetworkAPI.NETWORK_THREAD);
 			try
 			{
-				return getter.<PDUReadResult>get();
+				return getter.<PDUReadResult>get(timeout);
 			}
 			catch (Exception e)
 			{

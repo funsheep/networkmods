@@ -1,7 +1,12 @@
 package com.lodige.network.client;
 
+import github.javaappplatform.commons.events.Event;
+import github.javaappplatform.commons.events.IListener;
+import github.javaappplatform.commons.events.ITalker;
 import github.javaappplatform.platform.extension.ExtensionRegistry;
+import github.javaappplatform.platform.extension.ServiceInstantiationException;
 import github.javaappplatform.platform.job.AComputeDoJob;
+import github.javaappplatform.platform.job.ADoJob;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -20,14 +25,60 @@ import com.lodige.network.server.PortRange;
  */
 public class ClientConnection extends ANetworkConnection
 {
+	
+	private class Reconnecter extends ADoJob implements IListener
+	{
+		private boolean running = false;
+		
+		public Reconnecter(String con)
+		{
+			super("AutoReconnecter for " + con);
+			ClientConnection.this.addListener(INetworkAPI.E_STATE_CHANGED, this, ITalker.PRIORITY_HIGH);
+		}
+
+		@Override
+		public void doJob()
+		{
+			if (this.isfinished())
+				return;
+			try
+			{
+				if (ClientConnection.this.state() == INetworkAPI.S_NOT_CONNECTED)
+				{
+					ClientConnection.this.connect();
+					this.shutdown();
+				}
+			}
+			catch (IOException e)
+			{
+				LOGGER.info("Could not reconnect to {}.", ClientConnection.this.remoteAddress, e);
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void handleEvent(Event e)
+		{
+			if (ClientConnection.this.state() == INetworkAPI.S_NOT_CONNECTED && !this.running)
+			{
+				this.shutdown = false;
+				this.running = true;
+				this.schedule(INetworkAPI.NETWORK_THREAD, true, 10 * 1000);
+			}
+		}
+		
+	}
 
 	private final InetSocketAddress remoteAddress;
 	private final PortRange localRange;
+	private Reconnecter autoReconnect = null;
+	
 
-
-	public ClientConnection(String remoteHost, int remotePort, PortRange localPortRange, String networkservice)
+	public ClientConnection(String remoteHost, int remotePort, PortRange localPortRange, String networkservice) throws ServiceInstantiationException
 	{
-		this(remoteHost, remotePort, localPortRange, ExtensionRegistry.<INetworkService>getService(networkservice));
+		this(remoteHost, remotePort, localPortRange, ExtensionRegistry.getExtensionByName(networkservice).<INetworkService>getService());
 	}
 	
 	public ClientConnection(String remoteHost, int remotePort, PortRange localPortRange, INetworkService service)
@@ -77,6 +128,24 @@ public class ClientConnection extends ANetworkConnection
 		}
 	}
 
+	public synchronized void setAutoReconnect(boolean autoReconnect)
+	{
+		if (!this.doesAutoReconnect() && autoReconnect)
+		{
+			this.autoReconnect = new Reconnecter(this.remoteAddress.toString());
+			this.autoReconnect.schedule(INetworkAPI.NETWORK_THREAD, true, 5 * 1000);
+		}
+		else if (this.doesAutoReconnect() && !autoReconnect)
+		{
+			this.autoReconnect.shutdown();
+			this.autoReconnect = null;
+		}
+	}
+	
+	public boolean doesAutoReconnect()
+	{
+		return this.autoReconnect != null;
+	}
 
 	/**
 	 * {@inheritDoc}

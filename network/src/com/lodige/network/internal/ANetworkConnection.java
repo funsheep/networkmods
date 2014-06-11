@@ -77,7 +77,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 		@Override
 		public synchronized boolean isfinished()
 		{
-			boolean isFinished = this.shutdown || ANetworkConnection.this.receiveQueue.isClosed() || ANetworkConnection.this.receiveQueue.size() == 0;
+			boolean isFinished = this.shutdown || ANetworkConnection.this.receiveQueue == null || ANetworkConnection.this.receiveQueue.isClosed() || ANetworkConnection.this.receiveQueue.size() == 0;
 			if (isFinished)
 				this.hasFinished = true;
 			return isFinished;
@@ -94,9 +94,9 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	private SocketHandler handler;
 	private final IInternalNetworkService service;
 	private final IProtocol protocol;
-	private final CloseableQueue sendQueue = new CloseableQueue(INetworkAPI.MAX_MESSAGE_COUNTER);
-	private final CloseableQueue receiveQueue = new CloseableQueue(INetworkAPI.MAX_MESSAGE_COUNTER);
 	private final DispatchJob dispatcher = new DispatchJob();
+	private CloseableQueue sendQueue;
+	private CloseableQueue receiveQueue;
 
 
 	protected final AtomicInteger state = new AtomicInteger(INetworkAPI.S_NOT_CONNECTED);
@@ -125,6 +125,8 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 
 	protected void setSocket(Socket socket) throws IOException
 	{
+		this.sendQueue = new CloseableQueue(INetworkAPI.MAX_MESSAGE_COUNTER);
+		this.receiveQueue = new CloseableQueue(INetworkAPI.MAX_MESSAGE_COUNTER);
 		this.socket = socket;
 		this.handler = new SocketHandler(this);
 	}

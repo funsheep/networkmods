@@ -95,8 +95,13 @@ public class Write
 			Write.this.addToWB();
 			Write.this.connection.asyncSend(Write.this.wb.compile(null));
 		}
-		
+
 		public PDUWriteResult andWaitForResult() throws IOException
+		{
+			return this.andWaitForResult(0);
+		}
+
+		public PDUWriteResult andWaitForResult(int timeout) throws IOException
 		{
 			Write.this.addToWB();
 			Compute getter = new Compute();
@@ -118,7 +123,7 @@ public class Write
 			}, INetworkAPI.NETWORK_THREAD);
 			try
 			{
-				return getter.<PDUWriteResult>get();
+				return getter.<PDUWriteResult>get(timeout);
 			}
 			catch (Exception e)
 			{

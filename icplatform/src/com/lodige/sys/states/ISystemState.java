@@ -2,7 +2,7 @@
  * icplatform Project at Loedige.
  * Closed Source. Not for licence.
  */
-package com.lodige.states;
+package com.lodige.sys.states;
 
 import github.javaappplatform.commons.events.ITalker;
 import github.javaappplatform.commons.util.StringID;
@@ -26,4 +26,5 @@ public interface ISystemState extends ITalker
 	public String name();
 	
 	public State state();
+
 }

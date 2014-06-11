@@ -39,7 +39,9 @@ public abstract class ANodavePLCHasFaults<F extends Fault>
 		{
 			try
 			{
-				ANodavePLCHasFaults.this.checkInput(e.getData());
+				IInput input = e.getData();
+				if (ANodavePLCHasFaults.this.faultDB.knownFaults().contains(input.id()))
+					ANodavePLCHasFaults.this.checkInput(input);
 			}
 			catch (IOException ex)
 			{
