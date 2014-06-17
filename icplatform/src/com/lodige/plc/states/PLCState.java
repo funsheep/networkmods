@@ -6,8 +6,6 @@ package com.lodige.plc.states;
 
 import github.javaappplatform.commons.events.IInnerTalker;
 import github.javaappplatform.commons.util.GenericsToolkit;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -34,7 +32,7 @@ public class PLCState extends AState
 
 	private final IInput input;
 	private final int bitnr;
-	private final TIntObjectMap<Enum<? extends IStateMappable>> mapping;
+	private final Class<? extends IStateMappable> mapping;
 	
 
 	/**
@@ -52,15 +50,15 @@ public class PLCState extends AState
 	
 	public PLCState(IInput input, Class<? extends Enum<? extends IStateMappable>> clazz, IHasStates parent)
 	{
-		this(input.id(), input, Type.OBJECT, -1, map(clazz), parent);
+		this(input.id(), input, Type.OBJECT, -1, clazz, parent);
 	}
 
-	private PLCState(String id, IInput input, Type type, int bitnr, TIntObjectMap<Enum<? extends IStateMappable>> mapping, IHasStates parent)
+	private PLCState(String id, IInput input, Type type, int bitnr, Class<? extends Enum<? extends IStateMappable>> mapping, IHasStates parent)
 	{
 		super(id, type, parent);
 		this.input = input;
 		this.bitnr = bitnr;
-		this.mapping = mapping;
+		this.mapping = GenericsToolkit.convertUnchecked(mapping);
 		((IHasStates.Internal) this.parent)._registerState(this);
 		this.input.plc().addListener(IPLCAPI.EVENT_INPUT_CHANGED, (e) ->
 		{
@@ -239,7 +237,10 @@ public class PLCState extends AState
 			default:
 				throw new IllegalStateException("Enum Mappings for States of Type " + this.type + " not Supported.");
 		}
-		return GenericsToolkit.convertUnchecked(this.mapping.get(code));
+		for (IStateMappable e : this.mapping.getEnumConstants())
+			if (e.fits(code))
+				return GenericsToolkit.convertUnchecked(e);
+		return null;
 	}
 	
 	private static final Type map(com.lodige.plc.IPLCAPI.Type inputType, boolean string)
@@ -265,14 +266,4 @@ public class PLCState extends AState
 		}
 	}
 	
-	private static final TIntObjectMap<Enum<? extends IStateMappable>> map(Class<? extends Enum<? extends IStateMappable>> clazz)
-	{
-		TIntObjectMap<Enum<? extends IStateMappable>> map = new TIntObjectHashMap<>();
-		for (Enum<? extends IStateMappable> e : clazz.getEnumConstants())
-		{
-			map.put(((IStateMappable) e).code(), e);
-		}
-		return map;
-	}
-
 }

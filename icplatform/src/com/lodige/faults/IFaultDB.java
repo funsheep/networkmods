@@ -10,10 +10,10 @@ import java.util.Set;
  * TODO javadoc
  * @author renken
  */
-public interface IFaultDB<F extends Fault>
+public interface IFaultDB
 {
 
-	public F instantiateFault(String faultID);
+	public Fault instantiateFault(String faultID);
 
 	public Set<String> knownFaults();
 

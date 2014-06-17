@@ -21,7 +21,7 @@ public interface IStateAPI
 
 	public interface IStateMappable
 	{
-		public int code();
+		public boolean fits(int code);
 	}
 
 

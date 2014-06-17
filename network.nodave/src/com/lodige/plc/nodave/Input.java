@@ -215,14 +215,14 @@ class Input implements IInput, IPLCAPI
 		}
 		if (postEvent)
 		{
-			LOGGER.debug("Value of Input {} changed.", this.id);
+			LOGGER.info("Value of Input {} changed.", this.id);
 			((IInnerTalker) this.parent).postEvent(IPLCAPI.EVENT_INPUT_CHANGED, this);
 		}
 	}
 	
 	private boolean waitForUpdate()
 	{
-		if (this.value == null || this.onTrigger() && Platform.currentTime() - this.lastUpdate > UpdateFrequency.HIGH.schedule)
+		if (this.value == null || this.onTrigger())
 		{
 			this.triggerUpdate = true;
 			return true;
@@ -237,6 +237,8 @@ class Input implements IInput, IPLCAPI
 		{
 			if (this.waitForUpdate())
 			{
+				if (this.parent.connectionState() != ConnectionState.CONNECTED)
+					throw new IOException("No Connection to PLC.");
 				if (!this.waitForUpdate.await(INetworkAPI.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS))
 					throw new IOException("Timeout: Did not get update for input " + this.id + " for NodavePLC " + this.parent.id() + " in time.");
 			}
@@ -247,7 +249,6 @@ class Input implements IInput, IPLCAPI
 		}
 		finally
 		{
-			this.triggerUpdate = false;
 			this.lock.unlock();
 		}
 	}

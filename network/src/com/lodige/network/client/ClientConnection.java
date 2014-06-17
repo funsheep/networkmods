@@ -1,8 +1,5 @@
 package com.lodige.network.client;
 
-import github.javaappplatform.commons.events.Event;
-import github.javaappplatform.commons.events.IListener;
-import github.javaappplatform.commons.events.ITalker;
 import github.javaappplatform.platform.extension.ExtensionRegistry;
 import github.javaappplatform.platform.extension.ServiceInstantiationException;
 import github.javaappplatform.platform.job.AComputeDoJob;
@@ -26,16 +23,14 @@ import com.lodige.network.server.PortRange;
 public class ClientConnection extends ANetworkConnection
 {
 	
-	private class Reconnecter extends ADoJob implements IListener
+	private class Reconnecter extends ADoJob
 	{
-		private boolean running = false;
-		
 		public Reconnecter(String con)
 		{
 			super("AutoReconnecter for " + con);
-			ClientConnection.this.addListener(INetworkAPI.E_STATE_CHANGED, this, ITalker.PRIORITY_HIGH);
 		}
 
+	
 		@Override
 		public void doJob()
 		{
@@ -44,10 +39,7 @@ public class ClientConnection extends ANetworkConnection
 			try
 			{
 				if (ClientConnection.this.state() == INetworkAPI.S_NOT_CONNECTED)
-				{
 					ClientConnection.this.connect();
-					this.shutdown();
-				}
 			}
 			catch (IOException e)
 			{
@@ -55,20 +47,6 @@ public class ClientConnection extends ANetworkConnection
 			}
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void handleEvent(Event e)
-		{
-			if (ClientConnection.this.state() == INetworkAPI.S_NOT_CONNECTED && !this.running)
-			{
-				this.shutdown = false;
-				this.running = true;
-				this.schedule(INetworkAPI.NETWORK_THREAD, true, 10 * 1000);
-			}
-		}
-		
 	}
 
 	private final InetSocketAddress remoteAddress;
@@ -133,7 +111,7 @@ public class ClientConnection extends ANetworkConnection
 		if (!this.doesAutoReconnect() && autoReconnect)
 		{
 			this.autoReconnect = new Reconnecter(this.remoteAddress.toString());
-			this.autoReconnect.schedule(INetworkAPI.NETWORK_THREAD, true, 5 * 1000);
+			this.autoReconnect.schedule(INetworkAPI.NETWORK_THREAD, true, 10 * 1000);
 		}
 		else if (this.doesAutoReconnect() && !autoReconnect)
 		{

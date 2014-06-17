@@ -10,13 +10,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.lodige.faults.Fault;
 import com.lodige.faults.IFaultDB;
 
 /**
  * TODO javadoc
  * @author renken
  */
-public final class HRFaultDB implements IFaultDB<HRFault>
+public final class HRFaultDB implements IFaultDB
 {
 
 	private final Map<String, String> deviceIDByFaultID = new HashMap<>();
@@ -42,7 +43,7 @@ public final class HRFaultDB implements IFaultDB<HRFault>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public HRFault instantiateFault(String faultID)
+	public Fault instantiateFault(String faultID)
 	{
 		return new HRFault(faultID, this.deviceIDByFaultID.get(faultID), this.descriptionByFaultID.get(faultID), Instant.now());
 	}

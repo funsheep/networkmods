@@ -1,11 +1,11 @@
 package com.lodige.faults;
 
-import github.javaappplatform.commons.collection.IObservableSet;
+import java.util.Collection;
 
 
-public interface IHasFaults<F extends Fault>
+public interface IHasFaults
 {
 
-	public IObservableSet<F> activeFaults();
+	public Collection<Fault> activeFaults();
 
 }

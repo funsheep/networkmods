@@ -12,7 +12,7 @@ public interface IState
 
 	public IHasStates parent();
 
-
+	
 	public boolean bitValue() throws StateReadException;
 
 	public short shortValue() throws StateReadException;
