@@ -40,8 +40,8 @@ public class Servlet extends LoomiServlet
 		Set<IListener> listeners = ExtensionRegistry.getServices(EXTPOINT_UI_LIFECYCLE);
 		for (IListener li : listeners)
 		{
-			this.addListener(ILoomiAPI.E_UISESSION_STARTED, li);
-			this.addListener(ILoomiAPI.E_UISESSION_CLOSED, li);
+			this.addListener(ILoomiAPI.E_UISESSION_STARTING, li);
+			this.addListener(ILoomiAPI.E_UISESSION_CLOSING, li);
 		}
 		if (this.udp == null)
 			this.udp = ExtensionRegistry.getService(EXTPOINT_USERDATA_PROVIDER);

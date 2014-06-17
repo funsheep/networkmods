@@ -61,6 +61,7 @@ public class PLCState extends AState
 		this.input = input;
 		this.bitnr = bitnr;
 		this.mapping = mapping;
+		((IHasStates.Internal) this.parent)._registerState(this);
 		this.input.plc().addListener(IPLCAPI.EVENT_INPUT_CHANGED, (e) ->
 		{
 			if (e.getData() == this.input)
@@ -221,7 +222,7 @@ public class PLCState extends AState
 	public <O>O objectValue() throws StateReadException
 	{
 		int code;
-		switch (this.type)
+		switch (this.input.type())
 		{
 			case INT:
 				code = this.intValue();

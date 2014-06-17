@@ -19,4 +19,9 @@ public interface IHasStates extends ITalker
 
 	public Collection<IState> states();
 	
+	
+	public interface Internal
+	{
+		public IState _registerState(IState state);
+	}
 }

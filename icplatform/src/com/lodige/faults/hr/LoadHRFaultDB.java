@@ -19,7 +19,13 @@ public class LoadHRFaultDB
 
 	private final HRFaultDB knownFaults = new HRFaultDB();
 
-	
+
+	public LoadHRFaultDB andDefineFault(String id, String deviceID, String description)
+	{
+		this.knownFaults.defineFault(id, deviceID, description);
+		return this;
+	}
+
 	public LoadHRFaultDB andDefineFault(int db, int offset, int bit, String deviceID, String description)
 	{
 		final String id = db + "." + offset + "." + bit;

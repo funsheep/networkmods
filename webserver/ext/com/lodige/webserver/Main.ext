@@ -7,13 +7,6 @@
 		"port" : 8080
 	},
 
-	"com.lodige.webserver.logging" :
-	{
-		"point" : "github.javaappplatform.platform.logging.Level",
-		"logger" : "org.eclipse.jetty",
-		"level" : "ERROR"
-	},
-	
 	"com.lodige.webserver.host" :
 	{
 		"point" : "github.javaappplatform.platform.option",

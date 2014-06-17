@@ -17,6 +17,7 @@ import com.lodige.network.plc.msg.PDUResultException;
 import com.lodige.network.plc.msg.Variable;
 import com.lodige.plc.IInput;
 import com.lodige.plc.IPLCAPI;
+import com.lodige.plc.IPLCAPI.ConnectionState;
 import com.lodige.plc.IPLCAPI.UpdateFrequency;
 
 /**
@@ -50,7 +51,7 @@ class InputPolling extends ADoJob
 	@Override
 	public void doJob()
 	{
-		if (!this.plc.connected())
+		if (this.plc.connectionState() != ConnectionState.CONNECTED)
 			return;
 		
 		try
@@ -76,7 +77,7 @@ class InputPolling extends ADoJob
 					}
 				}
 			}
-			
+
 			if (inputs.size() == 0)
 				return;
 			this.poll(r3, inputs);

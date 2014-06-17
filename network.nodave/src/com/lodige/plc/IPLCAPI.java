@@ -9,6 +9,10 @@ import github.javaappplatform.commons.util.StringID;
 public interface IPLCAPI
 {
 
+	public enum ConnectionState
+	{
+		NOT_CONNECTED, CONNECTING, CONNECTED, SHUTTING_DOWN, UNKNOWN;
+	}
 
 	public enum Type
 	{
@@ -56,8 +60,9 @@ public interface IPLCAPI
 	}
 	
 	public static final int EVENT_INPUT_CHANGED = StringID.id("EVENT_VALUE_CHANGED");
+	public static final int EVENT_CONNECTION_STATE_CHANGED = StringID.id("EVENT_CONNECTION_STATE_CHANGED");
 	
-	public static final String PLC_UPDATE_THREAD = "NodavePLC UPDATE_THREAD";
+	public static final String PLC_UPDATE_THREAD = "Update PLCs";
 
 	public static final String TCP_PLC_CLIENT_NETWORK_SERVICE = "com.lodige.network.plc.TCPNetworkService";
 }

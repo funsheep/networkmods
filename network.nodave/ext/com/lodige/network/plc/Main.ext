@@ -12,13 +12,6 @@
 		"class" : "com.lodige.network.client.ClientNetworkService",
 		"protocol" : "com.lodige.network.plc.protocol.TCPProtocol",
 		"singleton" : true
-	},
-
-	"com.lodige.nodave.logging" :
-	{
-		"point" : "github.javaappplatform.platform.logging.Level",
-		"logger" : "com.lodige.network.plc",
-		"level" : "INFO"
 	}
 	
 }

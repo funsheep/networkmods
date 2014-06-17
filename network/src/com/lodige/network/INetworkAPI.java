@@ -38,7 +38,7 @@ public interface INetworkAPI
 
 	public static final int MAX_UDP_PAKET_SIZE = 4096;
 	public static final int MAX_SERVER_CONNECTION_QUEUE = 10;
-	public static final int CONNECTION_TIMEOUT = 1000 * 15;
+	public static final int CONNECTION_TIMEOUT = 1000 * 30;
 
 	public static final int MAX_MESSAGE_COUNTER = 50;
 

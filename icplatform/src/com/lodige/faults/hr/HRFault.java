@@ -24,5 +24,14 @@ public class HRFault extends com.lodige.faults.Fault
 		this.deviceID = deviceID;
 		this.description = description;
 	}
-	
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString()
+	{
+		return this.id + " Occurred At " + this.occurrence + " On " + this.deviceID + " - " + this.description;
+	}
 }

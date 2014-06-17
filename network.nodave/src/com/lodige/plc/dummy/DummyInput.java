@@ -2,21 +2,19 @@
  * network.nodave Project at Loedige.
  * Closed Source. Not for licence.
  */
-package com.lodige.plc.nodave;
+package com.lodige.plc.dummy;
 
 import github.javaappplatform.commons.events.IInnerTalker;
 import github.javaappplatform.commons.log.Logger;
 import github.javaappplatform.platform.Platform;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.lodige.network.INetworkAPI;
-import com.lodige.network.plc.INodaveAPI.Area;
 import com.lodige.plc.IInput;
 import com.lodige.plc.IPLC;
 import com.lodige.plc.IPLCAPI;
@@ -25,19 +23,15 @@ import com.lodige.plc.IPLCAPI;
  * TODO javadoc
  * @author renken
  */
-class Input implements IInput, IPLCAPI
+public abstract class DummyInput implements IInput, IPLCAPI
 {
 	
 	private static final Logger LOGGER = Logger.getLogger();
 
 	
 	protected final String id;
-	protected final Area area;
-	protected final int database;
-	protected final int offset;
-	protected final int length;
 	protected final Type type;
-	protected final NodavePLC parent;
+	protected final DummyPLC parent;
 	
 	private final ReentrantLock lock = new ReentrantLock();
 	private final Condition waitForUpdate = this.lock.newCondition();
@@ -52,15 +46,12 @@ class Input implements IInput, IPLCAPI
 	/**
 	 * 
 	 */
-	protected Input(String id, Area area, int database, int offset, int length, Type type, NodavePLC parent)
+	protected DummyInput(String id, Type type, DummyPLC parent)
 	{
 		this.id = id;
-		this.area = area;
-		this.database = database;
-		this.offset = offset;
-		this.length = length;
 		this.type = type;
 		this.parent = parent;
+		this.parent.registerInput(this);
 	}
 
 
@@ -161,41 +152,11 @@ class Input implements IInput, IPLCAPI
 		}
 	}
 	
-	void update(byte[] data, int offset)
+	abstract Object computeUpdate();
+	
+	void update()
 	{
-		Object val = null;
-		switch (this.type)
-		{
-			case GENERIC:
-				val = data;
-				break;
-			case SHORT:
-				final short s = (short) (((data[0] & 0xFF) << 8) | (data[1] & 0xFF));
-				val = Short.valueOf(s);
-				break;
-			case INT:
-				final int i = ByteBuffer.wrap(data).getInt();
-				val = Integer.valueOf(i);
-				break;
-			case FLOAT:
-				final float f = ByteBuffer.wrap(data).getFloat();
-				val = Float.valueOf(f);
-				break;
-			case UBYTE:
-				final short ub = (short) (data[0] & 0xFF);
-				val = Short.valueOf(ub);
-				break;
-			case USHORT:
-				final int us = Short.toUnsignedInt((short) (((data[0] & 0xFF) << 8) | (data[1] & 0xFF)));
-				val = Integer.valueOf(us);
-				break;
-			case UINT:
-				final long ui = Integer.toUnsignedLong(ByteBuffer.wrap(data).getInt());
-				val = Long.valueOf(ui);
-				break;
-			default:
-				throw new RuntimeException("Should not happen.");
-		}
+		Object val = this.computeUpdate();
 		
 		boolean postEvent = false;
 		this.lock.lock();
@@ -208,6 +169,7 @@ class Input implements IInput, IPLCAPI
 			this.waitForUpdate.signalAll();
 			postEvent = this.type != Type.GENERIC && !this.value.equals(old) ||
 						this.type == Type.GENERIC && !Arrays.equals((byte[]) old, (byte[]) this.value);
+			LOGGER.debug("DummyInput {} updated.", this.id);
 		}
 		finally
 		{
@@ -215,7 +177,7 @@ class Input implements IInput, IPLCAPI
 		}
 		if (postEvent)
 		{
-			LOGGER.debug("Value of Input {} changed.", this.id);
+			LOGGER.info("Value of DummyInput {} changed.", this.id);
 			((IInnerTalker) this.parent).postEvent(IPLCAPI.EVENT_INPUT_CHANGED, this);
 		}
 	}
@@ -259,15 +221,7 @@ class Input implements IInput, IPLCAPI
 	public short shortValue() throws IOException
 	{
 		this.triggerInternalUpdate();
-		this.lock.lock();
-		try
-		{
-			return ((Short) this.value).shortValue();
-		}
-		finally
-		{
-			this.lock.unlock();
-		}
+		return ((Short) this.value).shortValue();
 	}
 
 	/**
@@ -277,15 +231,7 @@ class Input implements IInput, IPLCAPI
 	public int intValue() throws IOException
 	{
 		this.triggerInternalUpdate();
-		this.lock.lock();
-		try
-		{
-			return ((Integer) this.value).intValue();
-		}
-		finally
-		{
-			this.lock.unlock();
-		}
+		return ((Integer) this.value).intValue();
 	}
 
 	/**
@@ -295,15 +241,7 @@ class Input implements IInput, IPLCAPI
 	public float floatValue() throws IOException
 	{
 		this.triggerInternalUpdate();
-		this.lock.lock();
-		try
-		{
-			return ((Float) this.value).floatValue();
-		}
-		finally
-		{
-			this.lock.unlock();
-		}
+		return ((Float) this.value).floatValue();
 	}
 
 	/**
@@ -331,15 +269,7 @@ class Input implements IInput, IPLCAPI
 	public long uintValue() throws IOException
 	{
 		this.triggerInternalUpdate();
-		this.lock.lock();
-		try
-		{
-			return ((Long) this.value).longValue();
-		}
-		finally
-		{
-			this.lock.unlock();
-		}
+		return ((Long) this.value).longValue();
 	}
 
 	/**
@@ -349,15 +279,7 @@ class Input implements IInput, IPLCAPI
 	public byte[] genericValue() throws IOException
 	{
 		this.triggerInternalUpdate();
-		this.lock.lock();
-		try
-		{
-			return (byte[]) this.value;
-		}
-		finally
-		{
-			this.lock.unlock();
-		}
+		return (byte[]) this.value;
 	}
 
 	/**

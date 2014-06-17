@@ -69,11 +69,11 @@ public class TCPProtocol extends S7Protocol
 	@Override
 	public void onConnect(Socket socket) throws IOException
 	{
-		LOGGER.debug("daveConnectPLC() step 1. rack: {} slot: {}", Integer.valueOf(this.rack), Integer.valueOf(this.slot));
+		assert LOGGER.trace("daveConnectPLC() step 1. rack: {} slot: {}", Integer.valueOf(this.rack), Integer.valueOf(this.slot));
 		this.send(Message.create(INodaveAPI.MSG_OTHER, this.b4), socket.getOutputStream());
 
 		IMessage msg = this.read(socket.getInputStream());
-		LOGGER.debug("daveConnectPLC() step 1 - got {}", msg);
+		assert LOGGER.trace("daveConnectPLC() step 1 - got {}", msg);
 		if (msg == null)
 			throw new IOException("Could not connect to PLC.");
 		
@@ -86,7 +86,7 @@ public class TCPProtocol extends S7Protocol
 				if (header[i] == (byte)0xc0)
 				{
 					this.tPDUsize = 128 << (header[i+2] - 7);
-					LOGGER.debug("tPDU size: {}", Integer.valueOf(this.tPDUsize));
+					assert LOGGER.trace("tPDU size: {}", Integer.valueOf(this.tPDUsize));
 				}
 			}
 		}
@@ -105,6 +105,7 @@ public class TCPProtocol extends S7Protocol
 	@Override
 	public void send(IMessage msg, OutputStream out) throws IOException
 	{
+		LOGGER.debug("Send Msg: {}", msg);
 		final int headerSize = HEADER_LENGTH + (((msg.type() & INodaveAPI.MSG_PDU) != 0) ? 3 : 0);
 		out.write(0x03);
 		out.write(0x0);
@@ -113,10 +114,10 @@ public class TCPProtocol extends S7Protocol
 
 		
 		InputStream dataIn = msg.data();
-		LOGGER.debug("send packet header: {} ", Strings.toHexString(new byte[] { 0x03, 0, (byte)((msg.size()+headerSize) / 0x100), (byte)((msg.size()+headerSize) % 0x100)}, 0, 4));
+		assert LOGGER.trace("send packet header: {} ", Strings.toHexString(new byte[] { 0x03, 0, (byte)((msg.size()+headerSize) / 0x100), (byte)((msg.size()+headerSize) % 0x100)}, 0, 4));
 		if ((msg.type() & INodaveAPI.MSG_PDU) != 0)
 		{
-			LOGGER.debug("send PDU header: {} ", Strings.toHexString(PDU_HEADER, 0, PDU_HEADER.length));
+			LOGGER.trace("send PDU header: {} ", Strings.toHexString(PDU_HEADER, 0, PDU_HEADER.length));
 			out.write(PDU_HEADER);
 			int len = dataIn.read(this.pduHeader);
 			if (len == -1)
@@ -126,13 +127,11 @@ public class TCPProtocol extends S7Protocol
 		}
 		
 		int len;
-		LOGGER.debug("payload:");
+		assert LOGGER.trace("payload:");
 		while ((len = dataIn.read(this.sendBuffer)) != -1)
 		{
 			out.write(this.sendBuffer, 0, len);
-			LOGGER.debug(Strings.toHexString(this.sendBuffer, 0, len));
-			if (Thread.interrupted())
-				break;
+			assert LOGGER.trace(Strings.toHexString(this.sendBuffer, 0, len));
 		}
 		out.flush();
 	}
@@ -164,25 +163,27 @@ public class TCPProtocol extends S7Protocol
 		boolean follow = ((data[1]==0xf0)&& ((data[2] & 0x80)==0) );
 		while (follow)
 		{
-			LOGGER.trace("read more data: {}", Byte.valueOf(header[2]));
+			assert LOGGER.trace("read more data: {}", Byte.valueOf(header[2]));
 			final byte[] lheader = new byte[7];
 			if (!InternalNetTools.readData(in, lheader, 0, lheader.length))
 				break;
 			
 			length = lheader[3]+0x100*lheader[2];
-			LOGGER.trace("read more data length: {}", Integer.valueOf(length));
+			assert LOGGER.trace("read more data length: {}", Integer.valueOf(length));
 			data = new byte[length-7];
 			if (!InternalNetTools.readData(in, data, 0, data.length))
 				break;
 			array.putAll(data);
 			
-			LOGGER.trace("Read payload:", Strings.toHexString(data));
+			assert LOGGER.trace("Read payload:", Strings.toHexString(data));
 			follow=((lheader[5]==0xf0) && ((lheader[6] & 0x80)==0) );
 		}
 		
-		LOGGER.debug("read message of {} bytes: {}", Integer.valueOf(array.size()), Strings.toHexString(array.getData()));
+		assert LOGGER.trace("read message of {} bytes: {}", Integer.valueOf(array.size()), Strings.toHexString(array.getData()));
 		
-		return Message.create(NodaveTools.msgType(array, TCP_START_IN), array, array.size(), null);
+		Message msg = Message.create(NodaveTools.msgType(array, TCP_START_IN), array, array.size(), null);
+		LOGGER.debug("Read Msg: {}", msg);
+		return msg;
 	}
 
 	/**

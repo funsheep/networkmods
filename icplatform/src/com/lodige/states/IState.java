@@ -32,4 +32,5 @@ public interface IState
 	public byte[] genericValue() throws StateReadException;
 	
 	public <O> O objectValue() throws StateReadException;
+
 }

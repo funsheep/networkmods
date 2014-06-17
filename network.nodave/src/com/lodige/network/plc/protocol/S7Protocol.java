@@ -58,7 +58,7 @@ public abstract class S7Protocol implements IProtocol
 		if (result.getError() != Result.OK.code)
 			throw new IOException(NodaveTools.strerror(result.getError()));
 		this.maxPDUlength = Converter.USBEWord(result.params(), 6);
-		LOGGER.debug("*** Partner offered PDU length: {}", Integer.valueOf(this.maxPDUlength));
+		LOGGER.debug("Partner offered PDU length: {}", Integer.valueOf(this.maxPDUlength));
 	}
 
 }

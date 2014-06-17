@@ -2,43 +2,35 @@
  * lodige.platform Project at Loedige.
  * Closed Source. Not for licence.
  */
-package com.lodige.plc.nodave;
+package com.lodige.plc.dummy;
 
 import java.io.IOException;
 
-import com.lodige.network.plc.INodaveAPI.Area;
 import com.lodige.plc.IOutput;
+import com.lodige.plc.IPLC;
 import com.lodige.plc.IPLCAPI;
 
 /**
  * TODO javadoc
  * @author renken
  */
-class Output implements IOutput, IPLCAPI
+public abstract class DummyOutput implements IOutput, IPLCAPI
 {
 	
 	private final String id;
 	private final Type type;
-	protected final Area area;
-	protected final int database;
-	protected final int offset;
-	private final int length;
-	private final NodavePLC parent; 
+	private final DummyPLC parent; 
 
 	
 	/**
 	 * 
 	 */
-	public Output(String id, Area area, int database, int offset, int length, Type type, NodavePLC parent)
+	public DummyOutput(String id, Type type, DummyPLC parent)
 	{
 		this.id = id;
-		this.area = area;
-		this.database = database;
-		this.offset = offset;
-//		this.bitnr = bitnr;
-		this.length = length;
 		this.type = type;
 		this.parent = parent;
+		this.parent.registerOutput(this);
 	}
 
 
@@ -64,7 +56,7 @@ class Output implements IOutput, IPLCAPI
 	 * {@inheritDoc}
 	 */
 	@Override
-	public NodavePLC plc()
+	public IPLC plc()
 	{
 		return this.parent;
 	}
@@ -99,8 +91,7 @@ class Output implements IOutput, IPLCAPI
 	{
 		if (this.type != Type.SHORT)
 			throw new IllegalStateException("DummyOutput is of type " + this.type);
-		byte[] data = { (byte) ((value >> 8) & 0xFF), (byte) (value & 0xFF) };
-		this.parent.writeOutput(this, data);
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	/**
@@ -111,8 +102,7 @@ class Output implements IOutput, IPLCAPI
 	{
 		if (this.type != Type.INT)
 			throw new IllegalStateException("DummyOutput is of type " + this.type);
-		byte[] data = { (byte)(value >>> 24), (byte)(value >>> 16), (byte)(value >>> 8), (byte)value };
-		this.parent.writeOutput(this, data);
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	/**
@@ -123,9 +113,7 @@ class Output implements IOutput, IPLCAPI
 	{
 		if (this.type != Type.FLOAT)
 			throw new IllegalStateException("DummyOutput is of type " + this.type);
-		final int value = Float.floatToRawIntBits(fvalue);
-		byte[] data = { (byte)(value >>> 24), (byte)(value >>> 16), (byte)(value >>> 8), (byte)value };
-		this.parent.writeOutput(this, data);
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	/**
@@ -136,8 +124,7 @@ class Output implements IOutput, IPLCAPI
 	{
 		if (this.type != Type.UBYTE)
 			throw new IllegalStateException("DummyOutput is of type " + this.type);
-		byte b = (byte) (value & 0xFF);
-		this.parent.writeOutput(this, new byte[] { b });
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	/**
@@ -148,8 +135,7 @@ class Output implements IOutput, IPLCAPI
 	{
 		if (this.type != Type.USHORT)
 			throw new IllegalStateException("DummyOutput is of type " + this.type);
-		byte[] data = { (byte) ((value >> 8) & 0xFF), (byte) (value & 0xFF) };
-		this.parent.writeOutput(this, data);
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	/**
@@ -160,8 +146,7 @@ class Output implements IOutput, IPLCAPI
 	{
 		if (this.type != Type.UINT)
 			throw new IllegalStateException("DummyOutput is of type " + this.type);
-		byte[] data = { (byte) (value >>> 24), (byte) (value >>> 16), (byte) (value >>> 8), (byte) value };
-		this.parent.writeOutput(this, data);
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	/**
@@ -172,9 +157,7 @@ class Output implements IOutput, IPLCAPI
 	{
 		if (this.type != Type.GENERIC)
 			throw new IllegalStateException("DummyOutput is of type " + this.type);
-		if (this.length != data.length)
-			throw new IllegalArgumentException("Size of data ["+data.length+"] does not match expected data length ["+this.length+"].");
-		this.parent.writeOutput(this, data);
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 }

@@ -4,7 +4,7 @@
  */
 package com.lodige.plc.nodave;
 
-import github.javaappplatform.commons.events.TalkerStub;
+import github.javaappplatform.platform.job.JobbedTalkerStub;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +20,8 @@ import com.lodige.network.plc.Write.Write3;
 import com.lodige.plc.IInput;
 import com.lodige.plc.IOutput;
 import com.lodige.plc.IPLC;
+import com.lodige.plc.IPLCAPI;
+import com.lodige.plc.IPLCAPI.ConnectionState;
 import com.lodige.plc.IPLCAPI.Type;
 import com.lodige.plc.IPLCAPI.UpdateFrequency;
 
@@ -28,7 +30,7 @@ import com.lodige.plc.IPLCAPI.UpdateFrequency;
  * TODO javadoc
  * @author renken
  */
-public class NodavePLC extends TalkerStub implements IPLC
+public class NodavePLC extends JobbedTalkerStub implements IPLC
 {
 
 	protected final ClientConnection cc;
@@ -44,6 +46,7 @@ public class NodavePLC extends TalkerStub implements IPLC
 	 */
 	public NodavePLC(String host, ClientNetworkService service) throws IOException
 	{
+		super(IPLCAPI.PLC_UPDATE_THREAD);
 		this.cc = new ClientConnection(host, 102, null, service);
 		this.cc.connect();
 		new InputPolling(this);
@@ -51,7 +54,9 @@ public class NodavePLC extends TalkerStub implements IPLC
 
 	public NodavePLC(ClientConnection connection)
 	{
+		super(IPLCAPI.PLC_UPDATE_THREAD);
 		this.cc = connection;
+		this.cc.addListener(INetworkAPI.E_STATE_CHANGED, (e) -> this.postEvent(IPLCAPI.EVENT_CONNECTION_STATE_CHANGED));
 		new InputPolling(this);
 	}
 
@@ -243,9 +248,21 @@ public class NodavePLC extends TalkerStub implements IPLC
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean connected()
+	public ConnectionState connectionState()
 	{
-		return this.cc.state() == INetworkAPI.S_CONNECTED;
+		switch (this.cc.state())
+		{
+			case INetworkAPI.S_CONNECTED:
+				return ConnectionState.CONNECTED;
+			case INetworkAPI.S_NOT_CONNECTED:
+				return ConnectionState.NOT_CONNECTED;
+			case INetworkAPI.S_CONNECTION_PENDING:
+				return ConnectionState.CONNECTING;
+			case INetworkAPI.S_CLOSING:
+				return ConnectionState.SHUTTING_DOWN;
+			default:
+				return ConnectionState.UNKNOWN;
+		}
 	}
 
 }

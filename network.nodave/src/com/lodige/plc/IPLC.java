@@ -5,6 +5,7 @@ import github.javaappplatform.commons.events.ITalker;
 import java.io.IOException;
 import java.util.Collection;
 
+import com.lodige.plc.IPLCAPI.ConnectionState;
 import com.lodige.plc.IPLCAPI.UpdateFrequency;
 
 /**
@@ -27,6 +28,6 @@ public interface IPLC extends ITalker
 	public boolean transactionActive();
 	public void endTransaction() throws IOException;
 
-	public boolean connected();
+	public ConnectionState connectionState();
 	
 }

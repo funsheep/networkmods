@@ -4,6 +4,8 @@
  */
 package com.lodige.states;
 
+import github.javaappplatform.commons.util.Strings;
+
 import com.lodige.states.IStateAPI.Type;
 
 /**
@@ -167,4 +169,62 @@ public abstract class AState implements IState
 		throw new StateReadException("Not implemented.");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder(20);
+		for (int i = this.type.name().length(); i < 6; i++)
+			sb.append(' ');
+		sb.append('[');
+		sb.append(this.type.name());
+		sb.append(']');
+		sb.append(this.id);
+		sb.append(" : ");
+		try
+		{
+			switch (this.type)
+			{
+				case BIT:
+					sb.append(this.bitValue());
+					break;
+				case FLOAT:
+					sb.append(this.floatValue());
+					break;
+				case GENERIC:
+					sb.append(Strings.toHexString(this.genericValue()));
+					break;
+				case INT:
+					sb.append(this.intValue());
+					break;
+				case OBJECT:
+					sb.append(String.valueOf(this.objectValue()));
+					break;
+				case SHORT:
+					sb.append(this.shortValue());
+					break;
+				case STRING:
+					sb.append(this.stringValue());
+					break;
+				case UBYTE:
+					sb.append(this.ubyteValue());
+					break;
+				case UINT:
+					sb.append(this.uintValue());
+					break;
+				case USHORT:
+					sb.append(this.ushortValue());
+					break;
+			}
+		}
+		catch (StateReadException e)
+		{
+			sb.append(e.getMessage());
+			if (e.getCause() != null)
+				sb.append(e.getCause());
+		}
+		return sb.toString();
+	}
 }
