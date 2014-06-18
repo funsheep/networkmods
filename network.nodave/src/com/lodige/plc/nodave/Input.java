@@ -41,7 +41,6 @@ class Input implements IInput, IPLCAPI
 	
 	private final ReentrantLock lock = new ReentrantLock();
 	private final Condition waitForUpdate = this.lock.newCondition();
-	private Boolean onTrigger = null;
 	private UpdateFrequency frequency = null;
 	private boolean triggerUpdate = false;
 	
@@ -109,7 +108,6 @@ class Input implements IInput, IPLCAPI
 		this.lock.lock();
 		try
 		{
-			this.onTrigger = null;
 			this.frequency = null;
 		}
 		finally
@@ -122,12 +120,11 @@ class Input implements IInput, IPLCAPI
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setUpdateMethod(UpdateFrequency frequency, boolean onTrigger)
+	public void setUpdateMethod(UpdateFrequency frequency)
 	{
 		this.lock.lock();
 		try
 		{
-			this.onTrigger = Boolean.valueOf(onTrigger);
 			this.frequency = frequency;
 		}
 		finally
@@ -141,24 +138,22 @@ class Input implements IInput, IPLCAPI
 		return this.frequency != null ? this.frequency : this.parent.frequency();
 	}
 
-	private boolean onTrigger()
-	{
-		return this.onTrigger != null ? this.onTrigger.booleanValue() : this.parent.onTrigger();
-	}
-
 	boolean startUpdate()
 	{
 		this.lock.lock();
 		try
 		{
-			return Platform.currentTime() - this.lastUpdate > this.frequency().schedule ||
-				   this.triggerUpdate ||
-				   this.value == null;
+			return Platform.currentTime() - this.lastUpdate > this.frequency().schedule || this.triggerUpdate;
 		}
 		finally
 		{
 			this.lock.unlock();
 		}
+	}
+	
+	void updateNoValue()
+	{
+		this.setValue(null);
 	}
 	
 	void update(byte[] data, int offset)
@@ -196,18 +191,21 @@ class Input implements IInput, IPLCAPI
 			default:
 				throw new RuntimeException("Should not happen.");
 		}
-		
+		this.setValue(val);
+	}
+	
+	private void setValue(Object newValue)
+	{
 		boolean postEvent = false;
 		this.lock.lock();
 		try
 		{
 			Object old = this.value;
-			this.value = val;
+			this.value = newValue;
 			this.lastUpdate = Platform.currentTime();
 			this.triggerUpdate = false;
 			this.waitForUpdate.signalAll();
-			postEvent = this.type != Type.GENERIC && !this.value.equals(old) ||
-						this.type == Type.GENERIC && !Arrays.equals((byte[]) old, (byte[]) this.value);
+			postEvent = !this._equals(old);
 		}
 		finally
 		{
@@ -220,49 +218,46 @@ class Input implements IInput, IPLCAPI
 		}
 	}
 	
-	private boolean waitForUpdate()
+	private boolean _equals(Object old)
 	{
-		if (this.value == null || this.onTrigger())
-		{
-			this.triggerUpdate = true;
-			return true;
-		}
-		return false;
+		if (this.type == Type.GENERIC)
+			return Arrays.equals((byte[]) old, (byte[]) this.value);
+		return this.value == old || old != null && old.equals(this.value);	
 	}
 	
-	private void triggerInternalUpdate() throws IOException
+	private void triggerInternalUpdate(boolean forceUpdate) throws IOException
 	{
-		this.lock.lock();
-		try
+		if (forceUpdate)
 		{
-			if (this.waitForUpdate())
+			if (this.parent.connectionState() != ConnectionState.CONNECTED)
+				throw new IOException("No Connection to PLC.");
+			this.triggerUpdate = true;
+			try
 			{
-				if (this.parent.connectionState() != ConnectionState.CONNECTED)
-					throw new IOException("No Connection to PLC.");
 				if (!this.waitForUpdate.await(INetworkAPI.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS))
 					throw new IOException("Timeout: Did not get update for input " + this.id + " for NodavePLC " + this.parent.id() + " in time.");
 			}
+			catch (InterruptedException e)
+			{
+				throw new RuntimeException(e);
+			}
 		}
-		catch (InterruptedException e)
-		{
-			throw new RuntimeException(e);
-		}
-		finally
-		{
-			this.lock.unlock();
-		}
+		else if (!forceUpdate && this.value == null)
+			this.triggerUpdate = true;
+		if (this.value == null)
+			throw new IOException("No value from input " + this.id + " available.");
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public short shortValue() throws IOException
+	public short shortValue(boolean forceUpdate) throws IOException
 	{
-		this.triggerInternalUpdate();
 		this.lock.lock();
 		try
 		{
+			this.triggerInternalUpdate(forceUpdate);
 			return ((Short) this.value).shortValue();
 		}
 		finally
@@ -275,12 +270,12 @@ class Input implements IInput, IPLCAPI
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int intValue() throws IOException
+	public int intValue(boolean forceUpdate) throws IOException
 	{
-		this.triggerInternalUpdate();
 		this.lock.lock();
 		try
 		{
+			this.triggerInternalUpdate(forceUpdate);
 			return ((Integer) this.value).intValue();
 		}
 		finally
@@ -293,12 +288,12 @@ class Input implements IInput, IPLCAPI
 	 * {@inheritDoc}
 	 */
 	@Override
-	public float floatValue() throws IOException
+	public float floatValue(boolean forceUpdate) throws IOException
 	{
-		this.triggerInternalUpdate();
 		this.lock.lock();
 		try
 		{
+			this.triggerInternalUpdate(forceUpdate);
 			return ((Float) this.value).floatValue();
 		}
 		finally
@@ -311,30 +306,30 @@ class Input implements IInput, IPLCAPI
 	 * {@inheritDoc}
 	 */
 	@Override
-	public short ubyteValue() throws IOException
+	public short ubyteValue(boolean forceUpdate) throws IOException
 	{
-		return this.shortValue();
+		return this.shortValue(forceUpdate);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int ushortValue() throws IOException
+	public int ushortValue(boolean forceUpdate) throws IOException
 	{
-		return this.intValue();
+		return this.intValue(forceUpdate);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long uintValue() throws IOException
+	public long uintValue(boolean forceUpdate) throws IOException
 	{
-		this.triggerInternalUpdate();
 		this.lock.lock();
 		try
 		{
+			this.triggerInternalUpdate(forceUpdate);
 			return ((Long) this.value).longValue();
 		}
 		finally
@@ -347,12 +342,12 @@ class Input implements IInput, IPLCAPI
 	 * {@inheritDoc}
 	 */
 	@Override
-	public byte[] genericValue() throws IOException
+	public byte[] genericValue(boolean forceUpdate) throws IOException
 	{
-		this.triggerInternalUpdate();
 		this.lock.lock();
 		try
 		{
+			this.triggerInternalUpdate(forceUpdate);
 			return (byte[]) this.value;
 		}
 		finally

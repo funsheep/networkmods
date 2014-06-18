@@ -22,7 +22,7 @@ public interface IPLC extends ITalker
 	public IOutput getOutput(String id);
 	public Collection<IOutput> outputs();
 
-	public void setUpdateMethod(UpdateFrequency frequency, boolean updateOnTrigger);
+	public void setUpdateMethod(UpdateFrequency frequency);
 
 	public void beginTransaction();
 	public boolean transactionActive();

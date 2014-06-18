@@ -54,36 +54,47 @@ class InputPolling extends ADoJob
 		if (this.plc.connectionState() != ConnectionState.CONNECTED)
 			return;
 		
-		try
+		Read r = Read.fromPLC(this.plc.cc);
+		Read.Read3 r3 = null;
+		ArrayList<Input> inputs = new ArrayList<>();
+		for (IInput input : this.plc.inputs())
 		{
-			Read r = Read.fromPLC(this.plc.cc);
-			Read.Read3 r3 = null;
-			ArrayList<Input> inputs = new ArrayList<>();
-			for (IInput input : this.plc.inputs())
+			Input in = (Input) input;
+			if (in.startUpdate())
 			{
-				Input in = (Input) input;
-				if (in.startUpdate())
+				if (r3 != null)
+					r = r3.andRead();
+				r3 = r.bytes(in.length).from(in.area).andDatabase(in.database).startAt(in.offset);
+				inputs.add(in);
+				if (inputs.size() == MAX_INPUTS_PER_POLL)
 				{
-					if (r3 != null)
-						r = r3.andRead();
-					r3 = r.bytes(in.length).from(in.area).andDatabase(in.database).startAt(in.offset);
-					inputs.add(in);
-					if (inputs.size() == MAX_INPUTS_PER_POLL)
+					try
 					{
 						this.poll(r3, inputs);
-						inputs = new ArrayList<>();
-						r =  Read.fromPLC(this.plc.cc);
-						r3 = null;
 					}
+					catch (IOException e)
+					{
+						for (Input i : inputs)
+							i.updateNoValue();
+						LOGGER.info("Could not read data from plc {}.", this.plc.id(), e);
+					}
+					inputs = new ArrayList<>();
+					r =  Read.fromPLC(this.plc.cc);
+					r3 = null;
 				}
 			}
+		}
 
-			if (inputs.size() == 0)
-				return;
+		if (inputs.size() == 0)
+			return;
+		try
+		{
 			this.poll(r3, inputs);
 		}
 		catch (IOException e)
 		{
+			for (Input i : inputs)
+				i.updateNoValue();
 			LOGGER.info("Could not read data from plc {}.", this.plc.id(), e);
 		}
 	}

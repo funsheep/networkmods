@@ -35,7 +35,6 @@ public abstract class DummyInput implements IInput, IPLCAPI
 	
 	private final ReentrantLock lock = new ReentrantLock();
 	private final Condition waitForUpdate = this.lock.newCondition();
-	private Boolean onTrigger = null;
 	private UpdateFrequency frequency = null;
 	private boolean triggerUpdate = false;
 	
@@ -100,7 +99,6 @@ public abstract class DummyInput implements IInput, IPLCAPI
 		this.lock.lock();
 		try
 		{
-			this.onTrigger = null;
 			this.frequency = null;
 		}
 		finally
@@ -113,12 +111,11 @@ public abstract class DummyInput implements IInput, IPLCAPI
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setUpdateMethod(UpdateFrequency frequency, boolean onTrigger)
+	public void setUpdateMethod(UpdateFrequency frequency)
 	{
 		this.lock.lock();
 		try
 		{
-			this.onTrigger = Boolean.valueOf(onTrigger);
 			this.frequency = frequency;
 		}
 		finally
@@ -130,11 +127,6 @@ public abstract class DummyInput implements IInput, IPLCAPI
 	private UpdateFrequency frequency()
 	{
 		return this.frequency != null ? this.frequency : this.parent.frequency();
-	}
-
-	private boolean onTrigger()
-	{
-		return this.onTrigger != null ? this.onTrigger.booleanValue() : this.parent.onTrigger();
 	}
 
 	boolean startUpdate()
@@ -182,23 +174,19 @@ public abstract class DummyInput implements IInput, IPLCAPI
 		}
 	}
 	
-	private boolean waitForUpdate()
-	{
-		if (this.value == null || this.onTrigger() && Platform.currentTime() - this.lastUpdate > UpdateFrequency.HIGH.schedule)
-		{
-			this.triggerUpdate = true;
-			return true;
-		}
-		return false;
-	}
-	
-	private void triggerInternalUpdate() throws IOException
+	private void triggerInternalUpdate(boolean forceUpdate) throws IOException
 	{
 		this.lock.lock();
 		try
 		{
-			if (this.waitForUpdate())
+			if (this.value == null && !forceUpdate)
 			{
+				this.triggerUpdate = true;
+				throw new IOException("No values available.");
+			}
+			if (forceUpdate || this.value == null)
+			{
+				this.triggerUpdate = true;
 				if (!this.waitForUpdate.await(INetworkAPI.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS))
 					throw new IOException("Timeout: Did not get update for input " + this.id + " for NodavePLC " + this.parent.id() + " in time.");
 			}
@@ -218,9 +206,9 @@ public abstract class DummyInput implements IInput, IPLCAPI
 	 * {@inheritDoc}
 	 */
 	@Override
-	public short shortValue() throws IOException
+	public short shortValue(boolean forceUpdate) throws IOException
 	{
-		this.triggerInternalUpdate();
+		this.triggerInternalUpdate(forceUpdate);
 		return ((Short) this.value).shortValue();
 	}
 
@@ -228,9 +216,9 @@ public abstract class DummyInput implements IInput, IPLCAPI
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int intValue() throws IOException
+	public int intValue(boolean forceUpdate) throws IOException
 	{
-		this.triggerInternalUpdate();
+		this.triggerInternalUpdate(forceUpdate);
 		return ((Integer) this.value).intValue();
 	}
 
@@ -238,9 +226,9 @@ public abstract class DummyInput implements IInput, IPLCAPI
 	 * {@inheritDoc}
 	 */
 	@Override
-	public float floatValue() throws IOException
+	public float floatValue(boolean forceUpdate) throws IOException
 	{
-		this.triggerInternalUpdate();
+		this.triggerInternalUpdate(forceUpdate);
 		return ((Float) this.value).floatValue();
 	}
 
@@ -248,27 +236,27 @@ public abstract class DummyInput implements IInput, IPLCAPI
 	 * {@inheritDoc}
 	 */
 	@Override
-	public short ubyteValue() throws IOException
+	public short ubyteValue(boolean forceUpdate) throws IOException
 	{
-		return this.shortValue();
+		return this.shortValue(forceUpdate);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int ushortValue() throws IOException
+	public int ushortValue(boolean forceUpdate) throws IOException
 	{
-		return this.intValue();
+		return this.intValue(forceUpdate);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long uintValue() throws IOException
+	public long uintValue(boolean forceUpdate) throws IOException
 	{
-		this.triggerInternalUpdate();
+		this.triggerInternalUpdate(forceUpdate);
 		return ((Long) this.value).longValue();
 	}
 
@@ -276,9 +264,9 @@ public abstract class DummyInput implements IInput, IPLCAPI
 	 * {@inheritDoc}
 	 */
 	@Override
-	public byte[] genericValue() throws IOException
+	public byte[] genericValue(boolean forceUpdate) throws IOException
 	{
-		this.triggerInternalUpdate();
+		this.triggerInternalUpdate(forceUpdate);
 		return (byte[]) this.value;
 	}
 

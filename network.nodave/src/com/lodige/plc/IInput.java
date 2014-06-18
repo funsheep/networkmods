@@ -21,20 +21,56 @@ public interface IInput
 
 	public void resetUpdateMethod();
 
-	public void setUpdateMethod(UpdateFrequency frequency, boolean onTrigger);
+	public void setUpdateMethod(UpdateFrequency frequency);
 	
-	public short shortValue() throws IOException;
 
-	public int intValue() throws IOException;
+	public default short shortValue() throws IOException
+	{
+		return this.shortValue(false);
+	}
 
-	public float floatValue() throws IOException;
+	public default int intValue() throws IOException
+	{
+		return this.intValue(false);
+	}
 
-	public short ubyteValue() throws IOException;
+	public default float floatValue() throws IOException
+	{
+		return this.floatValue(false);
+	}
 
-	public int ushortValue() throws IOException;
+	public default short ubyteValue() throws IOException
+	{
+		return this.ubyteValue(false);
+	}
 
-	public long uintValue() throws IOException;
+	public default int ushortValue() throws IOException
+	{
+		return this.ushortValue(false);
+	}
+
+	public default long uintValue() throws IOException
+	{
+		return this.uintValue(false);
+	}
 	
-	public byte[] genericValue() throws IOException;
+	public default byte[] genericValue() throws IOException
+	{
+		return this.genericValue(false);
+	}
+
+	public short shortValue(boolean forceUpdate) throws IOException;
+
+	public int intValue(boolean forceUpdate) throws IOException;
+
+	public float floatValue(boolean forceUpdate) throws IOException;
+
+	public short ubyteValue(boolean forceUpdate) throws IOException;
+
+	public int ushortValue(boolean forceUpdate) throws IOException;
+
+	public long uintValue(boolean forceUpdate) throws IOException;
+	
+	public byte[] genericValue(boolean forceUpdate) throws IOException;
 
 }

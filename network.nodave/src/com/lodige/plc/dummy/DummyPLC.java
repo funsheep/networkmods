@@ -28,7 +28,6 @@ public class DummyPLC extends JobbedTalkerStub implements IPLC
 	private final String id;
 	private final HashMap<String, IInput> inputs = new HashMap<>();
 	private final HashMap<String, IOutput> outputs = new HashMap<>();
-	private boolean updateOnTrigger = false;
 	private UpdateFrequency frequency = UpdateFrequency.MEDIUM;
 	private boolean transactionActive = false;
 
@@ -116,20 +115,14 @@ public class DummyPLC extends JobbedTalkerStub implements IPLC
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void setUpdateMethod(UpdateFrequency frequency, boolean updateOnTrigger)
+	public synchronized void setUpdateMethod(UpdateFrequency frequency)
 	{
-		this.updateOnTrigger = updateOnTrigger;
 		this.frequency = frequency;
 	}
 
 	synchronized UpdateFrequency frequency()
 	{
 		return this.frequency;
-	}
-
-	synchronized boolean onTrigger()
-	{
-		return this.updateOnTrigger;
 	}
 
 	/**

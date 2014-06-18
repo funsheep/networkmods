@@ -36,7 +36,6 @@ public class NodavePLC extends JobbedTalkerStub implements IPLC
 	protected final ClientConnection cc;
 	private final HashMap<String, Input> inputs = new HashMap<>();
 	private final HashMap<String, IOutput> outputs = new HashMap<>();
-	private boolean updateOnTrigger = false;
 	private UpdateFrequency frequency = UpdateFrequency.MEDIUM;
 	private boolean transactionActive = false;
 
@@ -183,20 +182,14 @@ public class NodavePLC extends JobbedTalkerStub implements IPLC
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized void setUpdateMethod(UpdateFrequency frequency, boolean updateOnTrigger)
+	public synchronized void setUpdateMethod(UpdateFrequency frequency)
 	{
-		this.updateOnTrigger = updateOnTrigger;
 		this.frequency = frequency;
 	}
 	
 	synchronized UpdateFrequency frequency()
 	{
 		return this.frequency;
-	}
-
-	synchronized boolean onTrigger()
-	{
-		return this.updateOnTrigger;
 	}
 
 	/**

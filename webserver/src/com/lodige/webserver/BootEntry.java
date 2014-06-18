@@ -47,7 +47,8 @@ public class BootEntry implements IBootEntry
 		ServerConnector http = new ServerConnector(this.server);
 		http.setHost(Platform.getOptionValue(O_WEBSERVER_HOST, e.getProperty("host", "localhost")));
 		http.setPort(Platform.getOptionValue(O_WEBSERVER_PORT, e.getProperty("port", 80)));
-		http.setIdleTimeout(e.getProperty("idle_timeout", 500000));
+		http.setIdleTimeout(e.getProperty("idle_timeout", 45 * 1000));
+		http.setSoLingerTime(0);
 		LOGGER.info("Server Address is {}:{}", http.getHost(), Integer.valueOf(http.getPort()));
 		this.server.addConnector(http);
 		

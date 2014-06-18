@@ -54,7 +54,12 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 		@Override
 		public void doJob()
 		{
-			ANetworkConnection.this.postEvent(INetworkAPI.E_MSG_RECEIVED, ANetworkConnection.this.receiveQueue.take());
+			if (ANetworkConnection.this.receiveQueue.size() > 0)
+			{
+				IMessage msg = ANetworkConnection.this.receiveQueue.take();
+				if (msg != null)
+					ANetworkConnection.this.postEvent(INetworkAPI.E_MSG_RECEIVED, msg);
+			}
 		}
 		
 		/**
