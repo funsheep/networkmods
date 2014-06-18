@@ -18,16 +18,21 @@ public class NegateBitState extends AState
 	private final IState state;
 
 
+	public NegateBitState(String id, IState state)
+	{
+		this(id, state, state.parent());
+	}
+
 	/**
 	 * @param id
 	 * @param type
 	 * @param parent
 	 */
-	public NegateBitState(String id, IState state)
+	public NegateBitState(String id, IState state, IHasStates parent)
 	{
-		super(id, Type.BIT, state.parent());
+		super(id, Type.BIT, parent);
 		this.state = state;
-		this.parent.addListener(IStateAPI.EVENT_STATE_CHANGED, (e) ->
+		parent.addListener(IStateAPI.EVENT_STATE_CHANGED, (e) ->
 		{
 			if (e.getData() == this.state)
 				((IInnerTalker) this.parent).postEvent(e.type(), this);
