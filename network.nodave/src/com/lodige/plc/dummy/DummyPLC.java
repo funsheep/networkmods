@@ -54,7 +54,7 @@ public class DummyPLC extends JobbedTalkerStub implements IPLC
 	synchronized void registerInput(DummyInput input)
 	{
 		if (this.inputs.containsKey(input.id()))
-			throw new IllegalArgumentException("An input with ID " + input.id() + " is already registered.");
+			throw new IllegalArgumentException("An input with ID " + input.id() + " is already registered."); //$NON-NLS-1$ //$NON-NLS-2$
 		this.inputs.put(input.id(), input);
 	}
 
@@ -84,7 +84,7 @@ public class DummyPLC extends JobbedTalkerStub implements IPLC
 	synchronized void registerOutput(DummyOutput output)
 	{
 		if (this.outputs.containsKey(output.id()))
-			throw new IllegalArgumentException("An output with ID " + output.id() + " is already registered.");
+			throw new IllegalArgumentException("An output with ID " + output.id() + " is already registered."); //$NON-NLS-1$ //$NON-NLS-2$
 		this.outputs.put(output.id(), output);
 	}
 

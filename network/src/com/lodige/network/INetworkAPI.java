@@ -15,9 +15,9 @@ package com.lodige.network;
 public interface INetworkAPI
 {
 
-	public static final String NETWORK_THREAD = "network";
+	public static final String NETWORK_THREAD = "network"; //$NON-NLS-1$
 	
-	public static final String EXTPOINT_NETWORK_SERVICE = "com.lodige.network.NetworkService";
+	public static final String EXTPOINT_NETWORK_SERVICE = "com.lodige.network.NetworkService"; //$NON-NLS-1$
 
 
 	public static final int S_NOT_STARTED = 1;

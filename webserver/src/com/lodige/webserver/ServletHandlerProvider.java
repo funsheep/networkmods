@@ -27,6 +27,7 @@ public class ServletHandlerProvider implements IHandlerProvider
 {
 
 	public static final String EXT_POINT_SERVLET = "com.lodige.webserver.servlet";
+	public static final String EXT_POINT_SERVLET_INIT_PARAMS = "com.lodige.webserver.servlet.initparameters";
 	
 	
 	/**
@@ -51,6 +52,7 @@ public class ServletHandlerProvider implements IHandlerProvider
 			ServletHolder holder = new ServletHolder();
 			parseServletExtension(ext, holder);
 			parseServletAnnotations(holder);
+			parseServletInitparams(holder);
 			for (String url : urlPatterns(ext))
 				handler.addServlet(holder, url);
 		}
@@ -59,6 +61,7 @@ public class ServletHandlerProvider implements IHandlerProvider
 	
 	private static void parseServletExtension(Extension ext, ServletHolder holder)
 	{
+		holder.setName(ext.getProperty("name", ext.name));
 		for (Entry<String, Object> entry : ext.getProperties())
 		{
 			switch (entry.getKey())
@@ -73,7 +76,6 @@ public class ServletHandlerProvider implements IHandlerProvider
 					holder.setInitOrder(ext.getProperty("loadOnStartup", -1));
 					break;
 				case "name":
-					holder.setName(ext.getProperty("name", ""));
 					break;
 				case "class":
 					holder.setClassName(ext.getProperty("class", ""));
@@ -87,8 +89,27 @@ public class ServletHandlerProvider implements IHandlerProvider
 			}
 		}
 	}
+	
+	private static final void parseServletInitparams(ServletHolder holder)
+	{
+		Set<Extension> exts = ExtensionRegistry.getExtensions(EXT_POINT_SERVLET_INIT_PARAMS, "servlet="+holder.getName());
+		for (Extension ext : exts)
+		{
+			for (Entry<String, Object> entry : ext.getProperties())
+			{
+				switch (entry.getKey())
+				{
+					case "servlet":
+						break;
+					default:
+						System.out.println("Init:" + entry.getKey() + " - " + entry.getValue());
+						holder.setInitParameter(entry.getKey(), String.valueOf(entry.getValue()));
+				}
+			}
+		}
+	}
 
-	private static void parseServletAnnotations(ServletHolder holder)
+	private static final void parseServletAnnotations(ServletHolder holder)
 	{
 		Class< ? > type;
 		try

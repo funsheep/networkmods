@@ -95,7 +95,7 @@ public class NodavePLC extends JobbedTalkerStub implements IPLC
 //		if (type == Type.BIT)
 //			throw new UnsupportedOperationException("Use FlagInput wrapper instead.");
 		if (this.inputs.containsKey(id))
-			throw new IllegalArgumentException("Input with id " + id + " is already known.");
+			throw new IllegalArgumentException("Input with id " + id + " is already known."); //$NON-NLS-1$ //$NON-NLS-2$
 		Input input = new Input(id, area, database, offset, length, type, this);
 		this.inputs.put(id, input);
 		return input;
@@ -149,7 +149,7 @@ public class NodavePLC extends JobbedTalkerStub implements IPLC
 //		if (type == Type.BIT)
 //			throw new UnsupportedOperationException();
 		if (this.outputs.containsKey(id))
-			throw new IllegalArgumentException("Output with id " + id + " is already known.");
+			throw new IllegalArgumentException("Output with id " + id + " is already known."); //$NON-NLS-1$ //$NON-NLS-2$
 		Output output = new Output(id, area, database, offset, length, type, this);
 		this.outputs.put(id, output);
 		return output;

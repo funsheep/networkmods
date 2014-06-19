@@ -28,13 +28,13 @@ public class IOTest implements IBootEntry
 	@Override
 	public void startup(Extension e) throws PlatformException
 	{
-		ClientNetworkService service = new ClientNetworkService("NodavePLC", new TCPProtocol());
+		ClientNetworkService service = new ClientNetworkService("NodavePLC", new TCPProtocol()); //$NON-NLS-1$
 		try
 		{
-			final NodavePLC plc = new NodavePLC("192.168.130.110", service);
-			plc.createDBInput("Drive Motor", 15, 20, Type.UINT).setUpdateMethod(UpdateFrequency.OFF);
-			plc.createDBInput("Operating Mode", 15, 10, Type.UBYTE).setUpdateMethod(UpdateFrequency.LOW);
-			(new ADoJob("Manually Poll PLCs")
+			final NodavePLC plc = new NodavePLC("192.168.130.110", service); //$NON-NLS-1$
+			plc.createDBInput("Drive Motor", 15, 20, Type.UINT).setUpdateMethod(UpdateFrequency.OFF); //$NON-NLS-1$
+			plc.createDBInput("Operating Mode", 15, 10, Type.UBYTE).setUpdateMethod(UpdateFrequency.LOW); //$NON-NLS-1$
+			(new ADoJob("Manually Poll PLCs") //$NON-NLS-1$
 			{
 				
 				@Override
@@ -42,8 +42,8 @@ public class IOTest implements IBootEntry
 				{
 					try
 					{
-						System.err.println(plc.getInput("Operating Mode").ubyteValue());
-						System.err.println(plc.getInput("Drive Motor").uintValue());
+						System.err.println(plc.getInput("Operating Mode").ubyteValue()); //$NON-NLS-1$
+						System.err.println(plc.getInput("Drive Motor").uintValue()); //$NON-NLS-1$
 					}
 					catch (Exception e)
 					{

@@ -93,7 +93,7 @@ public class MessageBuilder
 	public void putString(String string)
 	{
 		if (string == null)
-			string = "";
+			string = ""; //$NON-NLS-1$
 		
 		//not the best solution, but efficient and correct. Maybe, in the future, use Converter.putString()
 		byte[] temp = Converter.convertString(string);

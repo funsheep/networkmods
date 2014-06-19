@@ -32,6 +32,6 @@ public class HRFault extends com.lodige.faults.Fault
 	@Override
 	public String toString()
 	{
-		return this.id + " Occurred At " + this.occurrence + " On " + this.deviceID + " - " + this.description;
+		return this.id + " Occurred At " + this.occurrence + " On " + this.deviceID + " - " + this.description; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 }

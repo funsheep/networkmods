@@ -33,6 +33,6 @@ public class Fault
 	@Override
 	public String toString()
 	{
-		return this.id + " Occurred At " + this.occurrence;
+		return this.id + " Occurred At " + this.occurrence; //$NON-NLS-1$
 	}
 }

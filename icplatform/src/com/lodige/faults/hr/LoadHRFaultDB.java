@@ -28,7 +28,7 @@ public class LoadHRFaultDB
 
 	public LoadHRFaultDB andDefineFault(int db, int offset, int bit, String deviceID, String description)
 	{
-		final String id = db + "." + offset + "." + bit;
+		final String id = String.valueOf(db) + '.' + offset + '.' + bit;
 		this.knownFaults.defineFault(id, deviceID, description);
 		return this;
 	}
@@ -42,7 +42,7 @@ public class LoadHRFaultDB
 	public static final LoadHRFaultDB fromStream(InputStream stream) throws IOException
 	{
 		final LoadHRFaultDB faults = new LoadHRFaultDB();
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(stream, Charset.forName("UTF-8")));
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(stream, Charset.forName("UTF-8"))); //$NON-NLS-1$
 		String line = reader.readLine();
 
 		int area_db = -1;
@@ -50,19 +50,19 @@ public class LoadHRFaultDB
 		int area_bitOff = -1;
 		while (line != null)
 		{
-			final String[] split = line.trim().split(",");
+			final String[] split = line.trim().split(","); //$NON-NLS-1$
 			if (split.length > 0)
 			{
 				switch (split[0])
 				{
-					case "fault":
+					case "fault": //$NON-NLS-1$
 						area_db = -1; area_off = -1; area_bitOff = -1;
 						int db = Integer.parseInt(split[1]);
 						int offset = Integer.parseInt(split[2]);
 						int bit = Integer.parseInt(split[3]);
 						faults.andDefineFault(db, offset, bit, split[4], split[5]);
 						break;
-					case "area":
+					case "area": //$NON-NLS-1$
 						area_db = -1; area_off = -1; area_bitOff = -1;
 						area_db = Integer.parseInt(split[1]);
 						area_off = Integer.parseInt(split[2]);

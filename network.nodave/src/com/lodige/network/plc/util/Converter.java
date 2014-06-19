@@ -11,7 +11,7 @@ public class Converter
 	public static byte[] toPLCfloat(float f)
 	{
 		int i = Float.floatToIntBits(f);
-		LOGGER.debug("i: {}", Integer.valueOf(i));
+		LOGGER.debug("i: {}", Integer.valueOf(i)); //$NON-NLS-1$
 		return bswap_32(i);
 	}
 
@@ -25,7 +25,7 @@ public class Converter
 		b[1] = (byte)(a & 0xff);
 		a = a >> 8;
 		b[0] = (byte)(a & 0xff);
-		LOGGER.debug("In: {} out: {}", Integer.valueOf(a), b);
+		LOGGER.debug("In: {} out: {}", Integer.valueOf(a), b); //$NON-NLS-1$
 		return b;
 	}
 
@@ -36,7 +36,7 @@ public class Converter
 		b[1] = (byte)(a & 0xff);
 		a = a >> 8;
 		b[0] = (byte)(a & 0xff);
-		LOGGER.debug("In: {} out: {}", Integer.valueOf(a), b);
+		LOGGER.debug("In: {} out: {}", Integer.valueOf(a), b); //$NON-NLS-1$
 		return b;
 	}
 
@@ -185,7 +185,7 @@ public class Converter
 		i <<= 8;
 		i |= USByte(b, pos + 3);
 		float f = Float.intBitsToFloat(i);
-		LOGGER.debug("Converted: {}", Float.valueOf(f));
+		LOGGER.debug("Converted: {}", Float.valueOf(f)); //$NON-NLS-1$
 		return f;
 	}
 

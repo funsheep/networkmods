@@ -146,7 +146,10 @@ public class Message implements IMessage
 	@Override
 	public String toString()
 	{
-		return "Message["+this.type()+"] '" + Strings.toHexString(this.bodyType == BODYTYPE_BYTEARRAY ? (byte[]) this.body : ((SemiDynamicByteArray) this.body).getData(), this.off, this.len) + "'";
+		return "Message["+ //$NON-NLS-1$
+				this.type()+
+				"] '"+ //$NON-NLS-1$
+				Strings.toHexString(this.bodyType == BODYTYPE_BYTEARRAY ? (byte[]) this.body : ((SemiDynamicByteArray) this.body).getData(), this.off, this.len) + '\'';
 	}
 
 	private static final Message get()

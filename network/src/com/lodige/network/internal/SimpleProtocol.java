@@ -77,13 +77,13 @@ public class SimpleProtocol implements IProtocol
 			return null;
 		final int length = Converter.getIntBig(buffer, 0);
 		if (length < HEADER_LENGTH)
-			throw new IOException("Message body has negative size " + (length - HEADER_LENGTH));
+			throw new IOException("Message body has negative size " + (length - HEADER_LENGTH)); //$NON-NLS-1$
 		if (!InternalNetTools.readData(in, buffer, 0, 4))	//type (int)
-			throw new EOFException("Unexpected end of stream.");
+			throw new EOFException("Unexpected end of stream."); //$NON-NLS-1$
 		final int msgType = Converter.getIntBig(buffer, 0);
 		final byte[] data = new byte[length - HEADER_LENGTH];
 		if (data.length > 0 && !InternalNetTools.readData(in, data))
-			throw new EOFException("Unexpected end of stream.");
+			throw new EOFException("Unexpected end of stream."); //$NON-NLS-1$
 		return Message.create(msgType, data);
 	}
 

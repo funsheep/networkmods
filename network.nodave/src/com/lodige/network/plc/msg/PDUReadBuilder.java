@@ -40,7 +40,7 @@ public class PDUReadBuilder extends PDUBuilder
 	{
 		super(1, INodaveAPI.MSG_PDU_READ);
 		addParam(READ_HEADER);
-		LOGGER.debug("{}", this);
+		LOGGER.debug("{}", this); //$NON-NLS-1$
 	}
 
 
@@ -89,7 +89,7 @@ public class PDUReadBuilder extends PDUBuilder
 		this.mem.putAt(pa, 0, pa.length, this.param + this.plen);
 		this.plen += pa.length;
 		Converter.setUSBEWord(this.mem, 6, this.plen);
-		LOGGER.debug("{}", this);
+		LOGGER.debug("{}", this); //$NON-NLS-1$
 	}
 
 	public void addBitVarToReadRequest(Area area, int DBnum, int start, int len)

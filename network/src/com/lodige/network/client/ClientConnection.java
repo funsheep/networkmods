@@ -27,7 +27,7 @@ public class ClientConnection extends ANetworkConnection
 	{
 		public Reconnecter(String con)
 		{
-			super("AutoReconnecter for " + con);
+			super("AutoReconnecter for " + con); //$NON-NLS-1$
 		}
 
 	
@@ -43,7 +43,7 @@ public class ClientConnection extends ANetworkConnection
 			}
 			catch (IOException e)
 			{
-				LOGGER.info("Could not reconnect to {}.", ClientConnection.this.remoteAddress, e);
+				LOGGER.info("Could not reconnect to {}.", ClientConnection.this.remoteAddress, e); //$NON-NLS-1$
 			}
 		}
 
@@ -70,14 +70,14 @@ public class ClientConnection extends ANetworkConnection
 
 	public void connect() throws IOException
 	{
-		AComputeDoJob job = new AComputeDoJob("Connect to address " + this.remoteAddress, INetworkAPI.NETWORK_THREAD)
+		AComputeDoJob job = new AComputeDoJob("Connect to address " + this.remoteAddress, INetworkAPI.NETWORK_THREAD) //$NON-NLS-1$
 		{
 			
 			@Override
 			public void doJob()
 			{
 				if (!ClientConnection.this.state.compareAndSet(INetworkAPI.S_NOT_CONNECTED, INetworkAPI.S_CONNECTION_PENDING))
-					this.finishedWithError(new IllegalStateException("Client Already Connected."));
+					this.finishedWithError(new IllegalStateException("Client Already Connected.")); //$NON-NLS-1$
 				ClientConnection.this.postEvent(INetworkAPI.E_STATE_CHANGED);
 				try
 				{
@@ -142,20 +142,20 @@ public class ClientConnection extends ANetworkConnection
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.append("ClientUnit: ");
+		sb.append("ClientUnit: "); //$NON-NLS-1$
 		switch (this.state())
 		{
 			case INetworkAPI.S_NOT_CONNECTED:
-				sb.append("Not Connected");
+				sb.append("Not Connected"); //$NON-NLS-1$
 				break;
 			case INetworkAPI.S_CONNECTED:
-				sb.append("Connected");
+				sb.append("Connected"); //$NON-NLS-1$
 				break;
 			case INetworkAPI.S_CLOSING:
-				sb.append("Closing");
+				sb.append("Closing"); //$NON-NLS-1$
 				break;
 			case INetworkAPI.S_CONNECTION_PENDING:
-				sb.append("Connection Pending");
+				sb.append("Connection Pending"); //$NON-NLS-1$
 				break;
 		}
 		sb.append('\n');

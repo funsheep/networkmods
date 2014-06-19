@@ -32,7 +32,7 @@ public class ClientNetworkService extends ANetworkService
 
 	public ClientNetworkService(Extension ex) throws ServiceInstantiationException
 	{
-		super(ex.name, instantiateProtocol(ex.getProperty("protocol")));
+		super(ex.name, instantiateProtocol(ex.getProperty("protocol"))); //$NON-NLS-1$
 	}
 	
 	public ClientNetworkService(String name, IProtocol protocol)
@@ -61,7 +61,7 @@ public class ClientNetworkService extends ANetworkService
 
 		ClientNetworkService.this.postEvent(INetworkAPI.E_STATE_CHANGED);
 
-		JobPlatform.runJob(new ADoJob("Closing Networkservice")
+		JobPlatform.runJob(new ADoJob("Closing Networkservice") //$NON-NLS-1$
 		{
 			
 			@Override
@@ -86,7 +86,7 @@ public class ClientNetworkService extends ANetworkService
 		
 		ClientNetworkService.this.postEvent(INetworkAPI.E_STATE_CHANGED);
 
-		JobPlatform.runJob(new ADoJob("Shutdown Networkconnections")
+		JobPlatform.runJob(new ADoJob("Shutdown Networkconnections") //$NON-NLS-1$
 		{
 			
 			@Override

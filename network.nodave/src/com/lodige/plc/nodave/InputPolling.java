@@ -39,7 +39,7 @@ class InputPolling extends ADoJob
 	 */
 	public InputPolling(NodavePLC plc)
 	{
-		super("Input Polling for " + plc.id());
+		super("Input Polling for " + plc.id()); //$NON-NLS-1$
 		this.plc = plc;
 		this.schedule(IPLCAPI.PLC_UPDATE_THREAD, true, UpdateFrequency.HIGH.schedule);
 	}
@@ -76,7 +76,7 @@ class InputPolling extends ADoJob
 					{
 						for (Input i : inputs)
 							i.updateNoValue();
-						LOGGER.info("Could not read data from plc {}.", this.plc.id(), e);
+						LOGGER.info("Could not read data from plc {}.", this.plc.id(), e); //$NON-NLS-1$
 					}
 					inputs = new ArrayList<>();
 					r =  Read.fromPLC(this.plc.cc);
@@ -95,7 +95,7 @@ class InputPolling extends ADoJob
 		{
 			for (Input i : inputs)
 				i.updateNoValue();
-			LOGGER.info("Could not read data from plc {}.", this.plc.id(), e);
+			LOGGER.info("Could not read data from plc {}.", this.plc.id(), e); //$NON-NLS-1$
 		}
 	}
 
@@ -104,7 +104,7 @@ class InputPolling extends ADoJob
 		int i = 0;
 		Variable[] vars = r3.andWaitForResult(INetworkAPI.CONNECTION_TIMEOUT).getResults();
 		if (vars.length != inputs.size())
-			throw new IOException("Number of results does not match number of requests.");
+			throw new IOException("Number of results does not match number of requests."); //$NON-NLS-1$
 		for (Input input : inputs)
 			try
 			{
@@ -112,7 +112,7 @@ class InputPolling extends ADoJob
 			}
 			catch (PDUResultException e)
 			{
-				LOGGER.severe("Could not read data from input {} from plc {}.", input.id, this.plc.id(), e);
+				LOGGER.severe("Could not read data from input {} from plc {}.", input.id, this.plc.id(), e); //$NON-NLS-1$
 			}
 	}
 }

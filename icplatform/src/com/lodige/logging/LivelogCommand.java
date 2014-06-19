@@ -30,7 +30,7 @@ public class LivelogCommand implements ICommand
 		for (Object event : events.toArray())
 		{
 			ILoggingEvent e = (ILoggingEvent) event;
-			out.println("["+e.getThreadName()+"] " + e.getLoggerName() + " - " + e.getFormattedMessage());
+			out.println('['+e.getThreadName()+"] " + e.getLoggerName() + " - " + e.getFormattedMessage()); //$NON-NLS-1$ //$NON-NLS-2$
 			this.printThrowable(e.getThrowableProxy(), out);
 		}
 	}
@@ -39,12 +39,12 @@ public class LivelogCommand implements ICommand
 	{
 		if (proxy == null)
 			return;
-		out.println(proxy.getClassName() + " - " + proxy.getMessage());
+		out.println(proxy.getClassName() + " - " + proxy.getMessage()); //$NON-NLS-1$
 		for (StackTraceElementProxy trace : proxy.getStackTraceElementProxyArray())
 		{
 			out.println(trace.getSTEAsString());
 		}
-		out.println("Caused By:");
+		out.println("Caused By:"); //$NON-NLS-1$
 		this.printThrowable(proxy.getCause(), out);
 	}
 }

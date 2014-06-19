@@ -46,7 +46,7 @@ class SocketHandler
 						if (msg == null)	//we got an EOF
 							break;
 
-						assert LOGGER.trace("Received {}", msg);
+						assert LOGGER.trace("Received {}", msg); //$NON-NLS-1$
 						SocketHandler.this.con._put(msg);
 					}
 					catch (final IOException e)
@@ -57,7 +57,7 @@ class SocketHandler
 			}
 			catch (final IOException ex)
 			{
-				LOGGER.debug("TCP MSG Handler shutdown.", ex);
+				LOGGER.debug("TCP MSG Handler shutdown.", ex); //$NON-NLS-1$
 				ex.printStackTrace();
 			}
 			SocketHandler.this.shutdown();
@@ -83,7 +83,7 @@ class SocketHandler
 					{
 						if (msg.type() != IInternalNetworkConnection.T_CLOSED_SEND_QUEUE)
 						{
-							assert LOGGER.trace("Send {}", msg);
+							assert LOGGER.trace("Send {}", msg); //$NON-NLS-1$
 							SocketHandler.this.con._protocol().send(msg, out);
 						}
 						SocketHandler.this.con._msgSend(msg);
@@ -93,7 +93,7 @@ class SocketHandler
 			}
 			catch (IOException ex)
 			{
-				LOGGER.debug("TCP MSG Handler shutdown.", ex);
+				LOGGER.debug("TCP MSG Handler shutdown.", ex); //$NON-NLS-1$
 			}
 			SocketHandler.this.shutdown();
 		}
@@ -114,8 +114,8 @@ class SocketHandler
 			return;
 		this.con._protocol().onConnect(this.con._socket());
 
-		this._receiver.setName("TCPReceiver for: " + this.con._socket().getLocalAddress());
-		this._sender.setName("TCPSender for: " + this.con._socket().getLocalAddress());
+		this._receiver.setName("TCPReceiver for: " + this.con._socket().getLocalAddress()); //$NON-NLS-1$
+		this._sender.setName("TCPSender for: " + this.con._socket().getLocalAddress()); //$NON-NLS-1$
 		this._receiver.start();
 		this._sender.start();
 	}

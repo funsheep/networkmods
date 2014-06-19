@@ -31,7 +31,7 @@ public class PortRange
 	public PortRange(int min, int max)
 	{
 		if (min <= 0 || max <= 0)
-			throw new IllegalArgumentException("Illegal min,max values below or equal to zero!");
+			throw new IllegalArgumentException("Illegal min,max values below or equal to zero!"); //$NON-NLS-1$
 		if (min < max)
 		{
 			this.min = min; this.max = max;
@@ -54,14 +54,14 @@ public class PortRange
 		for (int i = range.min; i < range.max; i++)
 			try
 			{
-				socket.bind(new InetSocketAddress("localhost",i));
+				socket.bind(new InetSocketAddress("localhost",i)); //$NON-NLS-1$
 				return;
 			}
 			catch (IOException e)
 			{
 				// try the next port
 			}
-		throw new IOException("Could not bind socket within this port range " + range);
+		throw new IOException("Could not bind socket within this port range " + range); //$NON-NLS-1$
 	}
 
 	public static final void bind(ServerSocket socket, PortRange range) throws IOException
@@ -75,14 +75,14 @@ public class PortRange
 		for (int i = range.min; i < range.max; i++)
 			try
 			{
-				socket.bind(new InetSocketAddress("localhost",i));
+				socket.bind(new InetSocketAddress("localhost",i)); //$NON-NLS-1$
 				return;
 			}
 			catch (IOException e)
 			{
 				// try the next port
 			}
-		throw new IOException("Could not bind socket within this port range " + range);
+		throw new IOException("Could not bind socket within this port range " + range); //$NON-NLS-1$
 	}
 
 	public static final void bind(DatagramSocket socket, PortRange range) throws IOException
@@ -96,14 +96,14 @@ public class PortRange
 		for (int i = range.min; i < range.max; i++)
 			try
 			{
-				socket.bind(new InetSocketAddress("localhost",i));
+				socket.bind(new InetSocketAddress("localhost",i)); //$NON-NLS-1$
 				return;
 			}
 			catch (IOException e)
 			{
 				// try the next port
 			}
-		throw new IOException("Could not bind socket within this port range " + range);
+		throw new IOException("Could not bind socket within this port range " + range); //$NON-NLS-1$
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class PortRange
 	@Override
 	public String toString()
 	{
-		return "[" + this.min + "," + this.max + "]";
+		return "[" + this.min + ',' + this.max + ']'; //$NON-NLS-1$
 	}
 
 }

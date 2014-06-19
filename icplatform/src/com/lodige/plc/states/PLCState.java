@@ -27,7 +27,7 @@ import com.lodige.states.StateReadException;
 public class PLCState extends AState
 {
 	
-	private static final Charset US_ASCII = Charset.forName("US-ASCII");
+	private static final Charset US_ASCII = Charset.forName("US-ASCII"); //$NON-NLS-1$
 
 
 	private final IInput input;
@@ -87,7 +87,7 @@ public class PLCState extends AState
 			case UINT:
 				return ((this.uintValue() & (1 << this.bitnr))) != 0;
 			default:
-				throw new IllegalStateException("Cannot get bit wise information from FLOAT or GENERIC inputs.");
+				throw new IllegalStateException("Cannot get bit wise information from FLOAT or GENERIC inputs."); //$NON-NLS-1$
 		}
 	}
 
@@ -235,7 +235,7 @@ public class PLCState extends AState
 				code = this.ushortValue();
 				break;
 			default:
-				throw new IllegalStateException("Enum Mappings for States of Type " + this.type + " not Supported.");
+				throw new IllegalStateException("Enum Mappings for States of Type " + this.type + " not Supported."); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		for (IStateMappable e : this.mapping.getEnumConstants())
 			if (e.fits(code))

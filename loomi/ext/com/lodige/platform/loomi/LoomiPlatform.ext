@@ -4,6 +4,13 @@
 	{
 		"point" : "com.lodige.webserver.servlet",
 		"class" : "com.lodige.platform.loomi.Servlet"
-	}
+	},
 	
+	"com.lodige.platform.loomi.servlet.initparams":
+	{
+		"point" : "com.lodige.webserver.servlet.initparameters",
+		"servlet" : "com.lodige.platform.loomi.Servlet",
+		"com.lodige.loomi.provider.IModelThreadProvider" : "com.lodige.platform.loomi.PlatformThreadProvider"
+	}
+
 }

@@ -67,7 +67,7 @@ public class PDUReadResult extends PDUResult
 		}
 		else
 		{
-			LOGGER.debug("fixme: what to do with data type {}", Integer.valueOf(type));
+			LOGGER.debug("fixme: what to do with data type {}", Integer.valueOf(type)); //$NON-NLS-1$
 //			throw new PDUResultException(Nodave.RESULT_UNKNOWN_DATA_UNIT_SIZE);
 		}
 		return _udlen;
@@ -144,7 +144,7 @@ public class PDUReadResult extends PDUResult
 			}
 			catch (PDUResultException e)
 			{
-				LOGGER.debug("Could not parse pdu results", e);
+				LOGGER.debug("Could not parse pdu results", e); //$NON-NLS-1$
 				this.results = new Variable[0];
 			}
 		return this.results;
@@ -183,7 +183,7 @@ public class PDUReadResult extends PDUResult
 			else
 			{
 				r = new Variable(error);
-				LOGGER.debug("Error {}", Integer.valueOf(r.error));
+				LOGGER.debug("Error {}", Integer.valueOf(r.error)); //$NON-NLS-1$
 			}
 
 			pos += 4;
@@ -203,7 +203,7 @@ public class PDUReadResult extends PDUResult
 		sb.append(super.toString());
 		if (this.udlen > 0)
 		{
-			sb.append("Result Data ");
+			sb.append("Result Data "); //$NON-NLS-1$
 			sb.append(Strings.toHexString(this.resultData()));
 			sb.append('\n');
 		}

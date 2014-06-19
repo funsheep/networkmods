@@ -26,7 +26,7 @@ public class ObservableFixedSizeOrderedSet<E> extends TalkerStub implements IObs
 
 	public ObservableFixedSizeOrderedSet(Extension ext)
 	{
-		this(ext.getProperty("maxsize", 10));
+		this(ext.getProperty("maxsize", 10)); //$NON-NLS-1$
 	}
 	
 	/**

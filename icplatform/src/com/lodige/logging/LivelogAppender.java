@@ -16,8 +16,8 @@ import ch.qos.logback.core.AppenderBase;
 public class LivelogAppender extends AppenderBase<ILoggingEvent>
 {
 	
-	public static final String EXTPOINT_LIVELOG = "com.lodige.logging.Livelog";
-	public static final String LOG_THREAD = "Log Thread";
+	public static final String EXTPOINT_LIVELOG = "com.lodige.logging.Livelog"; //$NON-NLS-1$
+	public static final String LOG_THREAD = "Log Thread"; //$NON-NLS-1$
 	
 	private final ObservableFixedSizeOrderedSet<ILoggingEvent> eventSet = ExtensionRegistry.getService(EXTPOINT_LIVELOG);
 

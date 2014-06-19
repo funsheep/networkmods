@@ -115,11 +115,11 @@ public class MessageReader
 		{
 			int amount = this.data.read(arr, 0, len);
 			if (amount != len)
-				throw new RuntimeException("Wrong message format. Tried to read " + len + " bytes, but read " + amount);
+				throw new RuntimeException("Wrong message format. Tried to read " + len + " bytes, but read " + amount); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		catch (IOException e)
 		{
-			throw new RuntimeException("Should not happen.", e);
+			throw new RuntimeException("Should not happen.", e); //$NON-NLS-1$
 		}
 	}
 

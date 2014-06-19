@@ -13,7 +13,6 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
 import com.lodige.loomi.ILoomiAPI;
-import com.lodige.loomi.annotation.LoomiConfiguration;
 import com.lodige.loomi.engine.LoomiServlet;
 
 /**
@@ -21,13 +20,10 @@ import com.lodige.loomi.engine.LoomiServlet;
  *
  */
 @WebServlet(value = "/*", asyncSupported = true)
-@LoomiConfiguration(ModelThreadProvider="com.lodige.platform.loomi.PlatformThreadProvider")
 public class Servlet extends LoomiServlet
 {
 
 	public static final String EXTPOINT_UI_LIFECYCLE = "com.lodige.platform.loomi.ui.lifecycle";
-	public static final String EXTPOINT_USERDATA_PROVIDER = "com.lodige.platform.loomi.userdataprovider";
-	public static final String EXTPOINT_MODELTHREAD_PROVIDER = "com.lodige.platform.loomi.modelthreadprovider";
 
 
 	/**
@@ -43,10 +39,6 @@ public class Servlet extends LoomiServlet
 			this.addListener(ILoomiAPI.E_UISESSION_STARTING, li);
 			this.addListener(ILoomiAPI.E_UISESSION_CLOSING, li);
 		}
-		if (this.udp == null)
-			this.udp = ExtensionRegistry.getService(EXTPOINT_USERDATA_PROVIDER);
-		if (this.mtp == null)
-			this.mtp = ExtensionRegistry.getService(EXTPOINT_MODELTHREAD_PROVIDER);
 	}
 	
 	private static final long serialVersionUID = 1L;

@@ -32,7 +32,7 @@ public class PLCConnectionState extends AState
 	 */
 	public PLCConnectionState(IPLC plc, IHasStates parent)
 	{
-		super("Connection State", Type.OBJECT, parent);
+		super("Connection State", Type.OBJECT, parent); //$NON-NLS-1$
 		this.plc = plc;
 		this.plc.addListener(IPLCAPI.EVENT_CONNECTION_STATE_CHANGED, (e) -> ((IInnerTalker) parent).postEvent(IStateAPI.EVENT_STATE_CHANGED, this));
 		((IHasStates.Internal) this.parent)._registerState(this);
@@ -46,7 +46,7 @@ public class PLCConnectionState extends AState
 	public <O> O objectValue() throws StateReadException
 	{
 		if (this.type() != Type.OBJECT)
-			throw new IllegalStateException("Type of this State does not match.");
+			throw new IllegalStateException("Type of this State does not match."); //$NON-NLS-1$
 		return GenericsToolkit.convertUnchecked(this.plc.connectionState());
 	}
 	

@@ -51,7 +51,7 @@ public class PDUResult
 		this.param = this.header + this.getHeaderLength();
 		this.data  = this.param + this.getParamLength();
 		this.dlen  = this.getDataLength();
-		LOGGER.debug("Got PDU result with number {}", Integer.valueOf(this.getNumber()));
+		LOGGER.debug("Got PDU result with number {}", Integer.valueOf(this.getNumber())); //$NON-NLS-1$
 	}
 
 
@@ -148,18 +148,18 @@ public class PDUResult
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder(this.data + this.dlen);
-		sb.append("PDU header ");
+		sb.append("PDU header "); //$NON-NLS-1$
 		sb.append(Strings.toHexString(this.header()));
 		sb.append('\n');
 		
-		sb.append("plen: "); sb.append(this.getParamLength()); sb.append(" dlen: "); sb.append(this.dlen); sb.append('\n');
+		sb.append("plen: "); sb.append(this.getParamLength()); sb.append(" dlen: "); sb.append(this.dlen); sb.append('\n'); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		sb.append("Parameter ");
+		sb.append("Parameter "); //$NON-NLS-1$
 		sb.append(Strings.toHexString(this.params()));
 		sb.append('\n');
 		if (this.dlen > 0)
 		{
-			sb.append("Data     ");
+			sb.append("Data     "); //$NON-NLS-1$
 			sb.append(Strings.toHexString(this.data()));
 			sb.append('\n');
 		}

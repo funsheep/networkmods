@@ -35,7 +35,7 @@ public abstract class ANodavePLCHasFaults implements IHasFaults
 	
 	private static final Logger LOGGER = Logger.getLogger();
 	
-	public static final String FAULT_NOT_CONNECTED = "PLC is not Connected.";
+	public static final String FAULT_NOT_CONNECTED = "PLC is not Connected."; //$NON-NLS-1$
 
 
 	private final IFaultDB faultDB;
@@ -56,7 +56,7 @@ public abstract class ANodavePLCHasFaults implements IHasFaults
 			}
 			catch (IOException ex)
 			{
-				LOGGER.warn("Could not read plc data.", ex);
+				LOGGER.warn("Could not read plc data.", ex); //$NON-NLS-1$
 			}
 		}
 	};
@@ -108,10 +108,10 @@ public abstract class ANodavePLCHasFaults implements IHasFaults
 	{
 		for (String faultID : this.faultDB.knownFaults())
 		{
-			final String[] address = faultID.split("[.]");
+			final String[] address = faultID.split("[.]"); //$NON-NLS-1$
 			if (address.length == 3)
 			{
-				final String inputID = address[0] + "." + address[1];
+				final String inputID = address[0] + '.' + address[1];
 				IInput in = plc.getInput(inputID);
 				if (in == null)
 				{
@@ -138,7 +138,7 @@ public abstract class ANodavePLCHasFaults implements IHasFaults
 			}
 			catch (IOException ex)
 			{
-				LOGGER.warn("Could not read plc data.", ex);
+				LOGGER.warn("Could not read plc data.", ex); //$NON-NLS-1$
 			}
 			finally
 			{
@@ -152,7 +152,7 @@ public abstract class ANodavePLCHasFaults implements IHasFaults
 		final short inValue = input.ubyteValue();
 		for (int i = 0; i < 8; i++)	//8 bit
 		{
-			final String faultID = input.id()+"."+i;
+			final String faultID = input.id()+'.'+i;
 			if (!this.faultDB.knownFaults().contains(faultID))
 				continue;
 

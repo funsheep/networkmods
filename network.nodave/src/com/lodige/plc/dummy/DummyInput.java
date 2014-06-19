@@ -161,7 +161,7 @@ public abstract class DummyInput implements IInput, IPLCAPI
 			this.waitForUpdate.signalAll();
 			postEvent = this.type != Type.GENERIC && !this.value.equals(old) ||
 						this.type == Type.GENERIC && !Arrays.equals((byte[]) old, (byte[]) this.value);
-			LOGGER.debug("DummyInput {} updated.", this.id);
+			LOGGER.debug("DummyInput {} updated.", this.id); //$NON-NLS-1$
 		}
 		finally
 		{
@@ -169,7 +169,7 @@ public abstract class DummyInput implements IInput, IPLCAPI
 		}
 		if (postEvent)
 		{
-			LOGGER.info("Value of DummyInput {} changed.", this.id);
+			LOGGER.info("Value of DummyInput {} changed.", this.id); //$NON-NLS-1$
 			((IInnerTalker) this.parent).postEvent(IPLCAPI.EVENT_INPUT_CHANGED, this);
 		}
 	}
@@ -182,13 +182,13 @@ public abstract class DummyInput implements IInput, IPLCAPI
 			if (this.value == null && !forceUpdate)
 			{
 				this.triggerUpdate = true;
-				throw new IOException("No values available.");
+				throw new IOException("No values available."); //$NON-NLS-1$
 			}
 			if (forceUpdate || this.value == null)
 			{
 				this.triggerUpdate = true;
 				if (!this.waitForUpdate.await(INetworkAPI.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS))
-					throw new IOException("Timeout: Did not get update for input " + this.id + " for NodavePLC " + this.parent.id() + " in time.");
+					throw new IOException("Timeout: Did not get update for input " + this.id + " for NodavePLC " + this.parent.id() + " in time."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 		catch (InterruptedException e)

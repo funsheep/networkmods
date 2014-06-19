@@ -83,7 +83,7 @@ public class InternalNetTools
 		{
 			eof = in.read(buffer, off, len);
 			if (eof == -1)
-				throw new EOFException("Unexpected stream end detected.");
+				throw new EOFException("Unexpected stream end detected."); //$NON-NLS-1$
 			off += eof;
 			len -= eof;
 		}
@@ -92,7 +92,7 @@ public class InternalNetTools
 
 	public static final boolean readDataCausious(InputStream in, byte[] b, int off, int len) throws IOException
 	{
-		LOGGER.trace("Interface.read");
+		LOGGER.trace("Interface.read"); //$NON-NLS-1$
 		int retry = 0;
 		while ((in.available() <= 0) && (retry < 10))
 		{
@@ -101,7 +101,7 @@ public class InternalNetTools
 				if (retry > 0)
 					Thread.sleep(5000 / 200);
 				retry++;
-				LOGGER.debug("Interface.read delayed");
+				LOGGER.debug("Interface.read delayed"); //$NON-NLS-1$
 			}
 			catch (InterruptedException e)
 			{

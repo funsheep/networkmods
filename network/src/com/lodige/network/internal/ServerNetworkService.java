@@ -60,7 +60,7 @@ public class ServerNetworkService extends ANetworkService implements IServerNetw
 		
 		ServerNetworkService.this.postEvent(INetworkAPI.E_STATE_CHANGED);
 
-		AComputeDoJob job = new AComputeDoJob("Start Server Unit", INetworkAPI.NETWORK_THREAD)
+		AComputeDoJob job = new AComputeDoJob("Start Server Unit", INetworkAPI.NETWORK_THREAD) //$NON-NLS-1$
 		{
 			
 			@Override
@@ -104,7 +104,7 @@ public class ServerNetworkService extends ANetworkService implements IServerNetw
 
 		ServerNetworkService.this.postEvent(INetworkAPI.E_STATE_CHANGED);
 
-		JobPlatform.runJob(new ADoJob("Closing Networkservice")
+		JobPlatform.runJob(new ADoJob("Closing Networkservice") //$NON-NLS-1$
 		{
 			
 			@Override
@@ -131,7 +131,7 @@ public class ServerNetworkService extends ANetworkService implements IServerNetw
 		
 		ServerNetworkService.this.postEvent(INetworkAPI.E_STATE_CHANGED);
 
-		JobPlatform.runJob(new ADoJob("Shutdown Networkconnections")
+		JobPlatform.runJob(new ADoJob("Shutdown Networkconnections") //$NON-NLS-1$
 		{
 			
 			@Override

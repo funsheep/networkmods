@@ -71,7 +71,7 @@ public abstract class ANetworkService extends JobbedTalkerStub implements IInter
 
 	protected void closeAllConnections()
 	{
-		JobPlatform.runJob(new AComputeDoJob("Closing Networkconnections", INetworkAPI.NETWORK_THREAD)
+		JobPlatform.runJob(new AComputeDoJob("Closing Networkconnections", INetworkAPI.NETWORK_THREAD) //$NON-NLS-1$
 		{
 			
 			@Override
@@ -85,7 +85,7 @@ public abstract class ANetworkService extends JobbedTalkerStub implements IInter
 
 	protected void shutdownAllConnections()
 	{
-		JobPlatform.runJob(new ADoJob("Shutdown Networkconnections")
+		JobPlatform.runJob(new ADoJob("Shutdown Networkconnections") //$NON-NLS-1$
 		{
 			
 			@Override
@@ -161,7 +161,7 @@ public abstract class ANetworkService extends JobbedTalkerStub implements IInter
 				return;
 			if (this.getConnection(connection.address()) != null)
 			{
-				throw new IllegalStateException("Should never happen.");
+				throw new IllegalStateException("Should never happen."); //$NON-NLS-1$
 			}
 			
 			this.connectionsByAddr.put(connection.address(), connection);

@@ -86,7 +86,7 @@ class Output implements IOutput, IPLCAPI
 //	public void writeBit(boolean bit) throws IOException
 //	{
 //		if (this.type != Type.BIT)
-//			throw new IllegalStateException("DummyOutput is of type " + this.type);
+//			throw new IllegalStateException("Output is of type " + this.type);
 //		byte b = (byte) (bit ? 1 << this.bitnr : 0);
 //		this.parent.writeOutput(this, new byte[] { b });
 //	}
@@ -98,7 +98,7 @@ class Output implements IOutput, IPLCAPI
 	public void writeShort(short value) throws IOException
 	{
 		if (this.type != Type.SHORT)
-			throw new IllegalStateException("DummyOutput is of type " + this.type);
+			throw new IllegalStateException("Output is of type " + this.type); //$NON-NLS-1$
 		byte[] data = { (byte) ((value >> 8) & 0xFF), (byte) (value & 0xFF) };
 		this.parent.writeOutput(this, data);
 	}
@@ -110,7 +110,7 @@ class Output implements IOutput, IPLCAPI
 	public void writeInt(int value) throws IOException
 	{
 		if (this.type != Type.INT)
-			throw new IllegalStateException("DummyOutput is of type " + this.type);
+			throw new IllegalStateException("Output is of type " + this.type); //$NON-NLS-1$
 		byte[] data = { (byte)(value >>> 24), (byte)(value >>> 16), (byte)(value >>> 8), (byte)value };
 		this.parent.writeOutput(this, data);
 	}
@@ -122,7 +122,7 @@ class Output implements IOutput, IPLCAPI
 	public void writeFloat(float fvalue) throws IOException
 	{
 		if (this.type != Type.FLOAT)
-			throw new IllegalStateException("DummyOutput is of type " + this.type);
+			throw new IllegalStateException("Output is of type " + this.type); //$NON-NLS-1$
 		final int value = Float.floatToRawIntBits(fvalue);
 		byte[] data = { (byte)(value >>> 24), (byte)(value >>> 16), (byte)(value >>> 8), (byte)value };
 		this.parent.writeOutput(this, data);
@@ -135,7 +135,7 @@ class Output implements IOutput, IPLCAPI
 	public void writeUByte(short value) throws IOException
 	{
 		if (this.type != Type.UBYTE)
-			throw new IllegalStateException("DummyOutput is of type " + this.type);
+			throw new IllegalStateException("Output is of type " + this.type); //$NON-NLS-1$
 		byte b = (byte) (value & 0xFF);
 		this.parent.writeOutput(this, new byte[] { b });
 	}
@@ -147,7 +147,7 @@ class Output implements IOutput, IPLCAPI
 	public void writeUShort(int value) throws IOException
 	{
 		if (this.type != Type.USHORT)
-			throw new IllegalStateException("DummyOutput is of type " + this.type);
+			throw new IllegalStateException("Output is of type " + this.type); //$NON-NLS-1$
 		byte[] data = { (byte) ((value >> 8) & 0xFF), (byte) (value & 0xFF) };
 		this.parent.writeOutput(this, data);
 	}
@@ -159,7 +159,7 @@ class Output implements IOutput, IPLCAPI
 	public void writeUInt(long value) throws IOException
 	{
 		if (this.type != Type.UINT)
-			throw new IllegalStateException("DummyOutput is of type " + this.type);
+			throw new IllegalStateException("Output is of type " + this.type); //$NON-NLS-1$
 		byte[] data = { (byte) (value >>> 24), (byte) (value >>> 16), (byte) (value >>> 8), (byte) value };
 		this.parent.writeOutput(this, data);
 	}
@@ -171,9 +171,9 @@ class Output implements IOutput, IPLCAPI
 	public void writeGeneric(byte... data) throws IOException
 	{
 		if (this.type != Type.GENERIC)
-			throw new IllegalStateException("DummyOutput is of type " + this.type);
+			throw new IllegalStateException("Output is of type " + this.type); //$NON-NLS-1$
 		if (this.length != data.length)
-			throw new IllegalArgumentException("Size of data ["+data.length+"] does not match expected data length ["+this.length+"].");
+			throw new IllegalArgumentException("Size of data ["+data.length+"] does not match expected data length ["+this.length+"]."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		this.parent.writeOutput(this, data);
 	}
 

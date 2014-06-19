@@ -38,7 +38,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 		
 		public DispatchJob()
 		{
-			super("Message Dispatcher");
+			super("Message Dispatcher"); //$NON-NLS-1$
 		}
 	
 		@Override
@@ -161,7 +161,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	public long asyncSend(IMessage msg) throws IOException
 	{
 		if (this.state.get() == INetworkAPI.S_NOT_CONNECTED)
-			throw new IllegalStateException("Connection is shutdown.");
+			throw new IllegalStateException("Connection is shutdown."); //$NON-NLS-1$
 		Message m = (Message) msg;
 		long sendID = SENDIDS.getAndIncrement();
 		m.setSendID(sendID);
@@ -171,7 +171,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 		}
 		catch (IllegalStateException | InterruptedException e)
 		{
-			throw new IOException("Could not send message", e);
+			throw new IOException("Could not send message", e); //$NON-NLS-1$
 		}
 		return sendID;
 	}
@@ -240,7 +240,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 		}
 		catch (InterruptedException e)
 		{
-			LOGGER.warn("Dropping received message: {}", msg);
+			LOGGER.warn("Dropping received message: {}", msg); //$NON-NLS-1$
 		}
 	}
 

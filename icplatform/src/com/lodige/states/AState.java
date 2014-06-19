@@ -66,8 +66,8 @@ public abstract class AState implements IState
 	public boolean bitValue() throws StateReadException
 	{
 		if (this.type() != Type.BIT)
-			throw new IllegalStateException("Type of this State does not match.");
-		throw new StateReadException("Not implemented.");
+			throw new IllegalStateException("Type of this State does not match."); //$NON-NLS-1$
+		throw new StateReadException("Not implemented."); //$NON-NLS-1$
 	}
 
 	/**
@@ -77,8 +77,8 @@ public abstract class AState implements IState
 	public short shortValue() throws StateReadException
 	{
 		if (this.type() != Type.SHORT)
-			throw new IllegalStateException("Type of this State does not match.");
-		throw new StateReadException("Not implemented.");
+			throw new IllegalStateException("Type of this State "+this.type+" does not match " + Type.SHORT); //$NON-NLS-1$
+		throw new StateReadException("Not implemented."); //$NON-NLS-1$
 	}
 
 	/**
@@ -88,8 +88,8 @@ public abstract class AState implements IState
 	public int intValue() throws StateReadException
 	{
 		if (this.type() != Type.INT)
-			throw new IllegalStateException("Type of this State does not match.");
-		throw new StateReadException("Not implemented.");
+			throw new IllegalStateException("Type of this State does not match."); //$NON-NLS-1$
+		throw new StateReadException("Not implemented."); //$NON-NLS-1$
 	}
 
 	/**
@@ -99,8 +99,8 @@ public abstract class AState implements IState
 	public float floatValue() throws StateReadException
 	{
 		if (this.type() != Type.FLOAT)
-			throw new IllegalStateException("Type of this State does not match.");
-		throw new StateReadException("Not implemented.");
+			throw new IllegalStateException("Type of this State does not match."); //$NON-NLS-1$
+		throw new StateReadException("Not implemented."); //$NON-NLS-1$
 	}
 
 	/**
@@ -110,8 +110,8 @@ public abstract class AState implements IState
 	public short ubyteValue() throws StateReadException
 	{
 		if (this.type() != Type.UBYTE)
-			throw new IllegalStateException("Type of this State does not match.");
-		throw new StateReadException("Not implemented.");
+			throw new IllegalStateException("Type of this State does not match."); //$NON-NLS-1$
+		throw new StateReadException("Not implemented."); //$NON-NLS-1$
 	}
 
 	/**
@@ -121,8 +121,8 @@ public abstract class AState implements IState
 	public int ushortValue() throws StateReadException
 	{
 		if (this.type() != Type.USHORT)
-			throw new IllegalStateException("Type of this State does not match.");
-		throw new StateReadException("Not implemented.");
+			throw new IllegalStateException("Type of this State does not match."); //$NON-NLS-1$
+		throw new StateReadException("Not implemented."); //$NON-NLS-1$
 	}
 
 	/**
@@ -132,8 +132,8 @@ public abstract class AState implements IState
 	public long uintValue() throws StateReadException
 	{
 		if (this.type() != Type.UINT)
-			throw new IllegalStateException("Type of this State does not match.");
-		throw new StateReadException("Not implemented.");
+			throw new IllegalStateException("Type of this State does not match."); //$NON-NLS-1$
+		throw new StateReadException("Not implemented."); //$NON-NLS-1$
 	}
 
 	/**
@@ -143,8 +143,8 @@ public abstract class AState implements IState
 	public String stringValue() throws StateReadException
 	{
 		if (this.type() != Type.STRING)
-			throw new IllegalStateException("Type of this State does not match.");
-		throw new StateReadException("Not implemented.");
+			throw new IllegalStateException("Type of this State does not match."); //$NON-NLS-1$
+		throw new StateReadException("Not implemented."); //$NON-NLS-1$
 	}
 
 	/**
@@ -154,8 +154,8 @@ public abstract class AState implements IState
 	public byte[] genericValue() throws StateReadException
 	{
 		if (this.type() != Type.GENERIC)
-			throw new IllegalStateException("Type of this State does not match.");
-		return null;
+			throw new IllegalStateException("Type of this State does not match."); //$NON-NLS-1$
+		throw new StateReadException("Not implemented."); //$NON-NLS-1$
 	}
 
 	/**
@@ -165,8 +165,8 @@ public abstract class AState implements IState
 	public <O> O objectValue() throws StateReadException
 	{
 		if (this.type() != Type.OBJECT)
-			throw new IllegalStateException("Type of this State does not match.");
-		throw new StateReadException("Not implemented.");
+			throw new IllegalStateException("Type of this State does not match."); //$NON-NLS-1$
+		throw new StateReadException("Not implemented."); //$NON-NLS-1$
 	}
 
 	/**
@@ -182,7 +182,7 @@ public abstract class AState implements IState
 		sb.append(this.type.name());
 		sb.append(']');
 		sb.append(this.id);
-		sb.append(" : ");
+		sb.append(" : "); //$NON-NLS-1$
 		try
 		{
 			switch (this.type)

@@ -35,7 +35,7 @@ public class SocketUnit extends Thread
 
 	public SocketUnit(int localPort)
 	{
-		super("Socketunit");
+		super("Socketunit"); //$NON-NLS-1$
 		this.localPort = localPort;
 		this.setDaemon(true);
 	}
@@ -70,7 +70,7 @@ public class SocketUnit extends Thread
 		{
 			while (!SocketUnit.this.isShutdown())
 			{
-				assert LOGGER.info("Accepting connections on {}", SocketUnit.this.socket);
+				assert LOGGER.info("Accepting connections on {}", SocketUnit.this.socket); //$NON-NLS-1$
 				SocketUnit.this.socketAccepted(SocketUnit.this.socket.accept());
 			}
 		}
@@ -78,11 +78,11 @@ public class SocketUnit extends Thread
 		{
 			if (!SocketUnit.this.isShutdown())
 			{
-				LOGGER.info("Socketunit shutdown on error.", e);
+				LOGGER.info("Socketunit shutdown on error.", e); //$NON-NLS-1$
 				SocketUnit.this.shutdown();
 			}
 		}
-		LOGGER.debug("Socketunit no longer accepting connections.");
+		LOGGER.debug("Socketunit no longer accepting connections."); //$NON-NLS-1$
 		this.serverNetworkService.shutdown();
 	}
 
@@ -95,7 +95,7 @@ public class SocketUnit extends Thread
 			if (!this.isShutdown())
 			{
 				InternalNetTools.configureSocket(clientSocket);
-				LOGGER.info("Client {} connected.", clientSocket.getInetAddress());
+				LOGGER.info("Client {} connected.", clientSocket.getInetAddress()); //$NON-NLS-1$
 
 				this.serverNetworkService.register(clientSocket);
 				return;
@@ -103,7 +103,7 @@ public class SocketUnit extends Thread
 		}
 		catch (IOException ioe)
 		{
-			LOGGER.warn("Accepting a client socket threw an exception.", ioe);
+			LOGGER.warn("Accepting a client socket threw an exception.", ioe); //$NON-NLS-1$
 		}
 		finally
 		{

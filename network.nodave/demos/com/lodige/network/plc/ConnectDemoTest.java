@@ -19,8 +19,8 @@ public class ConnectDemoTest
 	public static void main(String[] args) throws Exception
 	{
 		Logger.configureDefault();
-		ClientNetworkService service = new ClientNetworkService("NodavePLC", new TCPProtocol());
-		ClientConnection con = new ClientConnection("192.168.130.110", 102, null, service);
+		ClientNetworkService service = new ClientNetworkService("NodavePLC", new TCPProtocol()); //$NON-NLS-1$
+		ClientConnection con = new ClientConnection("192.168.130.110", 102, null, service); //$NON-NLS-1$
 		con.connect();
 
 		PDUReadResult rr = Read.fromPLC(con).bytes(2).from(Area.DB).andDatabase(1).andWaitForResult();
@@ -31,7 +31,7 @@ public class ConnectDemoTest
 		for (Variable r : results)
 		{
 			System.out.println(r);
-			System.out.println("DB1:DW0: " + Converter.USBEWord(r.data(), 0));
+			System.out.println("DB1:DW0: " + Converter.USBEWord(r.data(), 0)); //$NON-NLS-1$
 		}
 		
 //		System.out.println("DB1:DW1: " + Nodave.USBEWord(udata, 2));
@@ -47,7 +47,7 @@ public class ConnectDemoTest
 //		a = dc.getWORD(62);
 //		System.out.println("DB1:DW32: " + a);
 //
-		System.out.println("Trying to read 16 bytes from FW0.\n");
+		System.out.println("Trying to read 16 bytes from FW0.\n"); //$NON-NLS-1$
 
 		rr = Read.fromPLC(con).bytes(16).from(Area.FLAGS).andDatabase(0).andWaitForResult();
 //		System.out.println(ByteBuffer.allocate(16).put(rr.resultData()).getFloat(12));

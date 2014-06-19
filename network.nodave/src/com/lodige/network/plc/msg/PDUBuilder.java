@@ -141,7 +141,7 @@ public class PDUBuilder
 	protected void addValue(byte[] values)
 	{
 		int valCount = 0x100 * this.mem.getDateFrom(this.data + 2) + this.mem.getDateFrom(this.data + 3);
-		LOGGER.debug("valCount: {}", Integer.valueOf(valCount));
+		LOGGER.debug("valCount: {}", Integer.valueOf(valCount)); //$NON-NLS-1$
 
 		final int type = this.mem.getDateFrom(this.data + 1);
 		if (type == 4)
@@ -154,13 +154,13 @@ public class PDUBuilder
 		}
 		else
 		{
-			LOGGER.debug("unknown this.data type/length: {}", Integer.valueOf(type));
+			LOGGER.debug("unknown this.data type/length: {}", Integer.valueOf(type)); //$NON-NLS-1$
 		}
 		if (this.udata == 0)
 			this.udata = this.data + 4;
 		this.udlen += values.length;
 		
-		LOGGER.debug("valCount: {}", Integer.valueOf(valCount));
+		LOGGER.debug("valCount: {}", Integer.valueOf(valCount)); //$NON-NLS-1$
 		Converter.setUSBEWord(this.mem, this.data + 2, valCount);
 		addData(values);
 	}
@@ -172,7 +172,7 @@ public class PDUBuilder
 	{
 		if (this.dlen == 0)
 		{
-			LOGGER.debug("adding user data header.");
+			LOGGER.debug("adding user data header."); //$NON-NLS-1$
 			final byte udh[] = { (byte)0xff, 9, 0, 0 };
 			addData(udh);
 		}
@@ -194,24 +194,24 @@ public class PDUBuilder
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder(this.hlen + this.plen + this.dlen + this.udlen);
-		sb.append("PDU header ");
+		sb.append("PDU header "); //$NON-NLS-1$
 		sb.append(Strings.toHexString(this.mem.getDataFrom(new byte[this.hlen], 0)));
 		sb.append('\n');
 		
-		sb.append("plen: "); sb.append(this.plen); sb.append(" dlen: "); sb.append(this.dlen); sb.append('\n');
+		sb.append("plen: "); sb.append(this.plen); sb.append(" dlen: "); sb.append(this.dlen); sb.append('\n'); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		sb.append("Parameter ");
+		sb.append("Parameter "); //$NON-NLS-1$
 		sb.append(Strings.toHexString(this.mem.getDataFrom(new byte[this.plen], this.param)));
 		sb.append('\n');
 		if (this.dlen > 0)
 		{
-			sb.append("Data     ");
+			sb.append("Data     "); //$NON-NLS-1$
 			sb.append(Strings.toHexString(this.mem.getDataFrom(new byte[this.dlen], this.data)));
 			sb.append('\n');
 		}
 		if (this.udlen > 0)
 		{
-			sb.append("Result Data ");
+			sb.append("Result Data "); //$NON-NLS-1$
 			sb.append(Strings.toHexString(this.mem.getDataFrom(new byte[this.udlen], this.udata)));
 			sb.append('\n');
 		}

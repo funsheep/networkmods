@@ -189,7 +189,7 @@ class Input implements IInput, IPLCAPI
 				val = Long.valueOf(ui);
 				break;
 			default:
-				throw new RuntimeException("Should not happen.");
+				throw new RuntimeException("Should not happen."); //$NON-NLS-1$
 		}
 		this.setValue(val);
 	}
@@ -213,7 +213,7 @@ class Input implements IInput, IPLCAPI
 		}
 		if (postEvent)
 		{
-			LOGGER.info("Value of Input {} changed.", this.id);
+			LOGGER.info("Value of Input {} changed.", this.id); //$NON-NLS-1$
 			((IInnerTalker) this.parent).postEvent(IPLCAPI.EVENT_INPUT_CHANGED, this);
 		}
 	}
@@ -230,12 +230,12 @@ class Input implements IInput, IPLCAPI
 		if (forceUpdate)
 		{
 			if (this.parent.connectionState() != ConnectionState.CONNECTED)
-				throw new IOException("No Connection to PLC.");
+				throw new IOException("No Connection to PLC."); //$NON-NLS-1$
 			this.triggerUpdate = true;
 			try
 			{
 				if (!this.waitForUpdate.await(INetworkAPI.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS))
-					throw new IOException("Timeout: Did not get update for input " + this.id + " for NodavePLC " + this.parent.id() + " in time.");
+					throw new IOException("Timeout: Did not get update for input " + this.id + " for NodavePLC " + this.parent.id() + " in time."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 			catch (InterruptedException e)
 			{
@@ -245,7 +245,7 @@ class Input implements IInput, IPLCAPI
 		else if (!forceUpdate && this.value == null)
 			this.triggerUpdate = true;
 		if (this.value == null)
-			throw new IOException("No value from input " + this.id + " available.");
+			throw new IOException("No value from input " + this.id + " available."); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**

@@ -78,11 +78,11 @@ class CloseableQueue implements Closeable
 			while (this.queue.size() == this.maxcapacity && !this.isClosed())
 			{
 				if (!this.isFull.await(INetworkAPI.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS))
-					throw new InterruptedException("Timeout");
+					throw new InterruptedException("Timeout"); //$NON-NLS-1$
 			}
 			
 			if (this.closed)
-				throw new IllegalStateException("Queue is closed.");
+				throw new IllegalStateException("Queue is closed."); //$NON-NLS-1$
 
 			this.queue.add(msg);
 			this.isEmpty.signalAll();

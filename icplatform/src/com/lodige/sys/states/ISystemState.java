@@ -19,8 +19,8 @@ public interface ISystemState extends ITalker
 		STOPPED, RUNNING, ERROR, WARNING, INFO, UNKNOWN
 	}
 
-	public static final int EVENT_STATE_CHANGED = StringID.id("EVENT STATE CHANGED");
-	public static final String EXTPOINT_SYSTEM_STATE = "com.lodige.states.SystemState";
+	public static final int EVENT_STATE_CHANGED = StringID.id("EVENT STATE CHANGED"); //$NON-NLS-1$
+	public static final String EXTPOINT_SYSTEM_STATE = "com.lodige.states.SystemState"; //$NON-NLS-1$
 
 
 	public String name();

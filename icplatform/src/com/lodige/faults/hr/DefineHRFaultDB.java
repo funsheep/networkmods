@@ -17,7 +17,7 @@ public class DefineHRFaultDB
 	
 	public DefineHRFaultDB andWithFault(int db, int offset, int bit, String deviceID, String description)
 	{
-		final String id = db + "." + offset + "." + bit;
+		final String id = String.valueOf(db) + '.' + offset + '.' + bit;
 		this.knownFaults.defineFault(id, deviceID, description);
 		return this;
 	}

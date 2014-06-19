@@ -14,7 +14,7 @@ import java.nio.charset.Charset;
 public class Converter
 {
 
-	static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+	static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8"); //$NON-NLS-1$
 
 
 	/**

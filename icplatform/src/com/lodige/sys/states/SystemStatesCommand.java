@@ -24,7 +24,7 @@ public class SystemStatesCommand implements ICommand
 	{
 		for (ISystemState state : ExtensionRegistry.<ISystemState>getServices(ISystemState.EXTPOINT_SYSTEM_STATE))
 		{
-			out.println(state.name() + ": " + state.state());
+			out.println(state.name() + ": " + state.state()); //$NON-NLS-1$
 		}
 	}
 

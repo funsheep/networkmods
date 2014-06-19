@@ -36,7 +36,7 @@ public class PDUWriteBuilder extends PDUBuilder
 	{
 		super(1, INodaveAPI.MSG_PDU_WRITE);
 		addParam(WRITE_HEADER);
-		LOGGER.debug("{}", this);
+		LOGGER.debug("{}", this); //$NON-NLS-1$
 	}
 
 	
@@ -120,7 +120,7 @@ public class PDUWriteBuilder extends PDUBuilder
 		this.data = this.param + this.plen;
 		addData(da);
 		addValue(buffer);
-		LOGGER.debug("{}", this);
+		LOGGER.debug("{}", this); //$NON-NLS-1$
 	}
 
 	public void addBitVarToWriteRequest(Area area, int DBnum, int start, int byteCount, byte[] buffer)

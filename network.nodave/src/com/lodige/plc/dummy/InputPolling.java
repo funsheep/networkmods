@@ -25,7 +25,7 @@ class InputPolling extends ADoJob
 	 */
 	public InputPolling(DummyPLC plc)
 	{
-		super("DummyInput Polling for " + plc.id());
+		super("DummyInput Polling for " + plc.id()); //$NON-NLS-1$
 		this.plc = plc;
 		this.schedule(IPLCAPI.PLC_UPDATE_THREAD, true, UpdateFrequency.HIGH.schedule);
 	}

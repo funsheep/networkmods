@@ -79,83 +79,83 @@ public class NodaveTools
 		switch (Result.convert(code))
 		{
 			case OK:
-				return "ok";
+				return "ok"; //$NON-NLS-1$
 			case MULTIPLE_BITS_NOT_SUPPORTED:
-				return "the CPU does not support reading a bit block of length<>1";
+				return "the CPU does not support reading a bit block of length<>1"; //$NON-NLS-1$
 			case ITEM_NOT_AVAILABLE:
-				return "the desired item is not available in the PLC";
+				return "the desired item is not available in the PLC"; //$NON-NLS-1$
 			case ITEM_NOT_AVAILABLE200:
-				return "the desired item is not available in the PLC (200 family)";
+				return "the desired item is not available in the PLC (200 family)"; //$NON-NLS-1$
 			case ADDRESS_OUT_OF_RANGE:
-				return "the desired address is beyond limit for this PLC";
+				return "the desired address is beyond limit for this PLC"; //$NON-NLS-1$
 			case CPU_RETURNED_NO_DATA:
-				return "the PLC returned a packet with no result data";
+				return "the PLC returned a packet with no result data"; //$NON-NLS-1$
 			case UNKNOWN_ERROR:
-				return "the PLC returned the error code "+code+" not understood by this library";
+				return "the PLC returned the error code "+code+" not understood by this library"; //$NON-NLS-1$ //$NON-NLS-2$
 			case EMPTY_RESULT:
-				return "this result contains no data";
+				return "this result contains no data"; //$NON-NLS-1$
 			case EMPTY_RESULTSET:
-				return "cannot work with an undefined result set";
+				return "cannot work with an undefined result set"; //$NON-NLS-1$
 			case CANNOT_EVALUATE_PDU:
-				return "cannot evaluate the received PDU";
+				return "cannot evaluate the received PDU"; //$NON-NLS-1$
 			case WRITE_DATA_SIZE_MISMATCH:
-				return "Write data size error";
+				return "Write data size error"; //$NON-NLS-1$
 			case NO_PERIPHERAL_AT_ADDRESS:
-				return "No data from I/O module";
+				return "No data from I/O module"; //$NON-NLS-1$
 			case UNEXPECTED_FUNC:
-				return "Unexpected function code in answer";
+				return "Unexpected function code in answer"; //$NON-NLS-1$
 			case UNKNOWN_DATA_UNIT_SIZE:
-				return "PLC responds wit an unknown data type";
+				return "PLC responds wit an unknown data type"; //$NON-NLS-1$
 			case SHORT_PACKET:
-				return "Short packet from PLC";
+				return "Short packet from PLC"; //$NON-NLS-1$
 			case TIMEOUT:
-				return "Timeout when waiting for PLC response";
+				return "Timeout when waiting for PLC response"; //$NON-NLS-1$
 			case FUNCTION_ALREADY_OCCUPIED:
-				return "function already occupied.";
+				return "function already occupied."; //$NON-NLS-1$
 			case CURRENTLY_NOT_ALLOWED:
-				return "not allowed in current operating status.";
+				return "not allowed in current operating status."; //$NON-NLS-1$
 			case HARDWARE_FAULT:
-				return "hardware fault.";
+				return "hardware fault."; //$NON-NLS-1$
 			case ACCESS_NOT_ALLOWED:
-				return "object access not allowed.";
+				return "object access not allowed."; //$NON-NLS-1$
 			case CONTEXT_UNSUPPORTED:
-				return "context is not supported.";
+				return "context is not supported."; //$NON-NLS-1$
 			case INVALID_ADDRESS:
 			case INVALID_ADDRESS2:
-				return "invalid address.";
+				return "invalid address."; //$NON-NLS-1$
 			case DATATYPE_UNSUPPORTED:
-				return "data type not supported.";
+				return "data type not supported."; //$NON-NLS-1$
 			case DATATYPE_INCONSITENT:
-				return "data type not consistent.";
+				return "data type not consistent."; //$NON-NLS-1$
 			case OBJECT_NOT_EXISTENT:
-				return "object does not exist.";
+				return "object does not exist."; //$NON-NLS-1$
 			case INCORRECT_PDU_SIZE:
-				return "incorrect PDU size.";
+				return "incorrect PDU size."; //$NON-NLS-1$
 			case BLOCKNAME_SYNTAX_ERROR:
-				return "block name syntax error.";
+				return "block name syntax error."; //$NON-NLS-1$
 			case FUNCTION_PARAMETER_SYNTAX_ERROR:
-				return "syntax error function parameter.";
+				return "syntax error function parameter."; //$NON-NLS-1$
 			case BLOCKTYPE_SYNTAX_ERROR:
-				return "syntax error block type.";
+				return "syntax error block type."; //$NON-NLS-1$
 			case NO_BLOCK_ON_STORAGE:
-				return "no linked block in storage medium.";
+				return "no linked block in storage medium."; //$NON-NLS-1$
 			case OBJECT_ALREADY_EXISTS:
 			case OBJECT_ALREADY_EXISTS2:
-				return "object already exists.";
+				return "object already exists."; //$NON-NLS-1$
 			case BLOCK_ALREADY_EXISTS:
-				return "block exists in EPROM.";
+				return "block exists in EPROM."; //$NON-NLS-1$
 			case BLOCK_NOT_EXISTENT:
-				return "block does not exist.";
+				return "block does not exist."; //$NON-NLS-1$
 			case BLOCK_ALREADY_EXISTS2:
-				return "no block does not exist.";
+				return "no block does not exist."; //$NON-NLS-1$
 			case BLOCK_NUMBER_TOO_BIG:
-				return "block number too big.";
+				return "block number too big."; //$NON-NLS-1$
 			case UNFINISHED_BLOCK_TRANSFER:
-				return "unfinished block transfer in progress?";
+				return "unfinished block transfer in progress?"; //$NON-NLS-1$
 			case PASSWORD_PROTECTED:
-				return "protected by password.";
+				return "protected by password."; //$NON-NLS-1$
 		default:
-				return "no message defined for code: " + code + "!";
+				return "no message defined for code: " + code + "!"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
