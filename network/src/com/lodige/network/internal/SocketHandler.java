@@ -55,10 +55,9 @@ class SocketHandler
 					}
 				}
 			}
-			catch (final IOException ex)
+			catch (final Exception ex)
 			{
-				LOGGER.debug("TCP MSG Handler shutdown.", ex); //$NON-NLS-1$
-				ex.printStackTrace();
+				LOGGER.severe("TCP MSG Receiver {} shutdown.", this.getName(), ex); //$NON-NLS-1$
 			}
 			SocketHandler.this.shutdown();
 		}
@@ -91,9 +90,9 @@ class SocketHandler
 					}
 				}
 			}
-			catch (IOException ex)
+			catch (Exception ex)
 			{
-				LOGGER.debug("TCP MSG Handler shutdown.", ex); //$NON-NLS-1$
+				LOGGER.severe("TCP MSG Sender {} shutdown.", this.getName(), ex); //$NON-NLS-1$
 			}
 			SocketHandler.this.shutdown();
 		}

@@ -17,6 +17,7 @@ import github.javaappplatform.platform.job.JobbedTalkerStub;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -30,22 +31,15 @@ import com.lodige.network.msg.IMessage;
 public abstract class ANetworkConnection extends JobbedTalkerStub implements IInternalNetworkConnection
 {
 	
-	private class DispatchJob extends ADoJob
+	private class DispatchMSG extends ADoJob
 	{
-		private boolean hasFinished = true;
-		private int counter = 0;
-
+		private final IMessage msg;
 		
-		public DispatchJob()
+
+		public DispatchMSG(IMessage msg)
 		{
-			super("Message Dispatcher"); //$NON-NLS-1$
-		}
-	
-		@Override
-		public synchronized void schedule(String thread, boolean loop, long delay)
-		{
-			this.hasFinished = false;
-			super.schedule(thread, loop, delay);
+			super("Dispatch " + msg); //$NON-NLS-1$
+			this.msg = msg;
 		}
 	
 		/**
@@ -54,40 +48,10 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 		@Override
 		public void doJob()
 		{
-			if (ANetworkConnection.this.receiveQueue.size() > 0)
-			{
-				IMessage msg = ANetworkConnection.this.receiveQueue.take();
-				if (msg != null)
-					ANetworkConnection.this.postEvent(INetworkAPI.E_MSG_RECEIVED, msg);
-			}
+			ANetworkConnection.this.postEvent(INetworkAPI.E_MSG_RECEIVED, this.msg);
+			this.shutdown();
 		}
 		
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public long absoluteProgress()
-		{
-			return this.counter;
-		}
-
-		public synchronized boolean isRunning()
-		{
-			return !this.hasFinished;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public synchronized boolean isfinished()
-		{
-			boolean isFinished = this.shutdown || ANetworkConnection.this.receiveQueue == null || ANetworkConnection.this.receiveQueue.isClosed() || ANetworkConnection.this.receiveQueue.size() == 0;
-			if (isFinished)
-				this.hasFinished = true;
-			return isFinished;
-		}
-
 	}
 
 
@@ -99,9 +63,8 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	private SocketHandler handler;
 	private final IInternalNetworkService service;
 	private final IProtocol protocol;
-	private final DispatchJob dispatcher = new DispatchJob();
 	private CloseableQueue sendQueue;
-	private CloseableQueue receiveQueue;
+	private AtomicBoolean receiveClosed = new AtomicBoolean(false);
 
 
 	protected final AtomicInteger state = new AtomicInteger(INetworkAPI.S_NOT_CONNECTED);
@@ -131,7 +94,6 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	protected void setSocket(Socket socket) throws IOException
 	{
 		this.sendQueue = new CloseableQueue(INetworkAPI.MAX_MESSAGE_COUNTER);
-		this.receiveQueue = new CloseableQueue(INetworkAPI.MAX_MESSAGE_COUNTER);
 		this.socket = socket;
 		this.handler = new SocketHandler(this);
 	}
@@ -196,7 +158,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 		}
 		else if (msg.type() == IInternalNetworkConnection.T_CLOSED_SEND_QUEUE)
 		{
-			this.receiveQueue.close();
+			this.receiveClosed.set(true);
 		}
 	}
 
@@ -233,15 +195,8 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	@Override
 	public void _put(Message msg)
 	{
-		try
-		{
-			if (this.receiveQueue.put(msg) && !this.dispatcher.isRunning())
-				this.dispatcher.schedule(INetworkAPI.NETWORK_THREAD, false, 0);
-		}
-		catch (InterruptedException e)
-		{
-			LOGGER.warn("Dropping received message: {}", msg); //$NON-NLS-1$
-		}
+		if (!this.receiveClosed.get())
+			JobPlatform.runJob(new DispatchMSG(msg), INetworkAPI.NETWORK_THREAD);
 	}
 
 

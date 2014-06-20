@@ -216,11 +216,12 @@ public class NodavePLC extends JobbedTalkerStub implements IPLC
 	@Override
 	public synchronized void endTransaction() throws IOException
 	{
-		if (this.transactionActive && this.writer != null)
+		if (this.transactionActive)
 		{
-			this.writer.execute();
+			this.transactionActive = false;
+			if (this.writer != null)
+				this.writer.execute();
 		}
-		this.transactionActive = false;
 	}
 	
 	private Write3 writer;
