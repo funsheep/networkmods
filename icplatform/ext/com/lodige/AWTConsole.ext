@@ -1,0 +1,10 @@
+{
+
+	"com.lodige.consoleui.AWTConsole" :
+	{
+		"point" : "github.javaappplatform.platform.boot",
+		"class" : "com.lodige.consoleui.AWTConsole",
+		"singleton" : true
+	}
+
+}

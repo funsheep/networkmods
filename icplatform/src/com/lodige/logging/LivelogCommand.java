@@ -31,20 +31,22 @@ public class LivelogCommand implements ICommand
 		{
 			ILoggingEvent e = (ILoggingEvent) event;
 			out.println('['+e.getThreadName()+"] " + e.getLoggerName() + " - " + e.getFormattedMessage()); //$NON-NLS-1$ //$NON-NLS-2$
-			this.printThrowable(e.getThrowableProxy(), out);
+			this.printThrowable(e.getThrowableProxy(), true, out);
 		}
 	}
 
-	private void printThrowable(IThrowableProxy proxy, PrintStream out)
+	private void printThrowable(IThrowableProxy proxy, boolean first, PrintStream out)
 	{
 		if (proxy == null)
 			return;
+
+		if (!first)
+			out.println("Caused By:"); //$NON-NLS-1$
 		out.println(proxy.getClassName() + " - " + proxy.getMessage()); //$NON-NLS-1$
 		for (StackTraceElementProxy trace : proxy.getStackTraceElementProxyArray())
 		{
 			out.println(trace.getSTEAsString());
 		}
-		out.println("Caused By:"); //$NON-NLS-1$
-		this.printThrowable(proxy.getCause(), out);
+		this.printThrowable(proxy.getCause(), false, out);
 	}
 }
