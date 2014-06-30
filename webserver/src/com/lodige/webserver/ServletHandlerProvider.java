@@ -102,7 +102,6 @@ public class ServletHandlerProvider implements IHandlerProvider
 					case "servlet":
 						break;
 					default:
-						System.out.println("Init:" + entry.getKey() + " - " + entry.getValue());
 						holder.setInitParameter(entry.getKey(), String.valueOf(entry.getValue()));
 				}
 			}
