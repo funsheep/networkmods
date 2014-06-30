@@ -10,7 +10,13 @@
 	{
 		"point" : "github.javaappplatform.platform.boot",
 		"class" : "com.lodige.dbaccess.BootEntry",
-		"singleton" : true
+		"singleton" : true,
+		"testOnBorrow" : true,
+		"validationInterval" : 30000,
+		"timeBetweenEvictionRunsMillis" : 5000,
+		"minEvictableIdleTimeMillis" : 30000,
+		"removeAbandonedTimeout" : 60,
+		"removeAbandoned" : "true"
 	},
 
 	"com.lodige.dbaccess.logging" :
