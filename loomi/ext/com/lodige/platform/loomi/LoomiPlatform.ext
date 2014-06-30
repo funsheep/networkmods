@@ -6,6 +6,12 @@
 		"class" : "com.lodige.platform.loomi.Servlet"
 	},
 	
+	"com.lodige.loomi.engine.classic.ClassicUIProvider":
+	{
+		"point" : "com.lodige.platform.loomi.ui.provider",
+		"class" : "com.lodige.loomi.engine.classic.ClassicUIProvider"
+	},
+	
 	"com.lodige.platform.loomi.servlet.initparams":
 	{
 		"point" : "com.lodige.webserver.servlet.initparameters",
