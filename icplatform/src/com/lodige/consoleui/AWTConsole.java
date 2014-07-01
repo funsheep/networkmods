@@ -21,6 +21,9 @@ import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.JFrame;
 import javax.swing.JSplitPane;
@@ -42,6 +45,9 @@ import com.lodige.logging.ObservableFixedSizeOrderedSet;
 public class AWTConsole extends JFrame implements IBootEntry, WindowStateListener, IListener, IJob
 {
 
+	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
+	
+	
 	private final MessageConsole logConsole;
 	private final MessageConsole consoleConsole;
 	private final JTextField cmdPrompt = new JTextField();
@@ -55,7 +61,7 @@ public class AWTConsole extends JFrame implements IBootEntry, WindowStateListene
 	{
 		super("Console");
 		
-		this.setSize(600, 800);
+		this.setSize(800, 800);
 		this.setResizable(false);
 
 		Container pane = getContentPane();
@@ -139,9 +145,15 @@ public class AWTConsole extends JFrame implements IBootEntry, WindowStateListene
 	public void handleEvent(Event event)
 	{
 		ILoggingEvent e = (ILoggingEvent) event.getData();
-		this.logConsole.writeLine('['+e.getThreadName()+"] " + e.getLoggerName() + " - " + e.getFormattedMessage());
+		this.logConsole.writeLine(formatTime(e.getTimeStamp())+" ["+e.getThreadName()+"] " + e.getLoggerName() + " - " + e.getFormattedMessage());
 		this.printThrowable(e.getThrowableProxy(), true);
 	}
+
+	private static final String formatTime(long millis)
+	{
+		return LocalDate.from(Instant.ofEpochMilli(millis)).format(TIME_FORMATTER);
+	}
+	
 
 	/**
 	 * {@inheritDoc}
