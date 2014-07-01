@@ -11,7 +11,7 @@
 		"point" : "com.lodige.dbaccess.jdbcurigen",
 		"class" : "com.lodige.dbaccess.oracle.OracleThinURIGenerator",
 		"singleton" : false,
-		"validationquery" : "select 1 from dual"
+		"validationQuery" : "select 1 from dual"
 	}
 
 }

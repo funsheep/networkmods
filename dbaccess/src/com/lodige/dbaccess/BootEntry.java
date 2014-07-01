@@ -75,7 +75,7 @@ public class BootEntry implements IBootEntry
 	
 	private void initPool(BasicDataSource pool, Extension dbaccess, Extension generator)
 	{
-		String validQuery = generator.getProperty("validationquery");
+		String validQuery = generator.getProperty("validationQuery");
 		if (validQuery != null)
 			pool.setValidationQuery(validQuery);
 		pool.setTestOnBorrow(dbaccess.getProperty("testOnBorrow", true));
@@ -84,7 +84,7 @@ public class BootEntry implements IBootEntry
 		pool.setMinEvictableIdleTimeMillis(dbaccess.getProperty("minEvictableIdleTimeMillis", -1));
 		pool.setRemoveAbandoned(dbaccess.getProperty("removeAbandoned", true));
 		pool.setRemoveAbandonedTimeout(dbaccess.getProperty("removeAbandonedTimeout", 300));
-		pool.setValidationQueryTimeout(dbaccess.getProperty("validationquerytimeout", 10));
+		pool.setValidationQueryTimeout(dbaccess.getProperty("validationQueryTimeout", 10));
 	}
 
 	/**
