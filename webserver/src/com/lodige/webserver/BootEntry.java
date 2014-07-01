@@ -43,6 +43,8 @@ public class BootEntry implements IBootEntry
 	public void startup(Extension e) throws PlatformException
 	{
 		this.server = new Server();
+		this.server.setStopTimeout(0);
+
 		//set http connection
 		ServerConnector http = new ServerConnector(this.server);
 		http.setHost(Platform.getOptionValue(O_WEBSERVER_HOST, e.getProperty("host", "localhost")));
