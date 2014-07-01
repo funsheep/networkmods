@@ -107,6 +107,9 @@ public class TCPProtocol extends S7Protocol
 	{
 		LOGGER.debug("Send Msg: {}", msg); //$NON-NLS-1$
 		final int headerSize = HEADER_LENGTH + (((msg.type() & INodaveAPI.MSG_PDU) != 0) ? 3 : 0);
+		if (this.maxPDUlength > 0 && headerSize + msg.size() > this.maxPDUlength)
+			throw new IOException("Could not send message, as message size "+(headerSize+msg.size())+" excedes maxPDUlength " + this.maxPDUlength + ".");
+		
 		out.write(0x03);
 		out.write(0x0);
 		out.write((msg.size()+headerSize) / 0x100);

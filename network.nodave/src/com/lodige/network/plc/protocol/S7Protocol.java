@@ -28,7 +28,7 @@ public abstract class S7Protocol implements IProtocol
 
 
 	protected final int pduInHeaderSize;
-	protected int maxPDUlength;
+	protected int maxPDUlength = -1;
 
 	
 	public S7Protocol(int pduInHeaderSize)

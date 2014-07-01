@@ -9,6 +9,7 @@ import github.javaappplatform.platform.job.ADoJob;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.lodige.network.INetworkAPI;
@@ -78,9 +79,18 @@ class InputPolling extends ADoJob
 							i.updateNoValue();
 						LOGGER.info("Could not read data from plc {}.", this.plc.id(), e); //$NON-NLS-1$
 					}
-					inputs = new ArrayList<>();
+					inputs.clear();
 					r =  Read.fromPLC(this.plc.cc);
 					r3 = null;
+					//FIXME test to stabilize PLC communication
+					try
+					{
+						Thread.sleep(1000);
+					}
+					catch (InterruptedException e)
+					{
+						return;
+					}
 				}
 			}
 		}
@@ -114,5 +124,6 @@ class InputPolling extends ADoJob
 			{
 				LOGGER.severe("Could not read data from input {} from plc {}.", input.id, this.plc.id(), e); //$NON-NLS-1$
 			}
+		LOGGER.debug("Successfully updated inputs: {}", Arrays.toString(inputs.toArray()));
 	}
 }
