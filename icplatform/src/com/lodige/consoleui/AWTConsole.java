@@ -22,7 +22,7 @@ import java.awt.HeadlessException;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
 import java.time.Instant;
-import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import javax.swing.JFrame;
@@ -45,7 +45,7 @@ import com.lodige.logging.ObservableFixedSizeOrderedSet;
 public class AWTConsole extends JFrame implements IBootEntry, WindowStateListener, IListener, IJob
 {
 
-	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
+	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.systemDefault());
 	
 	
 	private final MessageConsole logConsole;
@@ -151,7 +151,7 @@ public class AWTConsole extends JFrame implements IBootEntry, WindowStateListene
 
 	private static final String formatTime(long millis)
 	{
-		return LocalDate.from(Instant.ofEpochMilli(millis)).format(TIME_FORMATTER);
+		return TIME_FORMATTER.format(Instant.ofEpochMilli(millis));
 	}
 	
 

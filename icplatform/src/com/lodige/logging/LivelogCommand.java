@@ -10,7 +10,7 @@ import github.javaappplatform.platform.extension.ExtensionRegistry;
 
 import java.io.PrintStream;
 import java.time.Instant;
-import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -24,7 +24,7 @@ import ch.qos.logback.classic.spi.StackTraceElementProxy;
 public class LivelogCommand implements ICommand
 {
 	
-	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
+	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.systemDefault());
 
 	/**
 	 * {@inheritDoc}
@@ -58,7 +58,7 @@ public class LivelogCommand implements ICommand
 	
 	private static final String formatTime(long millis)
 	{
-		return LocalDate.from(Instant.ofEpochMilli(millis)).format(TIME_FORMATTER);
+		return TIME_FORMATTER.format(Instant.ofEpochMilli(millis));
 	}
 	
 	private static final String ensureLength(String text, int length)

@@ -34,12 +34,12 @@ class CloseableQueue implements Closeable
 	}
 
 	
-	public IMessage take()
+	public IMessage poll()
 	{
 		return this.poll(0);
 	}
 
-	public IMessage poll()
+	public IMessage take()
 	{
 		return this.poll(INetworkAPI.CONNECTION_TIMEOUT);
 	}
