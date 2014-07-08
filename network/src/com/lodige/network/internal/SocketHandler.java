@@ -36,7 +36,7 @@ class SocketHandler
 		@Override
 		public void run()
 		{
-			try (InputStream in = SocketHandler.this.con._socket().getInputStream();)
+			try (InputStream in = SocketHandler.this.con._socket().getInputStream())
 			{
 				while (SocketHandler.this.isConnected())
 				{
@@ -73,7 +73,7 @@ class SocketHandler
 		@Override
 		public void run()
 		{
-			try (OutputStream out = SocketHandler.this.con._socket().getOutputStream();)
+			try (OutputStream out = SocketHandler.this.con._socket().getOutputStream())
 			{
 				while (SocketHandler.this.isConnected())
 				{

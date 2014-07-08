@@ -122,7 +122,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	@Override
 	public long asyncSend(IMessage msg) throws IOException
 	{
-		if (this.state.get() == INetworkAPI.S_NOT_CONNECTED)
+		if (this.state.get() != INetworkAPI.S_CONNECTED)
 			throw new IllegalStateException("Connection is shutdown."); //$NON-NLS-1$
 		Message m = (Message) msg;
 		long sendID = SENDIDS.getAndIncrement();
@@ -159,6 +159,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 		else if (msg.type() == IInternalNetworkConnection.T_CLOSED_SEND_QUEUE)
 		{
 			this.receiveClosed.set(true);
+			this._shutdown();
 		}
 	}
 
@@ -217,24 +218,31 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 			@Override
 			public void run()
 			{
-				ANetworkConnection.this.sendQueue.putVIP(Message.create(IInternalNetworkConnection.T_CLOSED_SEND_QUEUE, null));
+				ANetworkConnection.this.sendQueue.putVIP(Message.create(IInternalNetworkConnection.T_CLOSED_SEND_QUEUE, new byte[0]));
 				ANetworkConnection.this.sendQueue.close();
 			}
 		}, INetworkAPI.NETWORK_THREAD);
 	}
 
+	private void _shutdown()
+	{
+		if (this.state.getAndSet(INetworkAPI.S_NOT_CONNECTED) == INetworkAPI.S_NOT_CONNECTED)
+			return;
+		
+		this.handler.shutdown();
+		this.handler = null;
+		Close.close(this.socket);
+		this.socket = null;
+		this.postEvent(INetworkAPI.E_STATE_CHANGED);
+
+	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void shutdown()
 	{
-		if (this.state.getAndSet(INetworkAPI.S_NOT_CONNECTED) == INetworkAPI.S_NOT_CONNECTED)
-			return;
-		
-		this.handler.shutdown();
-		Close.close(this.socket);
-		this.postEvent(INetworkAPI.E_STATE_CHANGED);
+		this._shutdown();
 		this.service._unregister(this);
 	}
 

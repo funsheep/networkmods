@@ -5,6 +5,7 @@
 package com.lodige.plc.nodave;
 
 import github.javaappplatform.commons.log.Logger;
+import github.javaappplatform.commons.util.Close;
 import github.javaappplatform.platform.job.ADoJob;
 
 import java.io.IOException;
@@ -30,10 +31,12 @@ class InputPolling extends ADoJob
 	
 	private static final Logger LOGGER = Logger.getLogger();
 	
+	private static final int MAX_FAILS_BEFORE_RECONNECT = 3;
 	private static final int MAX_INPUTS_PER_POLL = 15;
 	
 	private final NodavePLC plc;
-
+	private int fails = 0;
+	
 
 	/**
 	 * @param name
@@ -55,6 +58,7 @@ class InputPolling extends ADoJob
 		if (this.plc.connectionState() != ConnectionState.CONNECTED)
 			return;
 		
+
 		Read r = Read.fromPLC(this.plc.cc);
 		Read.Read3 r3 = null;
 		ArrayList<Input> inputs = new ArrayList<>();
@@ -78,25 +82,15 @@ class InputPolling extends ADoJob
 						for (Input i : inputs)
 							i.updateNoValue();
 						LOGGER.info("Could not read data from plc {}.", this.plc.id(), e); //$NON-NLS-1$
+						this.fails++;
 					}
 					inputs.clear();
 					r =  Read.fromPLC(this.plc.cc);
 					r3 = null;
-					//FIXME test to stabilize PLC communication
-					try
-					{
-						Thread.sleep(1000);
-					}
-					catch (InterruptedException e)
-					{
-						return;
-					}
 				}
 			}
 		}
 
-		if (inputs.size() == 0)
-			return;
 		try
 		{
 			this.poll(r3, inputs);
@@ -106,11 +100,21 @@ class InputPolling extends ADoJob
 			for (Input i : inputs)
 				i.updateNoValue();
 			LOGGER.info("Could not read data from plc {}.", this.plc.id(), e); //$NON-NLS-1$
+			this.fails++;
+		}
+		
+		if (this.fails >= MAX_FAILS_BEFORE_RECONNECT)
+		{
+			LOGGER.severe("The last {} read requests to plc {} failed. Attempting a reconnect.", Integer.valueOf(this.fails), this.plc.id());
+			Close.close(this.plc.cc);
 		}
 	}
 
 	private void poll(Read.Read3 r3, List<Input> inputs) throws IOException
 	{
+		if (inputs.size() == 0)
+			return;
+		
 		int i = 0;
 		Variable[] vars = r3.andWaitForResult(INetworkAPI.CONNECTION_TIMEOUT).getResults();
 		if (vars.length != inputs.size())
@@ -125,5 +129,6 @@ class InputPolling extends ADoJob
 				LOGGER.severe("Could not read data from input {} from plc {}.", input.id, this.plc.id(), e); //$NON-NLS-1$
 			}
 		LOGGER.debug("Successfully updated inputs: {}", Arrays.toString(inputs.toArray()));
+		this.fails = 0;
 	}
 }
