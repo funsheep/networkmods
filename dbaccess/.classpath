@@ -4,8 +4,8 @@
 	<classpathentry kind="src" path="ext"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="github.javaappplatform.eclipse.project.classpath.JAPClasspathContainer"/>
-	<classpathentry kind="src" path="/platform"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-dbcp-1.4.jar" sourcepath="lib/commons-dbcp-1.4-src.zip"/>
 	<classpathentry kind="lib" path="lib/commons-pool-1.6.jar" sourcepath="lib/commons-pool-1.6-src.zip"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jap-platform"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
