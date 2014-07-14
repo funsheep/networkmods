@@ -47,7 +47,10 @@ public class Read
 			{
 				int gotID = NodaveTools.getPDUNumber(msg, Read.this.headerSize());
 				if (gotID == this.msgID)
+				{
+					Read.this.connection.removeListener(this);
 					this.callback.handleEvent(new Event(e.getSource(), INodaveAPI.E_PDU_RESULT_RECIEVED, new PDUReadResult(msg, Read.this.headerSize())));
+				}
 			}
 		}
 	}
@@ -102,18 +105,20 @@ public class Read
 			Compute getter = new Compute();
 			JobPlatform.runJob(() ->
 			{
+				IListener listener = null;
 				try
 				{
 					long msgID = Read.this.connection.asyncSend(Read.this.rb.compile(null));
-					Read.this.connection.addListener(INetworkAPI.E_MSG_RECEIVED, new PDUResultListener(msgID, (e) ->
+					listener = new PDUResultListener(msgID, (e) ->
 					{
 						getter.put(e.getData());
-					}));
+					});
+					Read.this.connection.addListener(INetworkAPI.E_MSG_RECEIVED, listener);
 				}
 				catch (Exception e)
 				{
+					Read.this.connection.removeListener(listener);
 					getter.error(e);
-					
 				}
 			}, INetworkAPI.NETWORK_THREAD);
 			try
@@ -128,35 +133,39 @@ public class Read
 			}
 		}
 
-		public long andInformMeOnResult(IListener listener) throws IOException
-		{
-			Read.this.addToRB();
-			Compute getter = new Compute();
-			JobPlatform.runJob(() ->
-			{
-				try
-				{
-					long msgID = Read.this.connection.asyncSend(Read.this.rb.compile(null));
-					Read.this.connection.addListener(INetworkAPI.E_MSG_RECEIVED, new PDUResultListener(msgID, listener));
-					getter.put(Long.valueOf(msgID));
-				}
-				catch (Exception e)
-				{
-					getter.error(e);
-					
-				}
-			}, INetworkAPI.NETWORK_THREAD);
-			try
-			{
-				return getter.<Long>get().longValue();
-			}
-			catch (Exception e)
-			{
-				if (e instanceof IOException)
-					throw (IOException) e;
-				throw new IOException(e);
-			}
-		}
+		//FIXME this will not work correctly, for example, for the user it is not possible to abort this operation after some time.
+//		public long andInformMeOnResult(IListener listener) throws IOException
+//		{
+//			Read.this.addToRB();
+//			Compute getter = new Compute();
+//			JobPlatform.runJob(() ->
+//			{
+//				IListener resultListener = null;
+//				try
+//				{
+//					long msgID = Read.this.connection.asyncSend(Read.this.rb.compile(null));
+//					resultListener = new PDUResultListener(msgID, listener);
+//					Read.this.connection.addListener(INetworkAPI.E_MSG_RECEIVED, resultListener);
+//					getter.put(Long.valueOf(msgID));
+//				}
+//				catch (Exception e)
+//				{
+//					if (resultListener != null)
+//						Read.this.connection.removeListener(listener);
+//					getter.error(e);
+//				}
+//			}, INetworkAPI.NETWORK_THREAD);
+//			try
+//			{
+//				return getter.<Long>get().longValue();
+//			}
+//			catch (Exception e)
+//			{
+//				if (e instanceof IOException)
+//					throw (IOException) e;
+//				throw new IOException(e);
+//			}
+//		}
 
 	}
 

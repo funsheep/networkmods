@@ -17,7 +17,6 @@ import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.lodige.network.INetworkAPI;
-import com.lodige.network.IProtocol;
 import com.lodige.network.server.IServerNetworkService;
 import com.lodige.network.server.ServerConnection;
 
@@ -33,9 +32,9 @@ public class ServerNetworkService extends ANetworkService implements IServerNetw
 	private final SocketUnit unit;
 	
 	
-	public ServerNetworkService(String name, int localPort, IProtocol protocol)
+	public ServerNetworkService(String name, int localPort, String protocolClass)
 	{
-		super(INetworkAPI.NETWORK_THREAD, protocol);
+		super("Server Network Service", protocolClass);
 		this.unit = new SocketUnit(localPort);
 	}
 	

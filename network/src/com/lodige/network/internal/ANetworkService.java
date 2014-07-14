@@ -10,6 +10,7 @@ package com.lodige.network.internal;
 
 import github.javaappplatform.commons.log.Logger;
 import github.javaappplatform.commons.util.Close;
+import github.javaappplatform.platform.extension.ServiceInstantiationException;
 import github.javaappplatform.platform.job.AComputeDoJob;
 import github.javaappplatform.platform.job.ADoJob;
 import github.javaappplatform.platform.job.JobPlatform;
@@ -39,14 +40,14 @@ public abstract class ANetworkService extends JobbedTalkerStub implements IInter
 	private final HashMap<InetAddress, INetworkConnection> connectionsByAddr  = new HashMap<>(1);
 	private final HashMap<String, INetworkConnection> connectionsByAlias = new HashMap<>(1);
 	private final String name;
-	private final IProtocol protocol;
+	private final String protocolClass;
 
 	
-	public ANetworkService(String name, IProtocol protocol)
+	public ANetworkService(String name, String protocolClass)
 	{
 		super(INetworkAPI.NETWORK_THREAD);
 		this.name = name;
-		this.protocol = protocol;
+		this.protocolClass = protocolClass;
 	}
 	
 	
@@ -65,7 +66,14 @@ public abstract class ANetworkService extends JobbedTalkerStub implements IInter
 	@Override
 	public IProtocol _getProtocol()
 	{
-		return this.protocol;
+		try
+		{
+			return instantiateProtocol(this.protocolClass);
+		}
+		catch (ServiceInstantiationException ex)
+		{
+			throw new RuntimeException("Could not instantiate protocol. Should not happen.", ex);
+		}
 	}
 
 
@@ -198,4 +206,17 @@ public abstract class ANetworkService extends JobbedTalkerStub implements IInter
 		}
 	}
 
+
+	private static final IProtocol instantiateProtocol(String protocol) throws ServiceInstantiationException
+	{
+		try
+		{
+			Class<?> clazz = Class.forName(protocol);
+			return (IProtocol) clazz.newInstance();
+		}
+		catch (ClassNotFoundException | InstantiationException | IllegalAccessException e)
+		{
+			throw new ServiceInstantiationException(e);
+		}
+	}
 }

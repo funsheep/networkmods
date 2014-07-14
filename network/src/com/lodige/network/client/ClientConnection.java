@@ -25,15 +25,16 @@ public class ClientConnection extends ANetworkConnection
 	
 	private class Reconnecter extends ADoJob
 	{
-		public Reconnecter(String con)
+		public Reconnecter()
 		{
-			super("AutoReconnecter for " + con); //$NON-NLS-1$
+			super("AutoReconnecter for " + ClientConnection.this.alias()); //$NON-NLS-1$
 		}
 
 	
 		@Override
 		public void doJob()
 		{
+			LOGGER.info(ClientConnection.this.toString()); //$NON-NLS-1$
 			if (this.isfinished() || ClientConnection.this.state() != INetworkAPI.S_NOT_CONNECTED)
 				return;
 			try
@@ -66,6 +67,19 @@ public class ClientConnection extends ANetworkConnection
 		this.localRange = localPortRange;
 		this.register();
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String alias()
+	{
+		String alias = super.alias();
+		if (alias != null)
+			return alias;
+		return this.remoteAddress.toString();
+	}
+
 
 
 	public void connect() throws IOException
@@ -110,7 +124,7 @@ public class ClientConnection extends ANetworkConnection
 	{
 		if (!this.doesAutoReconnect() && autoReconnect)
 		{
-			this.autoReconnect = new Reconnecter(this.remoteAddress.toString());
+			this.autoReconnect = new Reconnecter();
 			this.autoReconnect.schedule(INetworkAPI.NETWORK_THREAD, true, 10 * 1000);
 		}
 		else if (this.doesAutoReconnect() && !autoReconnect)
@@ -142,7 +156,9 @@ public class ClientConnection extends ANetworkConnection
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.append("ClientUnit: "); //$NON-NLS-1$
+		sb.append("ClientUnit "); //$NON-NLS-1$
+		sb.append(this.alias());
+		sb.append(": ");
 		switch (this.state())
 		{
 			case INetworkAPI.S_NOT_CONNECTED:
@@ -158,8 +174,6 @@ public class ClientConnection extends ANetworkConnection
 				sb.append("Connection Pending"); //$NON-NLS-1$
 				break;
 		}
-		sb.append('\n');
-		sb.append(super.toString());
 		return sb.toString();
 	}
 

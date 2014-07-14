@@ -9,14 +9,12 @@
 package com.lodige.network.client;
 
 import github.javaappplatform.platform.extension.Extension;
-import github.javaappplatform.platform.extension.ServiceInstantiationException;
 import github.javaappplatform.platform.job.ADoJob;
 import github.javaappplatform.platform.job.JobPlatform;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.lodige.network.INetworkAPI;
-import com.lodige.network.IProtocol;
 import com.lodige.network.internal.ANetworkService;
 
 
@@ -30,14 +28,14 @@ public class ClientNetworkService extends ANetworkService
 	private final AtomicInteger state = new AtomicInteger(INetworkAPI.S_RUNNING);
 
 
-	public ClientNetworkService(Extension ex) throws ServiceInstantiationException
+	public ClientNetworkService(Extension ex)
 	{
-		super(ex.name, instantiateProtocol(ex.getProperty("protocol"))); //$NON-NLS-1$
+		super(ex.name, ex.getProperty("protocol")); //$NON-NLS-1$
 	}
 	
-	public ClientNetworkService(String name, IProtocol protocol)
+	public ClientNetworkService(String name, String protocolClass)
 	{
-		super(name, protocol);
+		super(name, protocolClass);
 	}
 	
 	
@@ -98,16 +96,4 @@ public class ClientNetworkService extends ANetworkService
 		}, INetworkAPI.NETWORK_THREAD);
 	}
 
-	private static final IProtocol instantiateProtocol(String protocol) throws ServiceInstantiationException
-	{
-		try
-		{
-			Class<?> clazz = Class.forName(protocol);
-			return (IProtocol) clazz.newInstance();
-		}
-		catch (ClassNotFoundException | InstantiationException | IllegalAccessException e)
-		{
-			throw new ServiceInstantiationException(e);
-		}
-	}
 }

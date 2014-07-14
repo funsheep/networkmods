@@ -28,7 +28,7 @@ public class IOTest implements IBootEntry
 	@Override
 	public void startup(Extension e) throws PlatformException
 	{
-		ClientNetworkService service = new ClientNetworkService("NodavePLC", new TCPProtocol()); //$NON-NLS-1$
+		ClientNetworkService service = new ClientNetworkService("NodavePLC", TCPProtocol.class.getName()); //$NON-NLS-1$
 		try
 		{
 			final NodavePLC plc = new NodavePLC("192.168.130.110", service); //$NON-NLS-1$

@@ -19,7 +19,7 @@ public class ConnectDemoTest
 	public static void main(String[] args) throws Exception
 	{
 		Logger.configureDefault();
-		ClientNetworkService service = new ClientNetworkService("NodavePLC", new TCPProtocol()); //$NON-NLS-1$
+		ClientNetworkService service = new ClientNetworkService("NodavePLC", TCPProtocol.class.getName()); //$NON-NLS-1$
 		ClientConnection con = new ClientConnection("192.168.130.110", 102, null, service); //$NON-NLS-1$
 		con.connect();
 

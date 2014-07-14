@@ -141,9 +141,9 @@ class SocketHandler
 			{
 				LOGGER.debug("Could not correctly shutdown sockethandler.", e);
 			}
-			Close.close(this.socket);
 			this._receiver.interrupt();
 			this._sender.interrupt();
+			Close.close(this.socket);
 			this.con.shutdown();
 		}
 	}

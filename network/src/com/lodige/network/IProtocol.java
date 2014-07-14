@@ -25,5 +25,5 @@ public interface IProtocol
 	public IMessage read(InputStream in) throws IOException;
 
 	public void onDisconnect(Socket socket);
-
+	
 }

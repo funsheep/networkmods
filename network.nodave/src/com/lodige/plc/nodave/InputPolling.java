@@ -57,7 +57,6 @@ class InputPolling extends ADoJob
 	{
 		if (this.plc.connectionState() != ConnectionState.CONNECTED)
 			return;
-		
 
 		Read r = Read.fromPLC(this.plc.cc);
 		Read.Read3 r3 = null;
@@ -107,6 +106,7 @@ class InputPolling extends ADoJob
 		{
 			LOGGER.severe("The last {} read requests to plc {} failed. Attempting a reconnect.", Integer.valueOf(this.fails), this.plc.id());
 			Close.close(this.plc.cc);
+			this.fails = 0;
 		}
 	}
 
@@ -129,6 +129,5 @@ class InputPolling extends ADoJob
 				LOGGER.severe("Could not read data from input {} from plc {}.", input.id, this.plc.id(), e); //$NON-NLS-1$
 			}
 		LOGGER.debug("Successfully updated inputs: {}", Arrays.toString(inputs.toArray()));
-		this.fails = 0;
 	}
 }
