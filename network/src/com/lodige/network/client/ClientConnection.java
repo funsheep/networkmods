@@ -173,6 +173,9 @@ public class ClientConnection extends ANetworkConnection
 			case INetworkAPI.S_CONNECTION_PENDING:
 				sb.append("Connection Pending"); //$NON-NLS-1$
 				break;
+			default:
+				sb.append("Unkown");
+				break;
 		}
 		return sb.toString();
 	}
