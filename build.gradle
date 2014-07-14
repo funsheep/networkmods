@@ -1,0 +1,25 @@
+buildscript {
+	repositories {
+		maven {
+			url 'http://192.168.102.84/artifactory/external-dependencies'
+		}
+		ivy {
+			url 'http://192.168.102.84/repos/local-releases'
+		}
+	}
+
+	dependencies {
+		classpath 'com.lodige:LodigeJavaPlugin:1.+'
+	}
+}
+
+subProjects {
+	apply plugin: 'lodige'
+	
+	if (project.name != 'jap-platform')
+	{
+		dependencies {
+			compile project(':jap-platform')
+		}
+	}
+}

@@ -1,0 +1,6 @@
+dependencies
+{
+	compile project(':dbaccess')
+	compile project(':network')
+	compile project(':network.nodave')
+}
