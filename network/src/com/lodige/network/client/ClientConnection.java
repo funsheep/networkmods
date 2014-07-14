@@ -34,12 +34,12 @@ public class ClientConnection extends ANetworkConnection
 		@Override
 		public void doJob()
 		{
-			if (this.isfinished())
+			if (this.isfinished() || ClientConnection.this.state() != INetworkAPI.S_NOT_CONNECTED)
 				return;
 			try
 			{
-				if (ClientConnection.this.state() == INetworkAPI.S_NOT_CONNECTED)
-					ClientConnection.this.connect();
+				LOGGER.info("Attempting a reconnect to {}.", ClientConnection.this.remoteAddress); //$NON-NLS-1$
+				ClientConnection.this.connect();
 			}
 			catch (IOException e)
 			{

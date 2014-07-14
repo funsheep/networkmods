@@ -10,7 +10,6 @@ package com.lodige.network.internal;
 
 import github.javaappplatform.commons.events.Event;
 import github.javaappplatform.commons.log.Logger;
-import github.javaappplatform.commons.util.Close;
 import github.javaappplatform.platform.job.ADoJob;
 import github.javaappplatform.platform.job.JobPlatform;
 import github.javaappplatform.platform.job.JobbedTalkerStub;
@@ -59,7 +58,6 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	private static final AtomicLong SENDIDS = new AtomicLong(0);
 
 
-	private Socket socket;
 	private SocketHandler handler;
 	private final IInternalNetworkService service;
 	private final IProtocol protocol;
@@ -94,8 +92,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	protected void setSocket(Socket socket) throws IOException
 	{
 		this.sendQueue = new CloseableQueue(INetworkAPI.MAX_MESSAGE_COUNTER);
-		this.socket = socket;
-		this.handler = new SocketHandler(this);
+		this.handler = new SocketHandler(socket, this);
 	}
 
 	/**
@@ -167,15 +164,6 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Socket _socket()
-	{
-		return this.socket;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public IProtocol _protocol()
 	{
 		return this.protocol;
@@ -226,16 +214,22 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 
 	private void _shutdown()
 	{
-		if (this.state.getAndSet(INetworkAPI.S_NOT_CONNECTED) == INetworkAPI.S_NOT_CONNECTED)
-			return;
-		
-		this.handler.shutdown();
-		this.handler = null;
-		Close.close(this.socket);
-		this.socket = null;
-		this.postEvent(INetworkAPI.E_STATE_CHANGED);
-
+		JobPlatform.runJob(new Runnable()
+		{
+			
+			@Override
+			public void run()
+			{
+				if (ANetworkConnection.this.state.getAndSet(INetworkAPI.S_NOT_CONNECTED) == INetworkAPI.S_NOT_CONNECTED)
+					return;
+				
+				ANetworkConnection.this.handler.shutdown();
+				ANetworkConnection.this.handler = null;
+				ANetworkConnection.this.postEvent(INetworkAPI.E_STATE_CHANGED);
+			}
+		}, INetworkAPI.NETWORK_THREAD);
 	}
+	
 	/**
 	 * {@inheritDoc}
 	 */

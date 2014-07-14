@@ -14,6 +14,7 @@ import github.javaappplatform.commons.util.Close;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -36,7 +37,7 @@ class SocketHandler
 		@Override
 		public void run()
 		{
-			try (InputStream in = SocketHandler.this.con._socket().getInputStream())
+			try (InputStream in = SocketHandler.this.socket.getInputStream())
 			{
 				while (SocketHandler.this.isConnected())
 				{
@@ -73,7 +74,7 @@ class SocketHandler
 		@Override
 		public void run()
 		{
-			try (OutputStream out = SocketHandler.this.con._socket().getOutputStream())
+			try (OutputStream out = SocketHandler.this.socket.getOutputStream())
 			{
 				while (SocketHandler.this.isConnected())
 				{
@@ -100,21 +101,23 @@ class SocketHandler
 
 
 	private final IInternalNetworkConnection con;
+	private final Socket socket;
 	private final AtomicBoolean isShutdown = new AtomicBoolean(false);
 
 
 	/**
 	 *
 	 */
-	public SocketHandler(IInternalNetworkConnection con) throws IOException
+	public SocketHandler(Socket socket, IInternalNetworkConnection con) throws IOException
 	{
 		this.con = con;
+		this.socket = socket;
 		if (!this.isConnected())
 			return;
-		this.con._protocol().onConnect(this.con._socket());
+		this.con._protocol().onConnect(this.socket);
 
-		this._receiver.setName("TCPReceiver for: " + this.con._socket().getLocalAddress()); //$NON-NLS-1$
-		this._sender.setName("TCPSender for: " + this.con._socket().getLocalAddress()); //$NON-NLS-1$
+		this._receiver.setName("TCPReceiver for: " + this.socket.getLocalAddress()); //$NON-NLS-1$
+		this._sender.setName("TCPSender for: " + this.socket.getLocalAddress()); //$NON-NLS-1$
 		this._receiver.start();
 		this._sender.start();
 	}
@@ -122,7 +125,7 @@ class SocketHandler
 
 	public boolean isConnected()
 	{
-		return this.con._socket().isConnected() && !this.con._socket().isClosed();
+		return this.socket.isConnected() && !this.socket.isClosed();
 	}
 
 
@@ -130,8 +133,15 @@ class SocketHandler
 	{
 		if (this.isShutdown.compareAndSet(false, true))
 		{
-			this.con._protocol().onDisconnect(this.con._socket());
-			Close.close(this.con._socket());
+			try
+			{
+				this.con._protocol().onDisconnect(this.socket);
+			}
+			catch (Exception e)
+			{
+				LOGGER.debug("Could not correctly shutdown sockethandler.", e);
+			}
+			Close.close(this.socket);
 			this._receiver.interrupt();
 			this._sender.interrupt();
 			this.con.shutdown();
