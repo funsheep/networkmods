@@ -177,7 +177,7 @@ public class PDUReadResult extends PDUResult
 
 				r = new Variable(len, pos + 4, this.msg);
 				pos += len;
-				if ((len % 2) == 1)
+				if ((len % 2) != 0)
 					pos++;
 			}
 			else

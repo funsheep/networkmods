@@ -190,14 +190,15 @@ public abstract class DummyInput implements IInput, IPLCAPI
 				if (!this.waitForUpdate.await(INetworkAPI.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS))
 					throw new IOException("Timeout: Did not get update for input " + this.id + " for NodavePLC " + this.parent.id() + " in time."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
+			this.triggerUpdate = false;
 		}
 		catch (InterruptedException e)
 		{
+			this.triggerUpdate = false;
 			throw new RuntimeException(e);
 		}
 		finally
 		{
-			this.triggerUpdate = false;
 			this.lock.unlock();
 		}
 	}

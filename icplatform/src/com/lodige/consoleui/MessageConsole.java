@@ -3,6 +3,7 @@ package com.lodige.consoleui;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentListener;
@@ -68,7 +69,14 @@ public class MessageConsole
 	public synchronized PrintStream getStreamHandle()
 	{
 		if (this.stream == null)
-			this.stream = new PrintStream(new ConsoleOutputStream(Color.BLACK), true);
+			try
+			{
+				this.stream = new PrintStream(new ConsoleOutputStream(Color.BLACK), true, "UTF-8");
+			}
+			catch (UnsupportedEncodingException e)
+			{
+				throw new RuntimeException(e);
+			}
 		return this.stream;
 	}
 	
@@ -123,15 +131,21 @@ public class MessageConsole
 		@Override
 		public void flush()
 		{
-			String message = toString();
-
-			if (message.length() == 0) return;
-
-//			if (isAppend)
-			    handleAppend(message);
-//			else
-//			    handleInsert(message);
-
+			try
+			{
+				String message = this.toString("UTF-8");
+				if (message.length() == 0) return;
+				
+//				if (isAppend)
+				handleAppend(message);
+//				else
+//				    handleInsert(message);
+				
+			}
+			catch (UnsupportedEncodingException e)
+			{
+				throw new RuntimeException(e);
+			}
 			reset();
 		}
 

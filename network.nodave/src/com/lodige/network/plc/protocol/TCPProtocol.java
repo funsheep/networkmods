@@ -163,7 +163,7 @@ public class TCPProtocol extends S7Protocol
 			throw new EOFException("Unexpected end of stream."); //$NON-NLS-1$
 		array.putAll(data);
 		
-		boolean follow = ((data[1]==0xf0)&& ((data[2] & 0x80)==0) );
+		boolean follow = (0xff & data[1]) == 0xf0 && (data[2] & 0x80) == 0;
 		while (follow)
 		{
 			assert LOGGER.trace("read more data: {}", Byte.valueOf(header[2])); //$NON-NLS-1$
@@ -179,7 +179,7 @@ public class TCPProtocol extends S7Protocol
 			array.putAll(data);
 			
 			assert LOGGER.trace("Read payload:", Strings.toHexString(data)); //$NON-NLS-1$
-			follow=((lheader[5]==0xf0) && ((lheader[6] & 0x80)==0) );
+			follow = (0xff & lheader[5]) == 0xf0 && (lheader[6] & 0x80) == 0;
 		}
 		
 		assert LOGGER.trace("read message of {} bytes: {}", Integer.valueOf(array.size()), Strings.toHexString(array.getData())); //$NON-NLS-1$
