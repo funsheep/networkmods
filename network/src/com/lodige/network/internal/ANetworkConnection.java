@@ -48,7 +48,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 		public void doJob()
 		{
 			ANetworkConnection.this.postEvent(INetworkAPI.E_MSG_RECEIVED, this.msg);
-			this.shutdown();
+			super.shutdown();
 		}
 		
 	}
