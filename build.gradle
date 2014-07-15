@@ -16,10 +16,7 @@ buildscript {
 subprojects {
 	apply plugin: 'lodige'
 	
-	if (project.name != 'jap-platform')
-	{
-		dependencies {
-			compile project(':jap-platform')
-		}
+	dependencies {
+		compile 'github.javaappplatform:jap-platform:2.1+'
 	}
 }
