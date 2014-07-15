@@ -93,6 +93,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 		this.sendQueue = new CloseableQueue(INetworkAPI.MAX_MESSAGE_COUNTER);
 		this.protocol = this.service._getProtocol();
 		this.handler = new SocketHandler(socket, this);
+		this.receiveClosed.set(false);
 	}
 
 	/**
