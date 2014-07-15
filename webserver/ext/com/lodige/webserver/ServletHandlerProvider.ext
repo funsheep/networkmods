@@ -1,9 +1,0 @@
-{
-	"com.lodige.webserver.ServletHandlerProvider" :
-	{
-		"point" : "com.lodige.webserver.handler",
-		"class" : "com.lodige.webserver.ServletHandlerProvider",
-		"singleton" : true
-	}
-	
-}
