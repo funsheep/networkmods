@@ -16,7 +16,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 
 /**
  * @author renken
@@ -62,7 +62,7 @@ public class BootEntry implements IBootEntry
 		{
 			throw new PlatformException("Could not instantiate JDBC driver.", e1);
 		}
-		
+
 		BasicDataSource pool = new BasicDataSource();
 		pool.setUsername(dbuser);
 		pool.setPassword(dbpswd);
@@ -82,7 +82,7 @@ public class BootEntry implements IBootEntry
 		pool.setTestWhileIdle(dbaccess.getProperty("validationInterval", -1) != -1);
 		pool.setTimeBetweenEvictionRunsMillis(dbaccess.getProperty("timeBetweenEvictionRunsMillis", -1));
 		pool.setMinEvictableIdleTimeMillis(dbaccess.getProperty("minEvictableIdleTimeMillis", -1));
-		pool.setRemoveAbandoned(dbaccess.getProperty("removeAbandoned", true));
+		pool.setRemoveAbandonedOnMaintenance(dbaccess.getProperty("removeAbandoned", true));
 		pool.setRemoveAbandonedTimeout(dbaccess.getProperty("removeAbandonedTimeout", 300));
 		pool.setValidationQueryTimeout(dbaccess.getProperty("validationQueryTimeout", 10));
 	}

@@ -1,0 +1,25 @@
+buildscript {
+	repositories {
+		maven {
+			url 'http://192.168.102.84/artifactory/external-dependencies'
+		}
+		ivy {
+			url 'http://192.168.102.84/repos/local-releases'
+		}
+	}
+
+	dependencies {
+		classpath 'com.lodige:ResolveDependenciesPlugin:1.+'
+	}
+}
+
+apply plugin: 'resolveDeps'
+
+repositories {
+	maven { url 'http://192.168.102.84/artifactory/external-dependencies' }
+}
+dependencies
+{
+	dep 'org.apache.commons:commons-dbcp2:2.0.+'
+	dep 'org.mybatis:mybatis:3.2.+'
+}

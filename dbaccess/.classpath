@@ -4,8 +4,9 @@
 	<classpathentry kind="src" path="ext"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="github.javaappplatform.eclipse.project.classpath.JAPClasspathContainer"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-dbcp-1.4.jar" sourcepath="lib/commons-dbcp-1.4-src.zip"/>
-	<classpathentry kind="lib" path="lib/commons-pool-1.6.jar" sourcepath="lib/commons-pool-1.6-src.zip"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jap-platform"/>
+	<classpathentry kind="lib" path="lib/commons-dbcp2-2.0.1.jar" sourcepath="lib/commons-dbcp2-2.0.1-src.zip"/>
+	<classpathentry kind="lib" path="lib/commons-pool2-2.2.jar" sourcepath="lib/commons-pool2-2.2-src.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/mybatis-3.2.7.jar" sourcepath="lib/mybatis-3.2.7-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
