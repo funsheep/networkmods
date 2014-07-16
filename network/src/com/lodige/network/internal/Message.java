@@ -169,6 +169,7 @@ public class Message implements IMessage
 		final Message m = get();
 		m.set(type, callback);
 		m.set(body, off, len);
+		m.setSendID(sendID);
 		return m;
 	}
 
@@ -177,6 +178,7 @@ public class Message implements IMessage
 		final Message m = get();
 		m.set(type, callback);
 		m.set(body, len);
+		m.setSendID(sendID);
 		return m;
 	}
 
