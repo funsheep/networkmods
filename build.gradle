@@ -9,7 +9,7 @@ buildscript {
 	}
 
 	dependencies {
-		classpath 'com.lodige:LodigeJavaPlugin:1.+'
+		classpath 'com.lodige:LodigeJavaPlugin:2.+'
 	}
 }
 
