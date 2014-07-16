@@ -213,7 +213,7 @@ class Input implements IInput, IPLCAPI
 		}
 		if (postEvent)
 		{
-			LOGGER.info("Value of Input {} changed.", this.id); //$NON-NLS-1$
+			LOGGER.debug("Value of Input {} changed to {}.", this.id, newValue); //$NON-NLS-1$
 			((IInnerTalker) this.parent).postEvent(IPLCAPI.EVENT_INPUT_CHANGED, this);
 		}
 	}

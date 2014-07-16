@@ -30,13 +30,19 @@ public class Read
 	private final class PDUResultListener implements IListener
 	{
 		
-		private final long msgID;
-		private final IListener callback;
+		private long msgID;
+		private Compute compute;
 		
-		public PDUResultListener(long msgID, IListener callback)
+		public void setup(long msgID, Compute compute)
 		{
 			this.msgID = msgID;
-			this.callback = callback;
+			this.compute = compute;
+			Read.this.connection.addListener(INetworkAPI.E_MSG_RECEIVED, this);
+		}
+		
+		public void setdown()
+		{
+			Read.this.connection.removeListener(this);
 		}
 
 		@Override
@@ -47,10 +53,7 @@ public class Read
 			{
 				int gotID = NodaveTools.getPDUNumber(msg, Read.this.headerSize());
 				if (gotID == this.msgID)
-				{
-					Read.this.connection.removeListener(this);
-					this.callback.handleEvent(new Event(e.getSource(), INodaveAPI.E_PDU_RESULT_RECIEVED, new PDUReadResult(msg, Read.this.headerSize())));
-				}
+					this.compute.put(new PDUReadResult(msg, Read.this.headerSize()));
 			}
 		}
 	}
@@ -105,19 +108,13 @@ public class Read
 			Compute getter = new Compute();
 			JobPlatform.runJob(() ->
 			{
-				IListener listener = null;
 				try
 				{
 					long msgID = Read.this.connection.asyncSend(Read.this.rb.compile(null));
-					listener = new PDUResultListener(msgID, (e) ->
-					{
-						getter.put(e.getData());
-					});
-					Read.this.connection.addListener(INetworkAPI.E_MSG_RECEIVED, listener);
+					Read.this.resultListener.setup(msgID, getter);
 				}
 				catch (Exception e)
 				{
-					Read.this.connection.removeListener(listener);
 					getter.error(e);
 				}
 			}, INetworkAPI.NETWORK_THREAD);
@@ -130,6 +127,10 @@ public class Read
 				if (e instanceof IOException)
 					throw (IOException) e;
 				throw new IOException(e);
+			}
+			finally
+			{
+				Read.this.resultListener.setdown();
 			}
 		}
 
@@ -171,6 +172,7 @@ public class Read
 
 
 	private final ClientConnection connection;
+	private final PDUResultListener resultListener = new PDUResultListener();
 	private final PDUReadBuilder rb = new PDUReadBuilder();
 	private int byteCount;
 	private Area area;

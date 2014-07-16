@@ -66,7 +66,7 @@ public class NodavePLC extends JobbedTalkerStub implements IPLC
 	@Override
 	public String id()
 	{
-		return this.cc.alias() != null ? this.cc.alias() : this.cc.address().toString();
+		return this.cc.alias();
 	}
 
 	
