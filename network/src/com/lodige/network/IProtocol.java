@@ -18,6 +18,9 @@ import com.lodige.network.msg.IMessage;
 public interface IProtocol
 {
 	
+	public long nextSendID();
+
+	
 	public void onConnect(Socket socket) throws IOException;
 	
 	public void send(IMessage msg, OutputStream out) throws IOException;

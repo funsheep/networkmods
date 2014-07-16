@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.lodige.network.INetworkAPI;
 import com.lodige.network.IProtocol;
@@ -55,14 +54,13 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 
 
 	protected static final Logger LOGGER = Logger.getLogger();
-	private static final AtomicLong SENDIDS = new AtomicLong(0);
 
 
 	private SocketHandler handler;
 	private final IInternalNetworkService service;
 	private IProtocol protocol;
 	private CloseableQueue sendQueue;
-	private AtomicBoolean receiveClosed = new AtomicBoolean(false);
+	private final AtomicBoolean receiveClosed = new AtomicBoolean(false);
 
 
 	protected final AtomicInteger state = new AtomicInteger(INetworkAPI.S_NOT_CONNECTED);
@@ -123,7 +121,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 		if (this.state.get() != INetworkAPI.S_CONNECTED)
 			throw new IllegalStateException("Connection is shutdown."); //$NON-NLS-1$
 		Message m = (Message) msg;
-		long sendID = SENDIDS.getAndIncrement();
+		long sendID = this.protocol.nextSendID();
 		m.setSendID(sendID);
 		try
 		{
@@ -135,7 +133,7 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 		}
 		return sendID;
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */

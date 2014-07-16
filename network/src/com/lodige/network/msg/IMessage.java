@@ -17,6 +17,10 @@ import java.io.InputStream;
 public interface IMessage
 {
 	public int type();
+	
+	//FIXME move this into a subclass of message. e.g. InMessage or something - protocol may create those then
+	public long sendID();
+
 
 	public void data(byte[] dest, int off);
 	

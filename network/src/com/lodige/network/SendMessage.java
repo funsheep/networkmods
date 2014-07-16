@@ -131,7 +131,7 @@ public class SendMessage
 		SemiDynamicByteArray arr = this.mb.get();
 		int length = arr.cursor();
 		arr.cursor(0);
-		this.con.asyncSend(Message.create(this.msgtype, arr, length, null));
+		this.con.asyncSend(Message.create(this.msgtype, arr, length, -1, null));
 		return true;
 	}
 	

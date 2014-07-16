@@ -18,7 +18,6 @@ import com.lodige.network.plc.INodaveAPI.Area;
 import com.lodige.network.plc.msg.PDUReadBuilder;
 import com.lodige.network.plc.msg.PDUReadResult;
 import com.lodige.network.plc.protocol.S7Protocol;
-import com.lodige.network.plc.util.NodaveTools;
 
 /**
  * TODO javadoc
@@ -49,12 +48,8 @@ public class Read
 		public void handleEvent(Event e)
 		{
 			IMessage msg = e.getData();
-			if (msg.type() == INodaveAPI.MSG_PDU_READ)
-			{
-				int gotID = NodaveTools.getPDUNumber(msg, Read.this.headerSize());
-				if (gotID == this.msgID)
-					this.compute.put(new PDUReadResult(msg, Read.this.headerSize()));
-			}
+			if (msg.type() == INodaveAPI.MSG_PDU_READ && msg.sendID() == this.msgID)
+				this.compute.put(new PDUReadResult(msg, Read.this.headerSize()));
 		}
 	}
 	

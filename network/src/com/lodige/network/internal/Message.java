@@ -66,6 +66,7 @@ public class Message implements IMessage
 	}
 
 
+	@Override
 	public long sendID()
 	{
 		return this.sendID;
@@ -146,10 +147,7 @@ public class Message implements IMessage
 	@Override
 	public String toString()
 	{
-		return "Message["+ //$NON-NLS-1$
-				this.type()+
-				"] '"+ //$NON-NLS-1$
-				Strings.toHexString(this.bodyType == BODYTYPE_BYTEARRAY ? (byte[]) this.body : ((SemiDynamicByteArray) this.body).getData(), this.off, this.len) + '\'';
+		return "Message["+ this.type() +"] '"+ Strings.toHexString(this.bodyType == BODYTYPE_BYTEARRAY ? (byte[]) this.body : ((SemiDynamicByteArray) this.body).getData(), this.off, this.len) + '\'';
 	}
 
 	private static final Message get()
@@ -163,10 +161,10 @@ public class Message implements IMessage
 
 	public static Message create(int type, byte[] body)
 	{
-		return create(type, body, 0, body.length, null);
+		return create(type, body, 0, body.length, -1, null);
 	}
 
-	public static Message create(int type, byte[] body, int off, int len, IListener callback)
+	public static Message create(int type, byte[] body, int off, int len, long sendID, IListener callback)
 	{
 		final Message m = get();
 		m.set(type, callback);
@@ -174,7 +172,7 @@ public class Message implements IMessage
 		return m;
 	}
 
-	public static Message create(int type, SemiDynamicByteArray body, int len, IListener callback)
+	public static Message create(int type, SemiDynamicByteArray body, int len, long sendID, IListener callback)
 	{
 		final Message m = get();
 		m.set(type, callback);

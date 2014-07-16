@@ -18,7 +18,6 @@ import com.lodige.network.plc.INodaveAPI.Area;
 import com.lodige.network.plc.msg.PDUWriteBuilder;
 import com.lodige.network.plc.msg.PDUWriteResult;
 import com.lodige.network.plc.protocol.S7Protocol;
-import com.lodige.network.plc.util.NodaveTools;
 
 /**
  * TODO javadoc
@@ -30,28 +29,31 @@ public class Write
 	private final class PDUResultListener implements IListener
 	{
 		
-		private final long msgID;
-		private final IListener callback;
+		private long msgID;
+		private Compute compute;
 		
-		public PDUResultListener(long msgID, IListener callback)
+		public void setup(long msgID, Compute compute)
 		{
 			this.msgID = msgID;
-			this.callback = callback;
+			this.compute = compute;
+			Write.this.connection.addListener(INetworkAPI.E_MSG_RECEIVED, this);
+		}
+		
+		public void setdown()
+		{
+			Write.this.connection.removeListener(this);
 		}
 
 		@Override
 		public void handleEvent(Event e)
 		{
 			IMessage msg = e.getData();
-			if (msg.type() == INodaveAPI.MSG_PDU_WRITE)
-			{
-				int gotID = NodaveTools.getPDUNumber(msg, Write.this.headerSize());
-				if (gotID == this.msgID)
-					this.callback.handleEvent(new Event(e.getSource(), INodaveAPI.E_PDU_RESULT_RECIEVED, new PDUWriteResult(msg, Write.this.headerSize())));
-			}
+			if (msg.type() == INodaveAPI.MSG_PDU_WRITE && msg.sendID() == this.msgID)
+				this.compute.put(new PDUWriteResult(msg, Write.this.headerSize()));
 		}
 	}
-	
+
+
 	public class Write1
 	{
 		private Write1() {}
@@ -110,10 +112,7 @@ public class Write
 				try
 				{
 					long msgID = Write.this.connection.asyncSend(Write.this.wb.compile(null));
-					Write.this.connection.addListener(INetworkAPI.E_MSG_RECEIVED, new PDUResultListener(msgID, (e) ->
-					{
-						getter.put(e.getData());
-					}));
+					Write.this.resultListener.setup(msgID, getter);
 				}
 				catch (Exception e)
 				{
@@ -131,42 +130,49 @@ public class Write
 					throw (IOException) e;
 				throw new IOException(e);
 			}
+			finally
+			{
+				Write.this.resultListener.setdown();
+			}
 		}
 
-		public long andInformMeOnResult(IListener listener) throws IOException
-		{
-			Write.this.addToWB();
-			Compute getter = new Compute();
-			JobPlatform.runJob(() ->
-			{
-				try
-				{
-					long msgID = Write.this.connection.asyncSend(Write.this.wb.compile(null));
-					Write.this.connection.addListener(INetworkAPI.E_MSG_RECEIVED, new PDUResultListener(msgID, listener));
-					getter.put(Long.valueOf(msgID));
-				}
-				catch (Exception e)
-				{
-					getter.error(e);
-					
-				}
-			}, INetworkAPI.NETWORK_THREAD);
-			try
-			{
-				return getter.<Long>get().longValue();
-			}
-			catch (Exception e)
-			{
-				if (e instanceof IOException)
-					throw (IOException) e;
-				throw new IOException(e);
-			}
-		}
+	
+		//FIXME this will not work correctly, for example, for the user it is not possible to abort this operation after some time.
+//		public long andInformMeOnResult(IListener listener) throws IOException
+//		{
+//			Write.this.addToWB();
+//			Compute getter = new Compute();
+//			JobPlatform.runJob(() ->
+//			{
+//				try
+//				{
+//					long msgID = Write.this.connection.asyncSend(Write.this.wb.compile(null));
+//					Write.this.connection.addListener(INetworkAPI.E_MSG_RECEIVED, new PDUResultListener(msgID, listener));
+//					getter.put(Long.valueOf(msgID));
+//				}
+//				catch (Exception e)
+//				{
+//					getter.error(e);
+//					
+//				}
+//			}, INetworkAPI.NETWORK_THREAD);
+//			try
+//			{
+//				return getter.<Long>get().longValue();
+//			}
+//			catch (Exception e)
+//			{
+//				if (e instanceof IOException)
+//					throw (IOException) e;
+//				throw new IOException(e);
+//			}
+//		}
 
 	}
 
 
 	private final ClientConnection connection;
+	private final PDUResultListener resultListener = new PDUResultListener();
 	private final PDUWriteBuilder wb = new PDUWriteBuilder();
 	private byte[] buffer;
 	private Area area;

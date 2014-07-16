@@ -120,7 +120,7 @@ public class TCPProtocol extends S7Protocol
 		assert LOGGER.trace("send packet header: {} ", Strings.toHexString(new byte[] { 0x03, 0, (byte)((msg.size()+headerSize) / 0x100), (byte)((msg.size()+headerSize) % 0x100)}, 0, 4)); //$NON-NLS-1$
 		if ((msg.type() & INodaveAPI.MSG_PDU) != 0)
 		{
-			LOGGER.trace("send PDU header: {} ", Strings.toHexString(PDU_HEADER, 0, PDU_HEADER.length)); //$NON-NLS-1$
+			assert LOGGER.trace("send PDU header: {} ", Strings.toHexString(PDU_HEADER, 0, PDU_HEADER.length)); //$NON-NLS-1$
 			out.write(PDU_HEADER);
 			int len = dataIn.read(this.pduHeader);
 			if (len == -1)
@@ -138,7 +138,7 @@ public class TCPProtocol extends S7Protocol
 		}
 		out.flush();
 	}
-	
+
 
 	/**
 	 * {@inheritDoc}
@@ -184,7 +184,19 @@ public class TCPProtocol extends S7Protocol
 		
 		assert LOGGER.trace("read message of {} bytes: {}", Integer.valueOf(array.size()), Strings.toHexString(array.getData())); //$NON-NLS-1$
 		
-		Message msg = Message.create(NodaveTools.msgType(array, TCP_START_IN), array, array.size(), null);
+		final int msgType = NodaveTools.msgType(array, TCP_START_IN);
+		long msgID = -1;
+		switch (msgType)
+		{
+			case INodaveAPI.MSG_PDU_READ:
+			case INodaveAPI.MSG_PDU_WRITE:
+				msgID = NodaveTools.getPDUNumber(array, this.pduInHeaderSize());
+				break;
+			default:
+				//do nothing
+		}
+		
+		Message msg = Message.create(msgType, array, array.size(), msgID, null);
 		LOGGER.debug("Read Msg: {}", msg); //$NON-NLS-1$
 		return msg;
 	}

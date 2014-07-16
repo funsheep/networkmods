@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.lodige.network.IProtocol;
 import com.lodige.network.msg.Converter;
@@ -24,6 +25,7 @@ public class SimpleProtocol implements IProtocol
 	public static final IProtocol INSTANCE = new SimpleProtocol();
 	
 	private static final int HEADER_LENGTH = 8;
+	private static final AtomicLong SENDIDs = new AtomicLong(0);
 
 	
 	private SimpleProtocol()
@@ -94,6 +96,12 @@ public class SimpleProtocol implements IProtocol
 	public void onDisconnect(Socket socket)
 	{
 		//do nothing
+	}
+
+	@Override
+	public long nextSendID()
+	{
+		return SENDIDs.getAndIncrement();
 	}
 
 }

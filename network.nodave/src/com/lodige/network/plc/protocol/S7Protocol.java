@@ -25,10 +25,11 @@ public abstract class S7Protocol implements IProtocol
 {
 
 	protected static final Logger LOGGER = Logger.getLogger();
-
+	private static final int USHORT_MAX = 1 << 16;
 
 	protected final int pduInHeaderSize;
 	protected int maxPDUlength = -1;
+	private int sendID = 0;
 
 	
 	public S7Protocol(int pduInHeaderSize)
@@ -36,6 +37,16 @@ public abstract class S7Protocol implements IProtocol
 		this.pduInHeaderSize = pduInHeaderSize;
 	}
 
+	
+	@Override
+	public synchronized long nextSendID()
+	{
+		this.sendID++;
+		if (this.sendID == USHORT_MAX)
+			this.sendID = 0;
+		return this.sendID;
+	}
+	
 
 	public int pduInHeaderSize()
 	{

@@ -182,7 +182,7 @@ public class PDUBuilder
 
 	public final IMessage compile(IListener callback)
 	{
-		IMessage m = Message.create(this.type(), this.mem, this.hlen + this.plen + this.dlen, callback);
+		IMessage m = Message.create(this.type(), this.mem, this.hlen + this.plen + this.dlen, -1, callback);
 		return GenericsToolkit.convertUnchecked(m);
 	}
 

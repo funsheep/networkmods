@@ -6,7 +6,6 @@ package com.lodige.network.plc.util;
 
 import github.javaappplatform.commons.collection.SemiDynamicByteArray;
 
-import com.lodige.network.msg.IMessage;
 import com.lodige.network.plc.INodaveAPI;
 import com.lodige.network.plc.INodaveAPI.Func;
 import com.lodige.network.plc.INodaveAPI.Result;
@@ -22,10 +21,10 @@ public class NodaveTools
 	/**
 	 * return the number of the PDU
 	 */
-	public static final int getPDUNumber(IMessage msg, int header)
+	public static final int getPDUNumber(SemiDynamicByteArray array, int header)
 	{
 		byte[] tmp = new byte[2];
-		msg.data(tmp, header + 4);
+		array.getDataFrom(tmp, header + 4);
 		return Converter.USBEWord(tmp, 0);
 	}
 
