@@ -1,1 +1,1 @@
-include 'dbaccess', 'dbaccess.oracle12.1', 'dbaccess.sqlite', 'icplatform', 'jap-platform', 'network', 'network.nodave', 'webserver'
+include 'network', 'network.nodave', 'plc'
