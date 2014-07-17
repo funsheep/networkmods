@@ -6,12 +6,14 @@ import github.javaappplatform.commons.util.FastMersenneTwister;
 
 import com.lodige.network.client.ClientConnection;
 import com.lodige.network.client.ClientNetworkService;
-import com.lodige.network.plc.INodaveAPI.Area;
-import com.lodige.network.plc.msg.PDUReadResult;
-import com.lodige.network.plc.msg.PDUWriteResult;
-import com.lodige.network.plc.msg.Variable;
-import com.lodige.network.plc.protocol.TCPProtocol;
-import com.lodige.network.plc.util.Converter;
+import com.lodige.network.s7.Read;
+import com.lodige.network.s7.Write;
+import com.lodige.network.s7.INodaveAPI.Area;
+import com.lodige.network.s7.msg.PDUReadResult;
+import com.lodige.network.s7.msg.PDUWriteResult;
+import com.lodige.network.s7.msg.Variable;
+import com.lodige.network.s7.protocol.TCPS7Protocol;
+import com.lodige.network.s7.util.Converter;
 
 public class ConnectDemoTest
 {
@@ -19,7 +21,7 @@ public class ConnectDemoTest
 	public static void main(String[] args) throws Exception
 	{
 		Logger.configureDefault();
-		ClientNetworkService service = new ClientNetworkService("NodavePLC", TCPProtocol.class.getName()); //$NON-NLS-1$
+		ClientNetworkService service = new ClientNetworkService("NodavePLC", TCPS7Protocol.class.getName()); //$NON-NLS-1$
 		ClientConnection con = new ClientConnection("192.168.130.110", 102, null, service); //$NON-NLS-1$
 		con.connect();
 

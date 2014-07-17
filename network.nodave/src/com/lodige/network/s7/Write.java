@@ -2,7 +2,7 @@
  * network.nodave Project at Loedige.
  * Closed Source. Not for licence.
  */
-package com.lodige.network.plc;
+package com.lodige.network.s7;
 
 import github.javaappplatform.commons.concurrent.Compute;
 import github.javaappplatform.commons.events.Event;
@@ -14,10 +14,10 @@ import java.io.IOException;
 import com.lodige.network.INetworkAPI;
 import com.lodige.network.client.ClientConnection;
 import com.lodige.network.msg.IMessage;
-import com.lodige.network.plc.INodaveAPI.Area;
-import com.lodige.network.plc.msg.PDUWriteBuilder;
-import com.lodige.network.plc.msg.PDUWriteResult;
-import com.lodige.network.plc.protocol.S7Protocol;
+import com.lodige.network.s7.INodaveAPI.Area;
+import com.lodige.network.s7.msg.PDUWriteBuilder;
+import com.lodige.network.s7.msg.PDUWriteResult;
+import com.lodige.network.s7.protocol.S7Protocol;
 
 /**
  * TODO javadoc

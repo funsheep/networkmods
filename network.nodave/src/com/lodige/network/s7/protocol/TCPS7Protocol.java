@@ -2,7 +2,7 @@
  * network.nodave Project at Loedige.
  * Closed Source. Not for licence.
  */
-package com.lodige.network.plc.protocol;
+package com.lodige.network.s7.protocol;
 
 import github.javaappplatform.commons.collection.SemiDynamicByteArray;
 import github.javaappplatform.commons.util.Strings;
@@ -16,15 +16,15 @@ import java.net.Socket;
 import com.lodige.network.internal.InternalNetTools;
 import com.lodige.network.internal.Message;
 import com.lodige.network.msg.IMessage;
-import com.lodige.network.plc.INodaveAPI;
-import com.lodige.network.plc.util.Converter;
-import com.lodige.network.plc.util.NodaveTools;
+import com.lodige.network.s7.INodaveAPI;
+import com.lodige.network.s7.util.Converter;
+import com.lodige.network.s7.util.NodaveTools;
 
 /**
  * TODO javadoc
  * @author renken
  */
-public class TCPProtocol extends S7Protocol
+public class TCPS7Protocol extends S7Protocol
 {
 
 	private static final int HEADER_LENGTH = 4;
@@ -39,14 +39,14 @@ public class TCPProtocol extends S7Protocol
 	private int tPDUsize;
 
 
-	public TCPProtocol()
+	public TCPS7Protocol()
 	{
 		this((byte) 0, (byte) 2, (byte) 1);
 	}
 	
-	public TCPProtocol(byte rack, byte slot, byte commType)
+	public TCPS7Protocol(byte rack, byte slot, byte commType)
 	{
-		super(TCPProtocol.TCP_START_IN);
+		super(TCPS7Protocol.TCP_START_IN);
 		this.rack = rack;
 		this.slot = slot;
 		this.commType = commType;

@@ -20,15 +20,15 @@
  along with this; see the file COPYING.  If not, write to
  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  
  */
-package com.lodige.network.plc.msg;
+package com.lodige.network.s7.msg;
 
 import github.javaappplatform.commons.util.Strings;
 
 import com.lodige.network.msg.IMessage;
-import com.lodige.network.plc.INodaveAPI.Func;
-import com.lodige.network.plc.INodaveAPI.Result;
-import com.lodige.network.plc.util.Converter;
-import com.lodige.network.plc.util.NodaveTools;
+import com.lodige.network.s7.INodaveAPI.Func;
+import com.lodige.network.s7.INodaveAPI.Result;
+import com.lodige.network.s7.util.Converter;
+import com.lodige.network.s7.util.NodaveTools;
 
 public class PDUReadResult extends PDUResult
 {

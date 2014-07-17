@@ -6,11 +6,11 @@
 */
 {
 
-	"com.lodige.network.plc.TCPNetworkService" :
+	"com.lodige.network.s7.TCPNetworkService" :
 	{
 		"point" : "com.lodige.network.client.ClientNetworkService",
 		"class" : "com.lodige.network.client.ClientNetworkService",
-		"protocol" : "com.lodige.network.plc.protocol.TCPProtocol",
+		"protocol" : "com.lodige.network.s7.protocol.TCPS7Protocol",
 		"singleton" : true
 	}
 	
