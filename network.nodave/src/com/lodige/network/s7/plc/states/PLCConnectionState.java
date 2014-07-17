@@ -34,8 +34,8 @@ public class PLCConnectionState extends AState
 	{
 		super("Connection State", Type.OBJECT, parent); //$NON-NLS-1$
 		this.plc = plc;
+		this.parent._registerState(this);
 		this.plc.addListener(IPLCAPI.EVENT_CONNECTION_STATE_CHANGED, (e) -> ((IInnerTalker) parent).postEvent(IStateAPI.EVENT_STATE_CHANGED, this));
-		((IHasStates.Internal) this.parent)._registerState(this);
 	}
 
 

@@ -4,8 +4,6 @@
  */
 package com.lodige.network.s7.plc.states;
 
-import github.javaappplatform.commons.events.IInnerTalker;
-
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -41,9 +39,9 @@ public class CheckInputValueState extends AState
 		this.toTest.plc().addListener(IPLCAPI.EVENT_INPUT_CHANGED, (e) ->
 		{
 			if (e.getData() == this.toTest)
-				((IInnerTalker) this.parent).postEvent(IStateAPI.EVENT_STATE_CHANGED, this);
+				this.parent.postEvent(IStateAPI.EVENT_STATE_CHANGED, this);
 		});
-		((IHasStates.Internal) this.parent)._registerState(this);
+		this.parent._registerState(this);
 	}
 
 	

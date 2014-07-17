@@ -4,7 +4,6 @@
  */
 package com.lodige.network.s7.plc.states;
 
-import github.javaappplatform.commons.events.IInnerTalker;
 import github.javaappplatform.commons.util.GenericsToolkit;
 
 import java.io.IOException;
@@ -59,11 +58,11 @@ public class PLCState extends AState
 		this.input = input;
 		this.bitnr = bitnr;
 		this.mapping = GenericsToolkit.convertUnchecked(mapping);
-		((IHasStates.Internal) this.parent)._registerState(this);
+		this.parent._registerState(this);
 		this.input.plc().addListener(IPLCAPI.EVENT_INPUT_CHANGED, (e) ->
 		{
 			if (e.getData() == this.input)
-				((IInnerTalker) this.parent).postEvent(IStateAPI.EVENT_STATE_CHANGED, this);
+				this.parent.postEvent(IStateAPI.EVENT_STATE_CHANGED, this);
 		});
 	}
 	
