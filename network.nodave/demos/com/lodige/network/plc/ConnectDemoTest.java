@@ -6,14 +6,14 @@ import github.javaappplatform.commons.util.FastMersenneTwister;
 
 import com.lodige.network.client.ClientConnection;
 import com.lodige.network.client.ClientNetworkService;
-import com.lodige.network.s7.Read;
-import com.lodige.network.s7.Write;
-import com.lodige.network.s7.INodaveAPI.Area;
-import com.lodige.network.s7.msg.PDUReadResult;
-import com.lodige.network.s7.msg.PDUWriteResult;
-import com.lodige.network.s7.msg.Variable;
-import com.lodige.network.s7.protocol.TCPS7Protocol;
-import com.lodige.network.s7.util.Converter;
+import com.lodige.network.s7.protocol.Read;
+import com.lodige.network.s7.protocol.Write;
+import com.lodige.network.s7.protocol.INodaveAPI.Area;
+import com.lodige.network.s7.protocol.impl.TCPS7Protocol;
+import com.lodige.network.s7.protocol.msg.PDUReadResult;
+import com.lodige.network.s7.protocol.msg.PDUWriteResult;
+import com.lodige.network.s7.protocol.msg.Variable;
+import com.lodige.network.s7.protocol.util.Converter;
 
 public class ConnectDemoTest
 {

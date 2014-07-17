@@ -1,4 +1,4 @@
-package com.lodige.network.s7.util;
+package com.lodige.network.s7.protocol.util;
 
 import github.javaappplatform.commons.collection.SemiDynamicByteArray;
 import github.javaappplatform.commons.log.Logger;

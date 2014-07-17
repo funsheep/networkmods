@@ -2,10 +2,10 @@
  * network.nodave Project at Loedige.
  * Closed Source. Not for licence.
  */
-package com.lodige.network.s7.msg;
+package com.lodige.network.s7.protocol.msg;
 
-import com.lodige.network.s7.INodaveAPI.Result;
-import com.lodige.network.s7.util.NodaveTools;
+import com.lodige.network.s7.protocol.INodaveAPI.Result;
+import com.lodige.network.s7.protocol.util.NodaveTools;
 
 /**
  * TODO javadoc

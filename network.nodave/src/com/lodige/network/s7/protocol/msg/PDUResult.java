@@ -20,13 +20,13 @@
  along with this; see the file COPYING.  If not, write to
  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  
  */
-package com.lodige.network.s7.msg;
+package com.lodige.network.s7.protocol.msg;
 
 import github.javaappplatform.commons.log.Logger;
 import github.javaappplatform.commons.util.Strings;
 
 import com.lodige.network.msg.IMessage;
-import com.lodige.network.s7.util.Converter;
+import com.lodige.network.s7.protocol.util.Converter;
 
 public class PDUResult
 {

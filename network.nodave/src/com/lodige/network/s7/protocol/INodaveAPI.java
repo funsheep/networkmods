@@ -18,7 +18,7 @@
  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  
 */
 
-package com.lodige.network.s7;
+package com.lodige.network.s7.protocol;
 
 
 public class INodaveAPI

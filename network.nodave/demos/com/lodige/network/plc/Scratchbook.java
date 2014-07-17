@@ -1,6 +1,6 @@
 package com.lodige.network.plc;
 
-import com.lodige.network.s7.util.Converter;
+import com.lodige.network.s7.protocol.util.Converter;
 
 
 public class Scratchbook

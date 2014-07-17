@@ -2,7 +2,7 @@
  * network.nodave Project at Loedige.
  * Closed Source. Not for licence.
  */
-package com.lodige.network.s7.protocol;
+package com.lodige.network.s7.protocol.impl;
 
 import github.javaappplatform.commons.log.Logger;
 
@@ -11,11 +11,11 @@ import java.net.Socket;
 
 import com.lodige.network.IProtocol;
 import com.lodige.network.msg.IMessage;
-import com.lodige.network.s7.INodaveAPI.Result;
-import com.lodige.network.s7.msg.PDUBuilder;
-import com.lodige.network.s7.msg.PDUResult;
-import com.lodige.network.s7.util.Converter;
-import com.lodige.network.s7.util.NodaveTools;
+import com.lodige.network.s7.protocol.INodaveAPI.Result;
+import com.lodige.network.s7.protocol.msg.PDUBuilder;
+import com.lodige.network.s7.protocol.msg.PDUResult;
+import com.lodige.network.s7.protocol.util.Converter;
+import com.lodige.network.s7.protocol.util.NodaveTools;
 
 /**
  * TODO javadoc
