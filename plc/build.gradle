@@ -1,5 +1,0 @@
-dependencies
-{
-	compile project(':network')
-	compile project(':network.nodave')
-}
