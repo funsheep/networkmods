@@ -1,4 +1,5 @@
 dependencies
 {
 	compile project(':network')
+	compile 'com.lodige:platform:latest.integration'
 }
