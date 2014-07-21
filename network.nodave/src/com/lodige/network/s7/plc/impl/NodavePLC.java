@@ -21,6 +21,7 @@ import com.lodige.network.s7.plc.IPLCAPI;
 import com.lodige.network.s7.plc.IPLCAPI.ConnectionState;
 import com.lodige.network.s7.plc.IPLCAPI.Type;
 import com.lodige.network.s7.plc.IPLCAPI.UpdateFrequency;
+import com.lodige.network.s7.plc.util.PLCTools;
 import com.lodige.network.s7.protocol.Write;
 import com.lodige.network.s7.protocol.INodaveAPI.Area;
 import com.lodige.network.s7.protocol.Write.Write3;
@@ -70,28 +71,29 @@ public class NodavePLC extends JobbedTalkerStub implements IPLC
 	}
 
 	
-	public IInput createDBInput(String id, int database, int offset, Type type)
+	public IInput createDBInput(int database, int offset, Type type)
 	{
-		return this.createInput(id, Area.DB, database, offset, type.size, type);
+		return this.createInput(Area.DB, database, offset, type.size, type);
 	}
 	
-	public IInput createGenericDBInput(String id, int database, int offset, int length)
+	public IInput createGenericDBInput(int database, int offset, int length)
 	{
-		return this.createInput(id, Area.DB, database, offset, length, Type.GENERIC);
+		return this.createInput(Area.DB, database, offset, length, Type.GENERIC);
 	}
 	
-	public IInput createNonDBInput(String id, Area area, int offset, Type type)
+	public IInput createNonDBInput(Area area, int offset, Type type)
 	{
-		return this.createInput(id, area, 0, offset, type.size, type);
+		return this.createInput(area, 0, offset, type.size, type);
 	}
 	
-	public IInput createGenericNonDBInput(String id, Area area, int offset, int length)
+	public IInput createGenericNonDBInput(Area area, int offset, int length)
 	{
-		return this.createInput(id, area, 0, offset, length, Type.GENERIC);
+		return this.createInput(area, 0, offset, length, Type.GENERIC);
 	}
 	
-	private synchronized Input createInput(String id, Area area, int database, int offset, int length, Type type)
+	private synchronized Input createInput(Area area, int database, int offset, int length, Type type)
 	{
+		String id = PLCTools.uID(area, database, offset);
 //		if (type == Type.BIT)
 //			throw new UnsupportedOperationException("Use FlagInput wrapper instead.");
 		if (this.inputs.containsKey(id))
@@ -124,28 +126,29 @@ public class NodavePLC extends JobbedTalkerStub implements IPLC
 		return new ArrayList<>(this.inputs.values());
 	}
 
-	public IOutput createDBOutput(String id, int database, int offset, Type type)
+	public IOutput createDBOutput(int database, int offset, Type type)
 	{
-		return this.createOutput(id, Area.DB, database, offset, type.size, type);
+		return this.createOutput(Area.DB, database, offset, type.size, type);
 	}
 	
-	public IOutput createGenericDBOutput(String id, int database, int offset, int length)
+	public IOutput createGenericDBOutput(int database, int offset, int length)
 	{
-		return this.createOutput(id, Area.DB, database, offset, length, Type.GENERIC);
+		return this.createOutput(Area.DB, database, offset, length, Type.GENERIC);
 	}
 	
-	public IOutput createNonDBOutput(String id, Area area, int offset, Type type)
+	public IOutput createNonDBOutput(Area area, int offset, Type type)
 	{
-		return this.createOutput(id, area, 0, offset, type.size, type);
+		return this.createOutput(area, 0, offset, type.size, type);
 	}
 	
-	public IOutput createGenericNonDBOutput(String id, Area area, int offset, int length)
+	public IOutput createGenericNonDBOutput(Area area, int offset, int length)
 	{
-		return this.createOutput(id, area, 0, offset, length, Type.GENERIC);
+		return this.createOutput(area, 0, offset, length, Type.GENERIC);
 	}
 	
-	private synchronized Output createOutput(String id, Area area, int database, int offset, int length, Type type)
+	private synchronized Output createOutput(Area area, int database, int offset, int length, Type type)
 	{
+		String id = PLCTools.uID(area, database, offset);
 //		if (type == Type.BIT)
 //			throw new UnsupportedOperationException();
 		if (this.outputs.containsKey(id))
@@ -234,7 +237,6 @@ public class NodavePLC extends JobbedTalkerStub implements IPLC
 		{
 			this.writer.execute();
 			this.writer = null;
-			return;
 		}
 	}
 

@@ -16,6 +16,8 @@ import com.lodige.network.client.ClientNetworkService;
 import com.lodige.network.s7.plc.IPLCAPI.Type;
 import com.lodige.network.s7.plc.IPLCAPI.UpdateFrequency;
 import com.lodige.network.s7.plc.impl.NodavePLC;
+import com.lodige.network.s7.plc.util.PLCTools;
+import com.lodige.network.s7.protocol.INodaveAPI.Area;
 import com.lodige.network.s7.protocol.impl.TCPS7Protocol;
 
 /**
@@ -32,8 +34,8 @@ public class IOTest implements IBootEntry
 		try
 		{
 			final NodavePLC plc = new NodavePLC("192.168.130.110", service); //$NON-NLS-1$
-			plc.createDBInput("Drive Motor", 15, 20, Type.UINT).setUpdateMethod(UpdateFrequency.OFF); //$NON-NLS-1$
-			plc.createDBInput("Operating Mode", 15, 10, Type.UBYTE).setUpdateMethod(UpdateFrequency.LOW); //$NON-NLS-1$
+			plc.createDBInput(15, 20, Type.UINT).setUpdateMethod(UpdateFrequency.OFF); //$NON-NLS-1$
+			plc.createDBInput(15, 10, Type.UBYTE).setUpdateMethod(UpdateFrequency.LOW); //$NON-NLS-1$
 			(new ADoJob("Manually Poll PLCs") //$NON-NLS-1$
 			{
 				
@@ -42,8 +44,8 @@ public class IOTest implements IBootEntry
 				{
 					try
 					{
-						System.err.println(plc.getInput("Operating Mode").ubyteValue()); //$NON-NLS-1$
-						System.err.println(plc.getInput("Drive Motor").uintValue()); //$NON-NLS-1$
+						System.err.println(plc.getInput(PLCTools.uID(Area.DB, 15, 20)).ubyteValue()); //$NON-NLS-1$
+						System.err.println(plc.getInput(PLCTools.uID(Area.DB, 15, 10)).uintValue()); //$NON-NLS-1$
 					}
 					catch (Exception e)
 					{
