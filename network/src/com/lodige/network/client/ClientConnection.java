@@ -34,7 +34,7 @@ public class ClientConnection extends ANetworkConnection
 		@Override
 		public void doJob()
 		{
-			LOGGER.info(ClientConnection.this.toString()); //$NON-NLS-1$
+			LOGGER.debug(ClientConnection.this.toString()); //$NON-NLS-1$
 			if (this.isfinished() || ClientConnection.this.state() != INetworkAPI.S_NOT_CONNECTED)
 				return;
 			try
@@ -99,6 +99,7 @@ public class ClientConnection extends ANetworkConnection
 					socket.connect(ClientConnection.this.remoteAddress, INetworkAPI.CONNECTION_TIMEOUT);
 					ClientConnection.this.setSocket(socket);
 					ClientConnection.this.state.set(INetworkAPI.S_CONNECTED);
+					LOGGER.info(ClientConnection.this.toString()); //$NON-NLS-1$
 				}
 				catch (IOException e)
 				{
