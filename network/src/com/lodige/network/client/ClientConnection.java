@@ -44,7 +44,7 @@ public class ClientConnection extends ANetworkConnection
 			}
 			catch (IOException e)
 			{
-				LOGGER.info("Could not reconnect to {}.", ClientConnection.this.remoteAddress, e); //$NON-NLS-1$
+				LOGGER.info("Could not reconnect to {}. Exception: {}", ClientConnection.this.remoteAddress, e.getMessage()); //$NON-NLS-1$
 			}
 		}
 
