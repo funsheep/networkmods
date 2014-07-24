@@ -223,11 +223,14 @@ public class NodavePLC extends JobbedTalkerStub implements IPLC
 		{
 			this.transactionActive = false;
 			if (this.writer != null)
+			{
 				this.writer.execute();
+				this.writer = null;
+			}
 		}
 	}
 	
-	private Write3 writer;
+	private Write3 writer = null;
 	synchronized void writeOutput(Output out, byte... data) throws IOException
 	{
 		Write base = (this.writer == null) ? Write.toPLC(this.cc) : this.writer.andWrite();
