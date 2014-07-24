@@ -196,15 +196,6 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	{
 		if (!this.state.compareAndSet(INetworkAPI.S_CONNECTED, INetworkAPI.S_CLOSING))
 			return;
-		try
-		{
-			throw new Exception();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		
 		this.postEvent(INetworkAPI.E_STATE_CHANGED);
 		
 		JobPlatform.runJob(new Runnable()
