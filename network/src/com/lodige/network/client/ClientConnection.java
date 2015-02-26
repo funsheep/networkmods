@@ -99,16 +99,16 @@ public class ClientConnection extends ANetworkConnection
 					socket.connect(ClientConnection.this.remoteAddress, INetworkAPI.CONNECTION_TIMEOUT);
 					ClientConnection.this.setSocket(socket);
 					ClientConnection.this.state.set(INetworkAPI.S_CONNECTED);
-					LOGGER.info(ClientConnection.this.toString()); //$NON-NLS-1$
+					LOGGER.info("Connection to " + ClientConnection.this.remoteAddress + " established.");
+					this.finished(null);
 				}
 				catch (IOException e)
 				{
-//					LOGGER.warn("Could not establish connection.", e);
+					LOGGER.warn("Could not establish connection to " + ClientConnection.this.remoteAddress + ".", e);
 					ClientConnection.this.state.set(INetworkAPI.S_NOT_CONNECTED);
 					this.finishedWithError(e);
 				}
 				ClientConnection.this.postEvent(INetworkAPI.E_STATE_CHANGED);
-				this.finished(null);
 			}
 		};
 		try
@@ -117,7 +117,9 @@ public class ClientConnection extends ANetworkConnection
 		}
 		catch (Exception e)
 		{
-			throw (IOException) e;
+			if (e instanceof IOException)
+				throw (IOException) e;
+			throw new IOException(e);
 		}
 	}
 

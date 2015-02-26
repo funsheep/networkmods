@@ -27,11 +27,11 @@ public interface INetworkConnection extends ITalker, Closeable
 	
 	public String alias();
 
+
 	public int state();
-
-	public void shutdown();
-
 	
 	public long asyncSend(IMessage msg) throws IOException;
 		
+	public void shutdown();
+	
 }

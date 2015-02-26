@@ -89,10 +89,16 @@ public abstract class ANetworkConnection extends JobbedTalkerStub implements IIn
 	protected void setSocket(Socket socket) throws IOException
 	{
 		this.sendQueue = new CloseableQueue(INetworkAPI.MAX_MESSAGE_COUNTER);
-		this.protocol = this.service._getProtocol();
+		this.protocol = this.loadProtocol();
 		this.handler = new SocketHandler(socket, this);
 		this.receiveClosed.set(false);
 	}
+	
+	protected IProtocol loadProtocol()
+	{
+		return this.service._getProtocol();
+	}
+
 
 	/**
 	 * {@inheritDoc}

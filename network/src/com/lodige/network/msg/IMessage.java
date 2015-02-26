@@ -22,7 +22,7 @@ public interface IMessage
 	public long sendID();
 
 
-	public void data(byte[] dest, int off);
+	public void data(byte[] dest, int off, int len);
 	
 	public InputStream data();
 

@@ -86,11 +86,11 @@ public class Message implements IMessage
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void data(byte[] dest, int off)
+	public void data(byte[] dest, int off, int length)
 	{
 		if (this.bodyType == BODYTYPE_BYTEARRAY)
 		{
-			System.arraycopy(this.body, off, dest, 0, dest.length);
+			System.arraycopy(this.body, off, dest, 0, length);
 			return;
 		}
 		((SemiDynamicByteArray) this.body).getDataFrom(dest, off);
