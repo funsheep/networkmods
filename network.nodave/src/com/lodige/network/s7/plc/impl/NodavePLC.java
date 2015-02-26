@@ -4,6 +4,7 @@
  */
 package com.lodige.network.s7.plc.impl;
 
+import github.javaappplatform.platform.job.JobPlatform;
 import github.javaappplatform.platform.job.JobbedTalkerStub;
 
 import java.io.IOException;
@@ -20,10 +21,9 @@ import com.lodige.network.s7.plc.IPLC;
 import com.lodige.network.s7.plc.IPLCAPI;
 import com.lodige.network.s7.plc.IPLCAPI.ConnectionState;
 import com.lodige.network.s7.plc.IPLCAPI.Type;
-import com.lodige.network.s7.plc.IPLCAPI.UpdateFrequency;
 import com.lodige.network.s7.plc.util.PLCTools;
-import com.lodige.network.s7.protocol.Write;
 import com.lodige.network.s7.protocol.INodaveAPI.Area;
+import com.lodige.network.s7.protocol.Write;
 import com.lodige.network.s7.protocol.Write.Write3;
 
 
@@ -31,13 +31,12 @@ import com.lodige.network.s7.protocol.Write.Write3;
  * TODO javadoc
  * @author renken
  */
-public class NodavePLC extends JobbedTalkerStub implements IPLC
+public class NodavePLC extends JobbedTalkerStub implements IPLC.Internal
 {
 
 	protected final ClientConnection cc;
 	private final HashMap<String, Input> inputs = new HashMap<>();
 	private final HashMap<String, IOutput> outputs = new HashMap<>();
-	private UpdateFrequency frequency = UpdateFrequency.MEDIUM;
 	private boolean transactionActive = false;
 
 
@@ -46,7 +45,7 @@ public class NodavePLC extends JobbedTalkerStub implements IPLC
 	 */
 	public NodavePLC(String host, ClientNetworkService service) throws IOException
 	{
-		super(IPLCAPI.PLC_UPDATE_THREAD);
+		super(JobPlatform.MAIN_THREAD);
 		this.cc = new ClientConnection(host, 102, null, service);
 		this.cc.connect();
 		new InputPolling(this);
@@ -54,13 +53,13 @@ public class NodavePLC extends JobbedTalkerStub implements IPLC
 
 	public NodavePLC(ClientConnection connection)
 	{
-		super(IPLCAPI.PLC_UPDATE_THREAD);
+		super(JobPlatform.MAIN_THREAD);
 		this.cc = connection;
 		this.cc.addListener(INetworkAPI.E_STATE_CHANGED, (e) -> this.postEvent(IPLCAPI.EVENT_CONNECTION_STATE_CHANGED));
 		new InputPolling(this);
 	}
 
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -68,6 +67,15 @@ public class NodavePLC extends JobbedTalkerStub implements IPLC
 	public String id()
 	{
 		return this.cc.alias();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ClientConnection connection()
+	{
+		return this.cc;
 	}
 
 	
@@ -181,20 +189,6 @@ public class NodavePLC extends JobbedTalkerStub implements IPLC
 		this.outputs.remove(output.id());
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public synchronized void setUpdateMethod(UpdateFrequency frequency)
-	{
-		this.frequency = frequency;
-	}
-	
-	synchronized UpdateFrequency frequency()
-	{
-		return this.frequency;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */

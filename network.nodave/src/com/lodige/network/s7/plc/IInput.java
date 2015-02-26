@@ -1,15 +1,16 @@
 package com.lodige.network.s7.plc;
 
+import github.javaappplatform.commons.events.ITalker;
+
 import java.io.IOException;
 
 import com.lodige.network.s7.plc.IPLCAPI.Type;
-import com.lodige.network.s7.plc.IPLCAPI.UpdateFrequency;
 
 /**
  * TODO javadoc
  * @author renken
  */
-public interface IInput
+public interface IInput extends ITalker
 {
 
 	public String id();
@@ -18,10 +19,13 @@ public interface IInput
 
 	public void delete();
 	
-
-	public void resetUpdateMethod();
-
-	public void setUpdateMethod(UpdateFrequency frequency);
+	
+	public void setUpdateFrequency(int frequency);
+	
+	public default void clearUpdateFrequency()
+	{
+		this.setUpdateFrequency(-1);
+	}
 	
 
 	public default short shortValue() throws IOException

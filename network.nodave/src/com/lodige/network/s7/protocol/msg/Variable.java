@@ -62,7 +62,7 @@ public class Variable
 		if (this.error != Result.OK.code)
 			throw new PDUResultException(this.error);
 		byte[] data = new byte[this.length];
-		this.msg.data(data, this.bufferStart);
+		this.msg.data(data, this.bufferStart, data.length);
 		return data;
 	}
 

@@ -14,6 +14,8 @@ import java.io.IOException;
 import com.lodige.network.INetworkAPI;
 import com.lodige.network.client.ClientConnection;
 import com.lodige.network.msg.IMessage;
+import com.lodige.network.s7.plc.IPLC;
+import com.lodige.network.s7.plc.IPLC.Internal;
 import com.lodige.network.s7.protocol.INodaveAPI.Area;
 import com.lodige.network.s7.protocol.impl.S7Protocol;
 import com.lodige.network.s7.protocol.msg.PDUWriteBuilder;
@@ -107,7 +109,7 @@ public class Write
 		{
 			Write.this.addToWB();
 			Compute getter = new Compute();
-			JobPlatform.runJob(() ->
+			JobPlatform.runJob("Write Request to " + Write.this.connection.alias(), () ->
 			{
 				try
 				{
@@ -217,6 +219,11 @@ public class Write
 	public static final Write toPLC(ClientConnection connection)
 	{
 		return new Write(connection);
+	}
+
+	public static final Write toPLC(IPLC plc)
+	{
+		return new Write(((Internal) plc).connection());
 	}
 
 }

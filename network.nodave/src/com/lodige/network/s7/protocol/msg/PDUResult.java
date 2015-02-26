@@ -58,7 +58,7 @@ public class PDUResult
 	private final int getHeaderLength()
 	{
 		byte[] tmp = new byte[1];
-		this.msg.data(tmp, this.header+1);
+		this.msg.data(tmp, this.header+1, tmp.length);
 		int headerLength = 10;
 		if (tmp[0] == 2 || tmp[0] == 3)
 			headerLength = 12;
@@ -68,14 +68,14 @@ public class PDUResult
 	private final int getParamLength()
 	{
 		byte[] tmp = new byte[2];
-		this.msg.data(tmp, this.header + 6);
+		this.msg.data(tmp, this.header + 6, tmp.length);
 		return Converter.USBEWord(tmp, 0);
 	}
 	
 	private final int getDataLength()
 	{
 		byte[] tmp = new byte[2];
-		this.msg.data(tmp, this.header + 8);
+		this.msg.data(tmp, this.header + 8, tmp.length);
 		return Converter.USBEWord(tmp, 0);
 	}
 	
@@ -108,21 +108,21 @@ public class PDUResult
 	public byte[] header()
 	{
 		byte[] dest = new byte[this.param - this.header];
-		this.msg.data(dest, this.header);
+		this.msg.data(dest, this.header, dest.length);
 		return dest;
 	}
 	
 	public byte[] params()
 	{
 		byte[] dest = new byte[this.data - this.param];
-		this.msg.data(dest, this.param);
+		this.msg.data(dest, this.param, dest.length);
 		return dest;
 	}
 
 	public byte[] data()
 	{
 		byte[] dest = new byte[this.dlen];
-		this.msg.data(dest, this.data);
+		this.msg.data(dest, this.data, dest.length);
 		return dest;
 	}
 
@@ -130,14 +130,14 @@ public class PDUResult
 	private final byte[] one = new byte[1];
 	protected byte[] date(int position)
 	{
-		this.msg.data(this.one, position);
+		this.msg.data(this.one, position, this.one.length);
 		return this.one;
 	}
 
 	private final byte[] two = new byte[2];
 	protected byte[] word(int position)
 	{
-		this.msg.data(this.two, position);
+		this.msg.data(this.two, position, this.two.length);
 		return this.two;
 	}
 	

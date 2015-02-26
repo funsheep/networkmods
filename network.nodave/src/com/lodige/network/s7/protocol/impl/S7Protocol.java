@@ -53,6 +53,11 @@ public abstract class S7Protocol implements IProtocol
 		return this.pduInHeaderSize;
 	}
 	
+	public int maxPDULength()
+	{
+		return this.maxPDUlength;
+	}
+	
 	/*
 		build the PDU for a PDU length negotiation    
 	*/

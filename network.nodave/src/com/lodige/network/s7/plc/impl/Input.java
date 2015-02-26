@@ -4,9 +4,9 @@
  */
 package com.lodige.network.s7.plc.impl;
 
-import github.javaappplatform.commons.events.IInnerTalker;
 import github.javaappplatform.commons.log.Logger;
 import github.javaappplatform.platform.Platform;
+import github.javaappplatform.platform.job.JobbedTalkerStub;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -25,7 +25,7 @@ import com.lodige.network.s7.protocol.INodaveAPI.Area;
  * TODO javadoc
  * @author renken
  */
-class Input implements IInput, IPLCAPI
+class Input extends JobbedTalkerStub implements IInput, IPLCAPI
 {
 	
 	private static final Logger LOGGER = Logger.getLogger();
@@ -41,8 +41,8 @@ class Input implements IInput, IPLCAPI
 	
 	private final ReentrantLock lock = new ReentrantLock();
 	private final Condition waitForUpdate = this.lock.newCondition();
-	private UpdateFrequency frequency = null;
 	private boolean triggerUpdate = false;
+	private int updateFrequency = -1;
 	
 	private Object value;
 	private long lastUpdate = 0;
@@ -53,6 +53,7 @@ class Input implements IInput, IPLCAPI
 	 */
 	protected Input(String id, Area area, int database, int offset, int length, Type type, NodavePLC parent)
 	{
+		super(IPLCAPI.PLC_UPDATE_THREAD + parent.id());
 		this.id = id;
 		this.area = area;
 		this.database = database;
@@ -103,47 +104,23 @@ class Input implements IInput, IPLCAPI
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void resetUpdateMethod()
+	public void setUpdateFrequency(int frequency)
 	{
-		this.lock.lock();
-		try
-		{
-			this.frequency = null;
-		}
-		finally
-		{
-			this.lock.unlock();
-		}
+		this.updateFrequency = frequency;
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setUpdateMethod(UpdateFrequency frequency)
-	{
-		this.lock.lock();
-		try
-		{
-			this.frequency = frequency;
-		}
-		finally
-		{
-			this.lock.unlock();
-		}
-	}
-	
-	private UpdateFrequency frequency()
-	{
-		return this.frequency != null ? this.frequency : this.parent.frequency();
-	}
 
 	boolean startUpdate()
 	{
 		this.lock.lock();
 		try
 		{
-			return Platform.currentTime() - this.lastUpdate > this.frequency().schedule || this.triggerUpdate;
+			if (this.triggerUpdate)
+				return true;
+			if (this.updateFrequency > 0 && Platform.currentTime() - this.lastUpdate < this.updateFrequency)
+				return false;
+
+			return Platform.currentTime() - this.lastUpdate > BACKGROUND_UPDATE_FRQUENCY || this.hasListener(EVENT_INPUT_CHANGED);
 		}
 		finally
 		{
@@ -214,7 +191,7 @@ class Input implements IInput, IPLCAPI
 		if (postEvent)
 		{
 			LOGGER.debug("Value of Input {} changed to {}.", this.id, newValue); //$NON-NLS-1$
-			((IInnerTalker) this.parent).postEvent(IPLCAPI.EVENT_INPUT_CHANGED, this);
+			this.postEvent(IPLCAPI.EVENT_INPUT_CHANGED, this);
 		}
 	}
 	

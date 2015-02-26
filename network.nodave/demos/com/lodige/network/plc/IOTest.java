@@ -34,8 +34,8 @@ public class IOTest implements IBootEntry
 		try
 		{
 			final NodavePLC plc = new NodavePLC("192.168.130.110", service); //$NON-NLS-1$
-			plc.createDBInput(15, 20, Type.UINT).setUpdateMethod(UpdateFrequency.OFF); //$NON-NLS-1$
-			plc.createDBInput(15, 10, Type.UBYTE).setUpdateMethod(UpdateFrequency.LOW); //$NON-NLS-1$
+			plc.createDBInput(15, 20, Type.UINT);
+			plc.createDBInput(15, 10, Type.UBYTE);
 			(new ADoJob("Manually Poll PLCs") //$NON-NLS-1$
 			{
 				

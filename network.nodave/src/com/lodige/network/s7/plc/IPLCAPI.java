@@ -44,25 +44,10 @@ public interface IPLCAPI
 		
 	}
 	
-	public enum UpdateFrequency
-	{
-		HIGH(1000),
-		MEDIUM(4000),
-		LOW(8000),
-		OFF(Integer.MAX_VALUE);
-		
-		public final int schedule;
-		
-		private UpdateFrequency(int schedule)
-		{
-			this.schedule = schedule;
-		}
-	}
+	public static final int BACKGROUND_UPDATE_FRQUENCY = 30000;
 	
 	public static final int EVENT_INPUT_CHANGED = StringID.id("EVENT_INPUT_CHANGED"); //int=2041127352 //$NON-NLS-1$
 	public static final int EVENT_CONNECTION_STATE_CHANGED = StringID.id("EVENT_CONNECTION_STATE_CHANGED"); //$NON-NLS-1$
 	
-	public static final String PLC_UPDATE_THREAD = "Update PLCs"; //$NON-NLS-1$
-
-	public static final String TCP_PLC_CLIENT_NETWORK_SERVICE = "com.lodige.network.s7.protocol.TCPNetworkService"; //$NON-NLS-1$
+	public static final String PLC_UPDATE_THREAD = "Update PLC"; //$NON-NLS-1$
 }

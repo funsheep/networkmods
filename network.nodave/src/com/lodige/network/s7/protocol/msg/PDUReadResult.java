@@ -76,7 +76,7 @@ public class PDUReadResult extends PDUResult
 	public byte[] resultData()
 	{
 		byte[] dest = new byte[this.udlen];
-		this.msg.data(dest, this.udata);
+		this.msg.data(dest, this.udata, dest.length);
 		return dest;
 	}
 

@@ -32,24 +32,31 @@ public class TCPS7Protocol extends S7Protocol
 	//	public static final int TCP_START_OUT = 3;
 
 
-	private final byte[] b4;
-	private final byte rack;
-	private final byte slot;
+	private byte[] b4;
+	private byte rack = -1;
+	private byte slot = -1;
 	private final byte commType;
 	private int tPDUsize;
 
 
 	public TCPS7Protocol()
 	{
-		this((byte) 0, (byte) 2, (byte) 1);
+		this((byte) 1);
 	}
 	
-	public TCPS7Protocol(byte rack, byte slot, byte commType)
+	public TCPS7Protocol(byte commType)
 	{
 		super(TCPS7Protocol.TCP_START_IN);
+		this.commType = commType;
+	}
+
+	
+	public void setRackSlot(byte rack, byte slot)
+	{
+		if (this.b4 != null)
+			throw new RuntimeException("Slot and Rack information is already set.");
 		this.rack = rack;
 		this.slot = slot;
-		this.commType = commType;
 		this.b4 = new byte[]
 		{
 			(byte)0x11,(byte)0xE0,(byte)0x00,
@@ -61,7 +68,7 @@ public class TCPS7Protocol extends S7Protocol
 			(byte)0xC0,1,(byte)0x9
 		};
 	}
-
+	
 
 	/**
 	 * {@inheritDoc}
@@ -69,6 +76,9 @@ public class TCPS7Protocol extends S7Protocol
 	@Override
 	public void onConnect(Socket socket) throws IOException
 	{
+		if (this.b4 == null)
+			throw new IOException("Slot and rack information is missing. Cannot initiate communication with PLC.");
+		
 		assert LOGGER.trace("daveConnectPLC() step 1. rack: {} slot: {}", Integer.valueOf(this.rack), Integer.valueOf(this.slot)); //$NON-NLS-1$
 		this.send(Message.create(INodaveAPI.MSG_OTHER, this.b4), socket.getOutputStream());
 
@@ -80,7 +90,7 @@ public class TCPS7Protocol extends S7Protocol
 		if (msg.size() == 22)
 		{
 			final byte[] header = new byte[msg.size()-2-6];
-			msg.data(header, 6);
+			msg.data(header, 6, header.length);
 			for (int i = 0; i < header.length; i++)
 			{
 				if (header[i] == (byte)0xc0)
@@ -115,7 +125,6 @@ public class TCPS7Protocol extends S7Protocol
 		out.write((msg.size()+headerSize) / 0x100);
 		out.write((msg.size()+headerSize) % 0x100);
 
-		
 		InputStream dataIn = msg.data();
 		assert LOGGER.trace("send packet header: {} ", Strings.toHexString(new byte[] { 0x03, 0, (byte)((msg.size()+headerSize) / 0x100), (byte)((msg.size()+headerSize) % 0x100)}, 0, 4)); //$NON-NLS-1$
 		if ((msg.type() & INodaveAPI.MSG_PDU) != 0)
@@ -125,6 +134,7 @@ public class TCPS7Protocol extends S7Protocol
 			int len = dataIn.read(this.pduHeader);
 			if (len == -1)
 				throw new IOException("Unexpected end of stream"); //$NON-NLS-1$
+
 			Converter.setUSBEWord(this.pduHeader, 4, (int) ((Message) msg).sendID());
 			out.write(this.pduHeader, 0, len);
 		}
@@ -196,6 +206,7 @@ public class TCPS7Protocol extends S7Protocol
 				//do nothing
 		}
 		
+		System.out.println("Message read of size " + array.size());
 		Message msg = Message.create(msgType, array, array.size(), msgID, null);
 		LOGGER.debug("Read Msg: {}", msg); //$NON-NLS-1$
 		return msg;

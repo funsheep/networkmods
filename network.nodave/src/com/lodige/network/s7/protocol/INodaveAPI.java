@@ -202,4 +202,6 @@ public class INodaveAPI
 		}
 	}
 
+	public static final String TCP_PLC_CLIENT_NETWORK_SERVICE = "com.lodige.network.s7.protocol.TCPNetworkService"; //$NON-NLS-1$
+
 }
